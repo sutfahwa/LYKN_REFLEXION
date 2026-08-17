@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LYKN Reflexion Concert</title>
+<meta name="description" content="LYKN Reflexion Concert — 24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี รายละเอียดบัตร ผังที่นั่ง และกำหนดการ">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./assets/favicon-512.png">
+<link rel="shortcut icon" href="./assets/favicon.ico">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<meta property="og:title" content="LYKN Reflexion Concert">
+<meta property="og:description" content="24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี">
+<meta property="og:image" content="./assets/logo.png">
+<meta property="og:type" content="website">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Noto Sans Thai', sans-serif; }
+  a { color: #6fe0d6; text-decoration: none; }
+  a:hover { color: #ffd400; }
+  @media (max-width: 880px) {
+    .nav-desktop { display: none !important; }
+    .nav-mobile { display: flex !important; }
+  }
+  @media (min-width: 881px) {
+    .nav-desktop { display: flex !important; }
+    .nav-mobile { display: none !important; }
+  }
+  @keyframes cardSpin { 0% { transform: rotateY(0deg) scale(1); } 50% { transform: rotateY(180deg) scale(1.05); } 100% { transform: rotateY(360deg) scale(1); } }
+  @keyframes floatFlareA { 0%,100% { transform: translate(0,0); opacity:0.5; } 50% { transform: translate(20px,-30px); opacity:0.9; } }
+  @keyframes floatFlareB { 0%,100% { transform: translate(0,0); opacity:0.4; } 50% { transform: translate(-24px,26px); opacity:0.8; } }
+  @keyframes floatFlareC { 0%,100% { transform: translate(0,0); opacity:0.35; } 50% { transform: translate(16px,20px); opacity:0.7; } }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#000000;color:#f2f7f6;padding-bottom:84px">
+
+  <nav class="nav-desktop" style="display:flex;position:fixed;top:0;left:0;right:0;z-index:50;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(5,13,16,0.88);backdrop-filter:blur(8px);border-bottom:1px solid rgba(111,224,214,0.15)">
+    <img src="./assets/lykn-nav-logo.png" alt="LYKN" onClick="{{ goHome }}" style="height:44px;cursor:pointer">
+    <div style="display:flex;gap:8px">
+      <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="5">
+        <div onClick="{{ item.onClick }}" style="padding:10px 18px;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;background:{{ item.bg }};color:{{ item.color }}">{{ item.label }}</div>
+      </sc-for>
+    </div>
+  </nav>
+
+  <nav class="nav-mobile" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:50;justify-content:space-around;padding:8px 4px calc(env(safe-area-inset-bottom,0px) + 8px);background:rgba(5,13,16,0.95);border-top:1px solid rgba(111,224,214,0.15)">
+    <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="5">
+      <div onClick="{{ item.onClick }}" style="flex:1;text-align:center;padding:8px 2px;border-radius:8px;font-size:11.5px;font-weight:500;cursor:pointer;color:{{ item.color }}">{{ item.label }}</div>
+    </sc-for>
+  </nav>
+
+  <main style="padding-top:70px;max-width:1100px;margin:0 auto">
+
+    <!-- HOME -->
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <section style="position:relative;padding:56px 20px 60px;text-align:center;overflow:hidden;background:#000000">
+        <div style="position:absolute;top:-40px;right:6%;width:12%;max-width:120px;height:220px;background:linear-gradient(115deg,transparent 30%,rgba(111,224,214,0.35) 48%,rgba(255,255,255,0.5) 50%,rgba(111,224,214,0.25) 52%,transparent 70%);transform:rotate(18deg);clip-path:polygon(30% 0,70% 0,100% 100%,0 100%);z-index:5;pointer-events:none;animation:floatFlareA 7s ease-in-out infinite"></div>
+        <div style="position:absolute;bottom:-20px;left:5%;width:10%;max-width:100px;height:180px;background:linear-gradient(115deg,transparent 30%,rgba(111,224,214,0.3) 48%,rgba(255,255,255,0.4) 50%,rgba(111,224,214,0.2) 52%,transparent 70%);transform:rotate(-12deg);clip-path:polygon(20% 0,80% 0,100% 100%,10% 100%);z-index:5;pointer-events:none;animation:floatFlareB 8.5s ease-in-out infinite"></div>
+        <div style="position:absolute;top:120px;right:22%;width:6%;max-width:60px;height:110px;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,0.25) 50%,transparent 70%);transform:rotate(-25deg);z-index:5;pointer-events:none;animation:floatFlareC 6s ease-in-out infinite"></div>
+        <div style="position:absolute;top:220px;left:14%;width:5%;max-width:50px;height:90px;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,0.18) 50%,transparent 70%);transform:rotate(30deg);z-index:5;pointer-events:none;animation:floatFlareA 7.5s ease-in-out infinite"></div>
+        <div style="position:absolute;top:80px;left:20%;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(111,224,214,0.35),transparent 70%);filter:blur(4px);animation:floatFlareA 7s ease-in-out infinite;z-index:5;pointer-events:none"></div>
+        <div style="position:absolute;bottom:60px;right:12%;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(111,224,214,0.28),transparent 70%);filter:blur(4px);animation:floatFlareB 8.5s ease-in-out infinite;z-index:5;pointer-events:none"></div>
+        <div style="position:absolute;top:280px;right:30%;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.3),transparent 70%);filter:blur(3px);animation:floatFlareC 6s ease-in-out infinite;z-index:5;pointer-events:none"></div>
+
+        <div style="position:relative;font-size:13px;letter-spacing:4px;color:#6fe0d6;font-weight:600;margin-bottom:18px">R E F L E X I O N &nbsp; C O U N T D O W N</div>
+        <div style="position:relative;max-width:520px;margin:0 auto 8px">
+          <img src="./assets/logo.png" alt="LYKN REFLEXION CONCERT" style="width:100%;height:220px;object-fit:contain;display:block">
+        </div>
+        <div style="position:relative;font-size:17px;color:#a9c4c2;margin-top:4px">24 - 25 ตุลาคม 2569 &nbsp;|&nbsp; อิมแพ็ค อารีน่า เมืองทองธานี</div>
+
+        <div style="position:relative;display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-top:44px">
+          <div style="min-width:280px">
+            <div style="font-size:13px;letter-spacing:2px;color:#6fe0d6;font-weight:600;margin-bottom:16px">เปิดจำหน่ายบัตรในอีก</div>
+            <div style="display:flex;gap:2px;justify-content:center;align-items:baseline">
+              <sc-for list="{{ presaleUnits }}" as="u" hint-placeholder-count="4">
+                <div style="display:flex;align-items:baseline">
+                  <div style="min-width:64px;text-align:center">
+                    <div style="font-size:44px;font-weight:700;color:#fff">{{ u.value }}</div>
+                    <div style="font-size:10.5px;letter-spacing:1.5px;color:#a9c4c2;margin-top:2px">{{ u.label }}</div>
+                  </div>
+                  <sc-if value="{{ u.hasColon }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-size:36px;font-weight:300;color:#3a5f5c;padding:0 2px 18px">:</div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-size:12.5px;color:#a9c4c2;margin-top:10px">เสาร์ที่ 22 สิงหาคม 2569, 10:00 น.</div>
+          </div>
+
+          <div style="width:1px;background:rgba(111,224,214,0.25);align-self:stretch"></div>
+
+          <div style="min-width:280px">
+            <div style="font-size:13px;letter-spacing:2px;color:#6fe0d6;font-weight:600;margin-bottom:16px">วันจัดคอนเสิร์ตในอีก</div>
+            <div style="display:flex;gap:2px;justify-content:center;align-items:baseline">
+              <sc-for list="{{ concertUnits }}" as="u" hint-placeholder-count="4">
+                <div style="display:flex;align-items:baseline">
+                  <div style="min-width:64px;text-align:center">
+                    <div style="font-size:44px;font-weight:700;color:#fff">{{ u.value }}</div>
+                    <div style="font-size:10.5px;letter-spacing:1.5px;color:#a9c4c2;margin-top:2px">{{ u.label }}</div>
+                  </div>
+                  <sc-if value="{{ u.hasColon }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-size:36px;font-weight:300;color:#3a5f5c;padding:0 2px 18px">:</div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-size:12.5px;color:#a9c4c2;margin-top:10px">เสาร์ที่ 24 และ อาทิตย์ที่ 25 ตุลาคม 2569</div>
+          </div>
+        </div>
+
+        <div onClick="{{ goDetails }}" style="position:relative;display:inline-block;margin-top:36px;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:600;font-size:15px;letter-spacing:0.5px;padding:15px 40px;border-radius:30px;cursor:pointer">ดูรายละเอียดคอนเสิร์ต</div>
+      </section>
+    </sc-if>
+
+    <!-- DETAILS -->
+    <sc-if value="{{ isDetails }}" hint-placeholder-val="{{ false }}">
+      <section style="padding:28px 20px 60px">
+        <h1 style="font-size:30px;font-weight:700;margin:0 0 6px">รายละเอียดคอนเสิร์ต</h1>
+        <p style="color:#6fe0d6;font-size:19px;font-weight:600;letter-spacing:0.5px;margin:0 0 28px">LYKN REFLEXION CONCERT — 24-25 ตุลาคม 2569</p>
+
+        <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">สถานที่แสดง</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:32px">
+          <sc-for list="{{ venues }}" as="v" hint-placeholder-count="3">
+            <div style="flex:{{ v.flex }};min-width:{{ v.minWidth }};background:{{ v.bg }};border:{{ v.border }};box-shadow:{{ v.shadow }};border-radius:14px;padding:{{ v.padding }}">
+              <div style="font-weight:700;font-size:{{ v.nameSize }};margin-bottom:10px;color:{{ v.nameColor }}">{{ v.name }}</div>
+              <sc-for list="{{ v.lines }}" as="ln" hint-placeholder-count="3">
+                <div style="display:flex;gap:8px;font-size:15px;color:#c7ddda;line-height:1.6;margin-bottom:4px"><span>{{ ln.icon }}</span><span>{{ ln.text }}</span></div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+
+        <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">ราคาบัตร และผังที่นั่ง</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:32px">
+          <div style="flex:1 1 420px;min-width:300px">
+            <div style="border-radius:12px;overflow:hidden;margin-bottom:16px">
+              <img src="./assets/seatplan-final.png" alt="ผังที่นั่ง อิมแพ็ค อารีน่า เมืองทองธานี" style="width:100%;height:auto;display:block">
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ priceLegend }}" as="lg" hint-placeholder-count="7">
+                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border-radius:8px;padding:5px 10px">
+                  <div style="width:12px;height:12px;border-radius:3px;background:{{ lg.color }}"></div>
+                  <div style="font-size:12px;color:#eafffb">{{ lg.price }} บาท</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="flex:1 1 260px;min-width:260px;display:flex;flex-direction:column;gap:16px">
+            <sc-for list="{{ ticketGroups }}" as="g" hint-placeholder-count="3">
+              <div style="background:rgba(79,195,187,0.14);border:1px solid rgba(111,224,214,0.3);border-radius:14px;padding:20px">
+                <div style="font-weight:700;font-size:15px;letter-spacing:0.5px;margin-bottom:10px">{{ g.title }}</div>
+                <sc-for list="{{ g.lines }}" as="pl" hint-placeholder-count="2">
+                  <div style="font-size:14px;line-height:1.9;color:#eafffb">{{ pl }}</div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">ช่องทางการซื้อ</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:32px">
+          <sc-for list="{{ channelGroups }}" as="cg" hint-placeholder-count="2">
+            <div style="flex:1;min-width:260px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px">
+              <div style="font-weight:700;font-size:15px;color:#6fe0d6;margin-bottom:4px">{{ cg.title }}</div>
+              <div style="font-size: 16px; color: #FFFFFF; margin-bottom: 12px">เปิดขาย {{ cg.dateNote }}</div>
+              <sc-for list="{{ cg.items }}" as="it" hint-placeholder-count="3">
+                <div style="display:flex;gap:8px;align-items:center;font-size:14px;padding:6px 0;border-top:1px solid rgba(255,255,255,0.06)"><span>{{ it.icon }}</span><span>{{ it.label }}</span></div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:36px">
+          <div onClick="{{ openBuyModal }}" style="background:{{ buyBtnBg }};border:1px solid #6fe0d6;color:{{ buyBtnColor }};font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all 0.15s">รายละเอียดการซื้อบัตร</div>
+          <div onClick="{{ openPickupModal }}" style="background:{{ pickupBtnBg }};border:1px solid #6fe0d6;color:{{ pickupBtnColor }};font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all 0.15s">รายละเอียดการรับบัตร</div>
+        </div>
+
+        <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">Fan Benefit</h2>
+        <div style="overflow-x:auto;margin-bottom:32px;border-radius:12px;border:1px solid rgba(255,255,255,0.1)">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap">
+            <thead>
+              <tr style="background:#0891b2">
+                <th style="text-align:left;padding:10px 14px;color:#fff;font-weight:700;position:sticky;left:0;background:#0891b2">TICKET PRICES</th>
+                <sc-for list="{{ fanBenefitPrices }}" as="p" hint-placeholder-count="8">
+                  <th style="padding:10px 14px;color:#fff;font-weight:700">{{ p }}</th>
+                </sc-for>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ fanBenefitRows }}" as="row" hint-placeholder-count="7">
+                <tr style="background:rgba(111,224,214,0.06)">
+                  <td style="text-align:left;padding:10px 14px;font-weight:600;color:#6fe0d6;position:sticky;left:0;background:#0c2226;border-top:1px solid rgba(255,255,255,0.08)">{{ row.label }}</td>
+                  <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="8">
+                    <td style="text-align:center;padding:10px 14px;color:#eafffb;border-top:1px solid rgba(255,255,255,0.08)">{{ c }}</td>
+                  </sc-for>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 style="font-size:20px;font-weight:600;margin:0 0 14px;color:#6fe0d6">กำหนดการแบบละเอียด</h2>
+        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:8px 20px">
+          <sc-for list="{{ groupedSchedule }}" as="grp" hint-placeholder-count="6">
+            <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08)">
+              <div style="font-weight:700;font-size:14px;color:#6fe0d6;margin-bottom:6px">{{ grp.dateLabel }}</div>
+              <sc-for list="{{ grp.items }}" as="item" hint-placeholder-count="3">
+                <div style="display:flex;gap:16px;padding:6px 0;opacity:{{ item.opacity }}">
+                  <div style="min-width:90px;font-weight:600;color:#ffd400;text-decoration:{{ item.strike }}">{{ item.time }}</div>
+                  <div style="font-size:14.5px;text-decoration:{{ item.strike }}">{{ item.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+
+        <h2 style="font-size:20px;font-weight:600;margin:32px 0 14px;color:#6fe0d6">ระเบียบการเข้างาน</h2>
+        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:20px 24px">
+          <ul style="padding-left:20px;margin:0;font-size:14.5px;line-height:1.9;color:#dcece9">
+            <li>ผู้ที่ได้รับสิทธิ์ร่วมกิจกรรม Sound Check, Hi-Touch และ Hi-Session ต้องมาลงทะเบียนรับสิทธิ์ที่หน้างานตั้งแต่ 08:00–14:00 น. หากไม่ลงทะเบียนในเวลาดังกล่าวถือว่าสละสิทธิ์ (แต่เข้าชมโชว์ได้ตามปกติ)</li>
+            <li>ไม่อนุญาตให้นำอาหารและเครื่องดื่มทุกชนิดเข้าภายในงาน</li>
+            <li>ไม่อนุญาตให้นำอาวุธหรือของมีคมทุกชนิดเข้าภายในงาน</li>
+            <li>ไม่อนุญาตให้ใช้แฟลชในการถ่ายภาพ</li>
+            <li>ไม่อนุญาตให้นำเลนส์ซูมระยะ 50-230 / 70-200 / 70-300 / 300-400 / 600, Teleconverter x1.4 และ x2, กล้อง Pro Zoomer, Compact Camera หรือกล้องที่มีเลนส์ในตัวเกินระยะ 150 เข้าภายในงาน (เลนส์ซูม 14-150 / 40-150 / 24-105 หรือ 18-135 นำเข้าได้)</li>
+            <li>ไม่อนุญาตให้บันทึกวิดีโอ บันทึกเสียง หรือถ่ายทอดสดภาพและเสียง (LIVE) ด้วยอุปกรณ์ทุกชนิดผ่านช่องทางหรือแอปพลิเคชันใดๆ — หากฝ่าฝืน ทีมงานสงวนสิทธิ์ลบภาพ/วิดีโอ/เสียงที่บันทึกไว้ และเชิญออกจากงานทันที</li>
+            <li>ไม่อนุญาตให้ชูป้ายทุกชนิดทุกขนาดระหว่างการแสดง เนื่องจากกระทบการรับชมของผู้ชมที่อยู่ด้านหลัง</li>
+          </ul>
+          <div style="font-size:12.5px;color:#8ea6a3;margin-top:14px">หมายเหตุ: ทางทีมงานขอสงวนสิทธิ์ในการเปลี่ยนแปลงเงื่อนไขหรือกฎกติกาตามความเหมาะสม</div>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- TIPS -->
+    <sc-if value="{{ isTips }}" hint-placeholder-val="{{ false }}">
+      <section style="padding:28px 20px 60px">
+        <h1 style="font-size:30px;font-weight:700;margin:0 0 12px">เคล็ดลับการกดบัตร</h1>
+        <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,212,0,0.1);border:1px solid rgba(255,212,0,0.5);border-radius:12px;padding:16px 20px;margin-bottom:32px">
+          <div style="font-size:20px;line-height:1">⚠️</div>
+          <div>
+            <div style="font-weight:700;font-size:14px;color:#ffd400;margin-bottom:3px">หมายเหตุสำคัญ</div>
+            <div style="font-size: 20px; line-height: 2; color: #f2e9c9; font-weight: 500">เทคนิคทั้งหมดรวบรวมจากประสบการณ์จริงของผู้ใช้งานในโซเชียลมีเดีย ไม่ได้รับประกันผลลัพธ์ 100%</div>
+          </div>
+        </div>
+
+        <sc-for list="{{ tipSections }}" as="sec" hint-placeholder-count="3">
+          <div style="margin-bottom:34px">
+            <h2 style="font-size:20px;font-weight:700;margin:0 0 6px;color:#6fe0d6">{{ sec.title }}</h2>
+            <div style="height:2px;background:linear-gradient(90deg,rgba(111,224,214,0.5),transparent);margin-bottom:16px"></div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="3">
+                <div style="display:flex;gap:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px 20px">
+                  <div style="font-size:28px;line-height:1">{{ it.icon }}</div>
+                  <div>
+                    <div style="font-weight:700;font-size:16px;color:#ffd400;margin-bottom:7px">{{ it.label }}</div>
+                    <div style="font-size:15px;line-height:1.8;color:#eafffb;margin-bottom:8px">{{ it.text }}</div>
+                    <sc-if value="{{ it.badges }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;gap:8px">
+                        <sc-for list="{{ it.badges }}" as="b" hint-placeholder-count="2">
+                          <sc-if value="{{ b.src }}" hint-placeholder-val="{{ false }}">
+                            <img src="{{ b.src }}" style="width:26px;height:26px;border-radius:6px;object-fit:contain">
+                          </sc-if>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <!-- FAQ -->
+    <sc-if value="{{ isFaq }}" hint-placeholder-val="{{ false }}">
+      <section style="padding:28px 20px 60px">
+        <h1 style="font-size:30px;font-weight:700;margin:0 0 20px">คำถามที่พบบ่อย</h1>
+        <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="6">
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:18px 20px;margin-bottom:12px">
+            <div style="font-weight:600;font-size:15.5px;color:#6fe0d6;margin-bottom:8px">{{ f.q }}</div>
+            <div style="font-size:14.5px;color:#dcece9;line-height:1.7">{{ f.a }}</div>
+          </div>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <!-- GACHA -->
+    <sc-if value="{{ isGacha }}" hint-placeholder-val="{{ false }}">
+      <section style="padding:28px 20px 60px;text-align:center">
+        <h1 style="font-size:30px;font-weight:700;margin:0 0 8px">สุ่มกาชาการ์ดอวยพร (Lucky Draw)</h1>
+        <p style="color:#a9c4c2;font-size:15px;margin:0 0 28px">แตะการ์ดใบไหนก็ได้ เพื่อสุ่มการ์ดอวยพร 1 ใบ ก่อนไปกดบัตร</p>
+        <div style="position:relative;width:180px;height:240px;margin:0 auto 32px">
+          <sc-for list="{{ gachaBacks }}" as="g" hint-placeholder-count="9">
+            <div style="position:absolute;top:{{ g.stackOffset }}px;left:{{ g.stackOffset }}px;width:180px;height:240px;border-radius:16px;background:linear-gradient(160deg,#0891b2,#0c2226);border:1px solid rgba(111,224,214,0.3);box-shadow:0 6px 16px rgba(0,0,0,0.4);transform:rotate({{ g.stackRot }}deg);display:flex;align-items:center;justify-content:center">
+              <div style="font-size:34px;font-weight:700;color:rgba(255,255,255,0.7)">?</div>
+            </div>
+          </sc-for>
+        </div>
+        <div onClick="{{ drawCard }}" style="display:inline-block;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;font-size:16px;padding:15px 40px;border-radius:30px;cursor:pointer">สุ่มการ์ดอวยพร</div>
+
+        <sc-if value="{{ isDrawing }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;background:rgba(3,8,10,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:16px">
+            <div style="width:220px;height:293px;border-radius:16px;background:linear-gradient(160deg,#0891b2,#0c2226);border:1px solid rgba(111,224,214,0.4);box-shadow:0 0 40px rgba(111,224,214,0.4);display:flex;align-items:center;justify-content:center;animation:cardSpin 0.5s ease-in-out infinite">
+              <div style="font-size:48px;font-weight:700;color:rgba(255,255,255,0.7)">?</div>
+            </div>
+            <div style="color:#6fe0d6;font-size:14px;letter-spacing:1px">กำลังสุ่มการ์ด...</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasResult }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;background:rgba(3,8,10,0.88);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeResult }}">
+            <div style="background:linear-gradient(165deg,#123a3a,#0c1f22);border:1px solid rgba(111,224,214,0.4);border-radius:20px;padding:28px;max-width:340px;text-align:center" onClick="{{ stopProp }}">
+              <sc-if value="{{ resultCard.src }}" hint-placeholder-val="{{ false }}">
+                <img src="{{ resultCard.src }}" style="width:100%;border-radius:14px;margin-bottom:20px;display:block">
+              </sc-if>
+              <div style="display:flex;gap:10px;justify-content:center">
+                <a href="{{ resultCard.src }}" download="lykn-lucky-draw.png" style="text-decoration:none;flex:1;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">ดาวน์โหลด</a>
+                <div onClick="{{ drawAgain }}" style="flex:1;background:transparent;border:1px solid #6fe0d6;color:#6fe0d6;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">สุ่มใหม่</div>
+              </div>
+              <div onClick="{{ closeResult }}" style="margin-top:10px;font-size:13px;color:#8ea6a3;cursor:pointer">ปิด</div>
+            </div>
+          </div>
+        </sc-if>
+      </section>
+    </sc-if>
+
+  </main>
+
+  <!-- BUY MODAL -->
+  <sc-if value="{{ isBuyModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:32px;max-width:640px;width:100%;max-height:88vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:16px">รายละเอียดการซื้อบัตร</div>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">จำกัดจำนวนซื้อ</div>
+        <ul style="padding-left:20px;margin:0 0 18px;font-size:14.5px;line-height:1.8;color:#eafffb">
+          <li>1 หมายเลขบัตรประชาชน/พาสปอร์ต ซื้อได้ 1 ครั้ง ต่อ 1 รอบการแสดง</li>
+          <li>ซื้อได้สูงสุด 4 ใบ ต่อ 1 เลขบัตร ต่อ 1 รอบการแสดง (รวม 2 รอบ = 8 ใบ)</li>
+        </ul>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">ช่องทางการชำระเงิน (ค่าธรรมเนียม 3%)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+          <sc-for list="{{ paymentMethods }}" as="pm" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 12px">
+              <span style="font-size:15px">{{ pm.icon }}</span>
+              <span style="font-size:13px;color:#eafffb">{{ pm.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">ราคาบัตรรวมค่าธรรมเนียม</div>
+        <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.1);margin-bottom:4px">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+            <thead>
+              <tr style="background:#0891b2">
+                <th style="padding:8px 12px;color:#fff;font-weight:700;text-align:left">ราคาบัตร</th>
+                <th style="padding:8px 12px;color:#fff;font-weight:700;text-align:right">ราคารวมค่าธรรมเนียม</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ priceWithFee }}" as="pf" hint-placeholder-count="8">
+                <tr style="background:rgba(111,224,214,0.06)">
+                  <td style="padding:8px 12px;color:#eafffb;border-top:1px solid rgba(255,255,255,0.08)">{{ pf.base }} บาท</td>
+                  <td style="padding:8px 12px;color:#ffd400;font-weight:600;text-align:right;border-top:1px solid rgba(255,255,255,0.08)">{{ pf.total }} บาท</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+
+        <div onClick="{{ closeModal }}" style="margin-top:22px;text-align:center;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">ปิด</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PICKUP MODAL -->
+  <sc-if value="{{ isPickupModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:32px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:16px">รายละเอียดการรับบัตร</div>
+        <ul style="padding-left:20px;margin:0 0 20px;font-size:14.5px;line-height:1.9;color:#eafffb">
+          <li>รับบัตรได้ที่ไทยทิคเก็ตเมเจอร์ 11 สาขาหลัก ตามช่วงเวลาที่กำหนด</li>
+          <li>หากไม่สามารถมารับได้ในช่วงเวลาดังกล่าว รับได้ที่บูธหน้างานในวันแสดงเท่านั้น (เฉพาะรอบที่ซื้อ)</li>
+          <li>ไม่สามารถเลือกรับบัตรทางไปรษณีย์ได้</li>
+          <li>ต้องแสดงบัตรประชาชน/พาสปอร์ตตัวจริง ที่มีหมายเลขตรงกับข้อมูลที่ใช้ลงทะเบียนซื้อบัตร</li>
+        </ul>
+        <div style="background:#f5f7f6;border-radius:14px;padding:20px;margin-bottom:6px">
+          <div style="font-size:15px;font-weight:700;color:#0c2226;margin-bottom:12px">เลือกกรณีของคุณ</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">เจ้าของ account</div>
+              <select onChange="{{ setPickupOwner }}" value="{{ pickupOwner }}" style="width:100%;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:8px">
+                <sc-for list="{{ pickupOptions.owner }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o }}">{{ o }}</option>
+                </sc-for>
+              </select>
+            </div>
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">เลขบัตรตอนจอง</div>
+              <select onChange="{{ setPickupBookedId }}" value="{{ pickupBookedId }}" style="width:100%;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:8px">
+                <sc-for list="{{ pickupOptions.bookedId }}" as="o" hint-placeholder-count="2">
+                  <option value="{{ o }}">{{ o }}</option>
+                </sc-for>
+              </select>
+            </div>
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">คนไปรับ</div>
+              <select onChange="{{ setPickupPicker }}" value="{{ pickupPicker }}" style="width:100%;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:8px">
+                <sc-for list="{{ pickupOptions.picker }}" as="o" hint-placeholder-count="3">
+                  <option value="{{ o }}">{{ o }}</option>
+                </sc-for>
+              </select>
+            </div>
+          </div>
+
+        <sc-if value="{{ pickupResult }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#0891b2;border-radius:10px;padding:12px 14px;margin-bottom:10px">
+            <div style="font-size:13px;color:#e0f7fa;font-weight:700;margin-bottom:6px">ต้องใช้เอกสาร</div>
+            <ul style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.7;color:#dcece9">
+              <sc-for list="{{ pickupResult }}" as="d" hint-placeholder-count="3">
+                <li>{{ d }}</li>
+              </sc-for>
+            </ul>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasNoPickupResult }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,212,0,0.12);border:1px dashed rgba(255,150,0,0.5);border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;color:#3a2c00">ไม่พบเงื่อนไขสำหรับกรณีนี้ กรุณาติดต่อเจ้าหน้าที่หน้างานหรือ Call Center 02-262-3456</div>
+        </sc-if>
+        </div>
+        <div style="font-size:12.5px;color:#8ea6a3;margin-bottom:16px">ทุกกรณีที่ใช้สำเนาบัตร สำเนาต้องระบุ: มอบอำนาจ / เลขออเดอร์ / ชื่อผู้มารับ</div>
+        <div onClick="{{ closeModal }}" style="margin-top:22px;text-align:center;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">ปิด</div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = {
+    page: 'home',
+    scheduleTab: 'presale',
+    isBuyModalOpen: false,
+    isPickupModalOpen: false,
+    isDrawing: false,
+    resultCard: null,
+    shuffleSrc: null,
+    selectedSeat: null,
+    pickupOwner: 'ตัวเอง',
+    pickupBookedId: 'ตัวเอง',
+    pickupPicker: 'ตัวเอง',
+    now: Date.now()
+  };
+
+  componentDidMount() {
+    this._t = setInterval(() => this.setState({ now: Date.now() }), 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this._t);
+  }
+
+  goTo(page) { this.setState({ page }); }
+
+  diffParts(targetISO) {
+    const diff = new Date(targetISO).getTime() - this.state.now;
+    if (diff <= 0) return { done: true, d: 0, h: 0, m: 0, s: 0 };
+    const s = Math.floor(diff / 1000) % 60;
+    const m = Math.floor(diff / 60000) % 60;
+    const h = Math.floor(diff / 3600000) % 24;
+    const d = Math.floor(diff / 86400000);
+    return { done: false, d, h, m, s };
+  }
+  pad(n) { return String(n).padStart(2, '0'); }
+  toUnits(parts) {
+    if (parts.done) return [{ label: 'เริ่มแล้ว', value: 'เริ่มแล้ว', hasColon: false }];
+    return [
+      { label: 'วัน', value: this.pad(parts.d), hasColon: true },
+      { label: 'ชม.', value: this.pad(parts.h), hasColon: true },
+      { label: 'นาที', value: this.pad(parts.m), hasColon: true },
+      { label: 'วินาที', value: this.pad(parts.s), hasColon: false }
+    ];
+  }
+
+  scheduleData() {
+    return [
+      { dateLabel: 'เสาร์ 22 ส.ค. 2569', time: '09:00', label: 'ระบบคิวออนไลน์เปิดให้เข้าคิวที่ thaiticketmajor.com', dt: '2026-08-22T09:00:00+07:00' },
+      { dateLabel: 'เสาร์ 22 ส.ค. 2569', time: '10:00', label: 'เปิดจำหน่ายบัตรออนไลน์ (thaiticketmajor.com)', dt: '2026-08-22T10:00:00+07:00' },
+      { dateLabel: 'อาทิตย์ 23 ส.ค. 2569', time: '10:00', label: 'เปิดจำหน่ายทุกช่องทางตามปกติ', dt: '2026-08-23T10:00:00+07:00' },
+      { dateLabel: 'จันทร์ 19 ต.ค. 2569', time: '—', label: 'ประกาศผล Random สิทธิ์ Hi-Session (บัตร 5,000 บาท) และ Official Poster เซ็นชื่อ (บัตร 6,900 บาท) ทั้ง 2 รอบ ทางโซเชียลของ GMMTV (จำกัด 1 สิทธิ์ต่อที่นั่ง)', dt: '2026-10-19T23:59:00+07:00' },
+      { dateLabel: 'อังคาร 20 ต.ค. 2569', time: '—', label: 'เปิดลงทะเบียนรับสิทธิ์เพิ่มเติม กรณี Random ไม่เต็มจำนวน', dt: '2026-10-20T23:59:00+07:00' },
+      { dateLabel: 'เสาร์ 24 ต.ค. 2569', time: '08:00', label: 'บูธหน้างานเปิด', dt: '2026-10-24T08:00:00+07:00' },
+      { dateLabel: 'เสาร์ 24 ต.ค. 2569', time: '08:00–14:00', label: 'ลงทะเบียนรับสิทธิ์ Fan Benefit หน้างาน (ไม่ลงทะเบียนในเวลา = สละสิทธิ์ แต่ยังเข้าชมโชว์ได้ตามปกติ)', dt: '2026-10-24T14:00:00+07:00' },
+      { dateLabel: 'เสาร์ 24 ต.ค. 2569', time: '13:00', label: 'เปิดฮอลล์สำหรับผู้มีสิทธิ์ Sound Check / Hi-Session / Hi-Touch', dt: '2026-10-24T13:00:00+07:00' },
+      { dateLabel: 'เสาร์ 24 ต.ค. 2569', time: '14:00', label: 'Sound Check (~10 นาที) — ผู้ซื้อบัตะร 6,900/5,900/5,500/5,000 นั่งตามที่ซื้อ', dt: '2026-10-24T14:00:00+07:00' },
+      { dateLabel: 'เสาร์ 24 ต.ค. 2569', time: '—', label: 'Hi-Session ต่อจาก Sound Check — บัตร 5,900/5,500 และ Random บัตร 5,000; หลังขึ้นเวทีต้องออกห้องแล้วกลับเข้าใหม่ก่อนประตูเปิด 17:00 น.', dt: '2026-10-24T15:00:00+07:00' },
+      { dateLabel: 'เสาร์ 24 ต.ค. 2569', time: '—', label: 'Hi-Touch ต่อจาก Hi-Session — เฉพาะบัตร 6,900; หลังขึ้นเวทีต้องออกห้องแล้วกลับเข้าใหม่ก่อนประตูเปิด 17:00 น.', dt: '2026-10-24T15:30:00+07:00' },
+      { dateLabel: 'เสาร์ 24 ต.ค. 2569', time: '17:00', label: 'ประตูเปิด สำหรับผู้ชมทั่วไป', dt: '2026-10-24T17:00:00+07:00' },
+      { dateLabel: 'เสาร์ 24 ต.ค. 2569', time: '18:00', label: 'เริ่มการแสดง', dt: '2026-10-24T18:00:00+07:00' },
+      { dateLabel: 'อาทิตย์ 25 ต.ค. 2569', time: '08:00', label: 'บูธหน้างานเปิด', dt: '2026-10-25T08:00:00+07:00' },
+      { dateLabel: 'อาทิตย์ 25 ต.ค. 2569', time: '08:00–14:00', label: 'ลงทะเบียนรับสิทธิ์ Fan Benefit หน้างาน (ไม่ลงทะเบียนในเวลา = สละสิทธิ์ แต่ยังเข้าชมโชว์ได้ตามปกติ)', dt: '2026-10-25T14:00:00+07:00' },
+      { dateLabel: 'อาทิตย์ 25 ต.ค. 2569', time: '13:00', label: 'เปิดฮอลล์สำหรับผู้มีสิทธิ์ Sound Check / Hi-Session / Hi-Touch', dt: '2026-10-25T13:00:00+07:00' },
+      { dateLabel: 'อาทิตย์ 25 ต.ค. 2569', time: '14:00', label: 'Sound Check (~10 นาที) — ผู้ซื้อบัตะร 6,900/5,900/5,500/5,000 นั่งตามที่ซื้อ', dt: '2026-10-25T14:00:00+07:00' },
+      { dateLabel: 'อาทิตย์ 25 ต.ค. 2569', time: '—', label: 'Hi-Session ต่อจาก Sound Check — บัตร 5,900/5,500 และ Random บัตร 5,000; หลังขึ้นเวทีต้องออกห้องแล้วกลับเข้าใหม่ก่อนประตูเปิด 17:00 น.', dt: '2026-10-25T15:00:00+07:00' },
+      { dateLabel: 'อาทิตย์ 25 ต.ค. 2569', time: '—', label: 'Hi-Touch ต่อจาก Hi-Session — เฉพาะบัตร 6,900; หลังขึ้นเวทีต้องออกห้องแล้วกลับเข้าใหม่ก่อนประตูเปิด 17:00 น.', dt: '2026-10-25T15:30:00+07:00' },
+      { dateLabel: 'อาทิตย์ 25 ต.ค. 2569', time: '17:00', label: 'ประตูเปิด สำหรับผู้ชมทั่วไป', dt: '2026-10-25T17:00:00+07:00' },
+      { dateLabel: 'อาทิตย์ 25 ต.ค. 2569', time: '18:00', label: 'เริ่มการแสดง', dt: '2026-10-25T18:00:00+07:00' },
+    ];
+  }
+
+  seatColors() {
+    return { 6900: '#3d2a7a', 5900: '#3f6fd1', 5500: '#7fb8e8', 5000: '#7b3fb0', 4500: '#e0558f', 3000: '#6b6f75', 2000: '#a9a06a', 1500: '#d9d9c8' };
+  }
+  seatRaw() {
+    // generic bottom-arc block generator (angle 180deg = left end, 0deg = right end)
+    const arc = (labels, prices, cx, cy, Rx, Ry, w, h, rotFactor) => labels.map((label, i) => {
+      const n = labels.length;
+      const angle = 180 - ((i + 0.5) / n) * 180;
+      const rad = angle * Math.PI / 180;
+      const x = cx + Rx * Math.cos(rad) - w / 2;
+      const y = cy + Ry * Math.sin(rad) - h / 2;
+      const rot = (90 - angle) * rotFactor;
+      return { id: label, label, price: prices[i], x, y, w, h, rot };
+    });
+
+    return [
+      { id: 'stage', label: 'STAGE', price: null, x: 220, y: 40, w: 200, h: 60, radius: '0 0 6px 6px' },
+
+      { id: 'A1', label: 'A1', price: 5900, x: 205, y: 118, w: 45, h: 72, clip: 'polygon(0 0,100% 30%,100% 100%,0 100%)' },
+      { id: 'A2', label: 'A2', price: 6900, x: 250, y: 118, w: 40, h: 72, clip: 'polygon(0 0,100% 0,100% 100%,20% 100%,0 55%)' },
+      { id: 'A3', label: 'A3', price: 6900, x: 350, y: 118, w: 40, h: 72, clip: 'polygon(0 0,100% 0,100% 55%,80% 100%,0 100%)' },
+      { id: 'A4', label: 'A4', price: 5900, x: 390, y: 118, w: 45, h: 72, clip: 'polygon(0 30%,100% 0,100% 100%,0 100%)' },
+
+      { id: 'B1', label: 'B1', price: 5900, x: 225, y: 210, w: 55, h: 60, clip: 'polygon(0 0,100% 18%,100% 100%,0 100%)' },
+      { id: 'B2', label: 'B2', price: 6900, x: 283, y: 210, w: 74, h: 60, clip: 'polygon(0 0,36% 0,36% 26%,64% 26%,64% 0,100% 0,100% 100%,0 100%)' },
+      { id: 'B3', label: 'B3', price: 5900, x: 360, y: 210, w: 55, h: 60, clip: 'polygon(0 18%,100% 0,100% 100%,0 100%)' },
+
+      { id: 'C1', label: 'C1', price: 5900, x: 225, y: 280, w: 55, h: 40, clip: 'polygon(0 0,100% 24%,100% 100%,0 100%)' },
+      { id: 'C2', label: 'C2', price: 5500, x: 283, y: 280, w: 74, h: 40, radius: '0 0 26px 26px' },
+      { id: 'C3', label: 'C3', price: 5500, x: 360, y: 280, w: 55, h: 40, clip: 'polygon(0 24%,100% 0,100% 100%,0 100%)' },
+
+      { id: 'FF', label: 'FF', price: 5500, x: 246, y: 332, w: 42, h: 32 },
+      { id: 'FOH', label: 'FOH', price: null, x: 292, y: 332, w: 56, h: 32 },
+      { id: 'HH', label: 'HH', price: 5500, x: 352, y: 332, w: 42, h: 32 },
+
+      { id: 'SB', label: 'SB', price: 4500, x: 140, y: 110, w: 55, h: 58, clip: 'polygon(35% 0,100% 0,100% 100%,0 100%,0 22%)' },
+      { id: 'SC', label: 'SC', price: 4500, x: 140, y: 168, w: 55, h: 58 },
+      { id: 'SD', label: 'SD', price: 4500, x: 140, y: 226, w: 55, h: 58 },
+      { id: 'SE', label: 'SE', price: 4500, x: 140, y: 284, w: 55, h: 58 },
+      { id: 'SF', label: 'SF', price: 4500, x: 140, y: 342, w: 55, h: 58, clip: 'polygon(0 0,100% 0,100% 100%,25% 100%,0 78%)' },
+      { id: 'SN', label: 'SN', price: 4500, x: 445, y: 110, w: 55, h: 58, clip: 'polygon(0 0,65% 0,100% 22%,100% 100%,0 100%)' },
+      { id: 'SM', label: 'SM', price: 4500, x: 445, y: 168, w: 55, h: 58 },
+      { id: 'SL', label: 'SL', price: 4500, x: 445, y: 226, w: 55, h: 58 },
+      { id: 'SK', label: 'SK', price: 4500, x: 445, y: 284, w: 55, h: 58 },
+      { id: 'SJ', label: 'SJ', price: 4500, x: 445, y: 342, w: 55, h: 58, clip: 'polygon(0 0,100% 0,100% 78%,75% 100%,0 100%)' },
+
+      { id: 'SG', label: 'SG', price: 5000, x: 203, y: 400, w: 74, h: 55, rot: -10 },
+      { id: 'SH', label: 'SH', price: 5000, x: 283, y: 400, w: 74, h: 55, rot: 0 },
+      { id: 'SI', label: 'SI', price: 5000, x: 363, y: 400, w: 74, h: 55, rot: 10 },
+
+      { id: 'blankL', label: '', price: null, x: 75, y: 110, w: 55, h: 51 },
+      { id: 'C', label: 'C', price: 3000, x: 75, y: 161, w: 55, h: 51 },
+      { id: 'D', label: 'D', price: 3000, x: 75, y: 212, w: 55, h: 51 },
+      { id: 'E', label: 'E', price: 3000, x: 75, y: 263, w: 55, h: 51 },
+      { id: 'blankR', label: '', price: null, x: 510, y: 110, w: 55, h: 51 },
+      { id: 'S', label: 'S', price: 3000, x: 510, y: 161, w: 55, h: 51 },
+      { id: 'R', label: 'R', price: 3000, x: 510, y: 212, w: 55, h: 51 },
+      { id: 'Q', label: 'Q', price: 3000, x: 510, y: 263, w: 55, h: 51 },
+
+      ...arc(
+        ['F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'],
+        [2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000],
+        320, 314, 245, 195, 58, 46, 0.38
+      )
+    ];
+  }
+  drawCard() {
+    if (this.state.isDrawing) return;
+    const cards = this.gachaCards();
+    this.setState({ isDrawing: true, resultCard: null, shuffleSrc: cards[0].src });
+    let count = 0;
+    this._shuffleTimer = setInterval(() => {
+      count++;
+      const s = cards[Math.floor(Math.random() * cards.length)].src;
+      this.setState({ shuffleSrc: s });
+    }, 90);
+    setTimeout(() => {
+      clearInterval(this._shuffleTimer);
+      const pick = cards[Math.floor(Math.random() * cards.length)];
+      this.setState({ isDrawing: false, resultCard: pick });
+    }, 1100);
+  }
+
+  pickupCasesData() {
+    return [
+      { owner: 'ตัวเอง', bookedId: 'ตัวเอง', picker: 'ตัวเอง', docs: ['บัตรประชาชนตัวจริงของตัวเอง', 'หลักฐานการชำระเงิน'] },
+      { owner: 'ตัวเอง', bookedId: 'ตัวเอง', picker: 'เพื่อน', docs: ['สำเนาบัตรตัวเอง', 'บัตรประชาชนตัวจริงของเพื่อน', 'หลักฐานการชำระเงิน'] },
+      { owner: 'ตัวเอง', bookedId: 'เพื่อน', picker: 'ตัวเอง', docs: ['บัตรประชาชนตัวจริงของเพื่อน', 'บัตรประชาชนตัวจริงของตัวเอง', 'หลักฐานการชำระเงิน'] },
+      { owner: 'ตัวเอง', bookedId: 'เพื่อน', picker: 'เพื่อน', docs: ['สำเนาบัตรตัวเอง', 'บัตรประชาชนตัวจริงของเพื่อน', 'หลักฐานการชำระเงิน'] },
+      { owner: 'เพื่อน', bookedId: 'เพื่อน', picker: 'ตัวเอง', docs: ['สำเนาบัตรเพื่อน', 'บัตรประชาชนตัวจริงของตัวเอง', 'บัตรประชาชนตัวจริงของเพื่อน', 'หลักฐานการชำระเงิน'] },
+      { owner: 'เพื่อน', bookedId: 'ตัวเอง', picker: 'เพื่อน', docs: ['บัตรประชาชนตัวจริงของเพื่อน', 'บัตรประชาชนตัวจริงของตัวเอง', 'หลักฐานการชำระเงิน'] },
+      { owner: 'เพื่อน', bookedId: 'ตัวเอง', picker: 'ตัวเอง', docs: ['สำเนาบัตรเพื่อน', 'หลักฐานการชำระเงิน'] },
+      { owner: 'ตัวเอง', bookedId: 'เพื่อน', picker: 'บุคคลที่ 3', docs: ['สำเนาบัตรตัวเอง (เซ็นมอบอำนาจให้บุคคลที่ 3)', 'บัตรประชาชนตัวจริงของเพื่อน (เจ้าของเลขบัตรตอนจอง)', 'บัตรประชาชนตัวจริงของบุคคลที่ 3 (คนรับบัตร)'] }
+    ];
+  }
+
+  gachaCards() {
+    return [5, 6, 7, 8, 9, 10, 11, 12, 13].map(n => ({ src: './assets/cards-sm/' + n + '.png' }));
+  }
+
+  renderVals() {
+    const pages = [
+      { key: 'home', label: 'หน้าแรก' },
+      { key: 'details', label: 'รายละเอียดคอนเสิร์ต' },
+      { key: 'tips', label: 'เคล็ดลับกดบัตร' },
+      { key: 'faq', label: 'คำถามที่พบบ่อย' },
+      { key: 'gacha', label: 'Lucky Draw' }
+    ];
+    const navItems = pages.map(p => ({
+      label: p.label,
+      onClick: () => this.goTo(p.key),
+      bg: this.state.page === p.key ? 'rgba(111,224,214,0.15)' : 'transparent',
+      color: this.state.page === p.key ? '#6fe0d6' : '#dcece9'
+    }));
+
+    const schedFlat = this.scheduleData().slice().sort((a, b) => new Date(a.dt) - new Date(b.dt));
+    const groupedSchedule = [];
+    schedFlat.forEach(item => {
+      const past = new Date(item.dt).getTime() < this.state.now;
+      const row = { time: item.time, label: item.label, strike: past ? 'line-through' : 'none', opacity: past ? 0.45 : 1 };
+      let group = groupedSchedule.find(g => g.dateLabel === item.dateLabel);
+      if (!group) { group = { dateLabel: item.dateLabel, items: [] }; groupedSchedule.push(group); }
+      group.items.push(row);
+    });
+
+    return {
+      isHome: this.state.page === 'home',
+      isDetails: this.state.page === 'details',
+      isTips: this.state.page === 'tips',
+      isFaq: this.state.page === 'faq',
+      isGacha: this.state.page === 'gacha',
+      navItems,
+      goHome: () => this.goTo('home'),
+      goDetails: () => this.goTo('details'),
+
+      presaleUnits: this.toUnits(this.diffParts('2026-08-22T10:00:00+07:00')),
+      concertUnits: this.toUnits(this.diffParts('2026-10-24T18:00:00+07:00')),
+
+      venues: [
+        { name: 'อิมแพ็ค อารีน่า เมืองทองธานี', flex: '1 1 100%', minWidth: '100%', bg: 'linear-gradient(135deg,rgba(111,224,214,0.22),rgba(28,63,143,0.22))', border: '1px solid rgba(111,224,214,0.5)', shadow: '0 0 30px rgba(111,224,214,0.25)', padding: '26px', nameSize: '20px', nameColor: '#6fe0d6',
+          lines: [
+            { icon: '📅', text: 'เสาร์ 24 และ อาทิตย์ 25 ตุลาคม 2569' },
+            { icon: '🚪', text: 'ประตูเปิด 17:00 น.' },
+            { icon: '🕕', text: 'เริ่มแสดง 18:00 น.' }
+          ] },
+        { name: 'Live Streaming by TTM LIVE', flex: '1', minWidth: '240px', bg: 'rgba(111,224,214,0.05)', border: '1px solid rgba(111,224,214,0.18)', shadow: 'none', padding: '18px', nameSize: '15.5px', nameColor: '#dcece9',
+          lines: [
+            { icon: '📅', text: 'เสาร์ 24 และ อาทิตย์ 25 ตุลาคม 2569' },
+            { icon: '🕕', text: 'รับชมสด 18:00 น. (GMT+7) ผ่าน TTM LIVE' }
+          ] },
+        { name: 'RERUN by TTM LIVE', flex: '1', minWidth: '240px', bg: 'rgba(111,224,214,0.05)', border: '1px solid rgba(111,224,214,0.18)', shadow: 'none', padding: '18px', nameSize: '15.5px', nameColor: '#dcece9',
+          lines: [
+            { icon: '📅', text: 'รับชมย้อนหลังรอบ 24-25 ต.ค. 2569' },
+            { icon: '🕕', text: '14–20 พ.ย. 2569 (390 นาที/รหัส)' }
+          ] }
+      ],
+      ticketGroups: [
+        { title: 'อิมแพ็ค อารีน่า เมืองทองธานี', lines: ['6,900 / 5,900 / 5,500 / 5,000 / 4,500 / 3,000 / 2,000 / 1,500 บาท'] },
+        { title: 'Live Streaming', lines: ['1,500 บาท (ลิงก์+โค้ด)', '1,520 บาท (ลิงก์+โค้ด + บัตรพลาสติกที่ระลึก)'] },
+        { title: 'RERUN', lines: ['1,200 บาท (ลิงก์+โค้ด)', '1,220 บาท (ลิงก์+โค้ด + บัตรพลาสติกที่ระลึก)'] }
+      ],
+      channelGroups: [
+        { title: 'ช่องทางออนไลน์ (เปิดก่อน)', dateNote: 'เสาร์ 22 ส.ค. 2569, 10:00 น.', items: [
+          { icon: '🌐', label: 'เว็บไซต์ www.thaiticketmajor.com' }
+        ] },
+        { title: 'ทุกช่องทาง (เปิดตามปกติ)', dateNote: 'อาทิตย์ 23 ส.ค. 2569, 10:00 น.', items: [
+          { icon: '🎫', label: 'เคาน์เตอร์ไทยทิคเก็ตเมเจอร์ทุกสาขา' },
+          { icon: '🎬', label: 'เมเจอร์ ซีนีเพล็กซ์' },
+          { icon: '📮', label: 'ไปรษณีย์ไทย' },
+          { icon: '☎️', label: 'Call Center 02-262-3456' }
+        ] }
+      ],
+
+      groupedSchedule,
+
+      openBuyModal: () => this.setState({ isBuyModalOpen: true }),
+      openPickupModal: () => this.setState({ isPickupModalOpen: true }),
+      closeModal: () => this.setState({ isBuyModalOpen: false, isPickupModalOpen: false }),
+      isBuyModalOpen: this.state.isBuyModalOpen,
+      isPickupModalOpen: this.state.isPickupModalOpen,
+      buyBtnBg: this.state.isBuyModalOpen ? '#6fe0d6' : 'transparent',
+      buyBtnColor: this.state.isBuyModalOpen ? '#0a1a1d' : '#6fe0d6',
+      pickupBtnBg: this.state.isPickupModalOpen ? '#6fe0d6' : 'transparent',
+      pickupBtnColor: this.state.isPickupModalOpen ? '#0a1a1d' : '#6fe0d6',
+      priceWithFee: [
+        { base: '6,900', total: '7,137' },
+        { base: '5,900', total: '6,107' },
+        { base: '5,500', total: '5,695' },
+        { base: '5,000', total: '5,180' },
+        { base: '4,500', total: '4,665' },
+        { base: '3,000', total: '3,120' },
+        { base: '2,000', total: '2,090' },
+        { base: '1,500', total: '1,575' }
+      ],
+      paymentMethods: [
+        { icon: '💳', label: 'บัตรเครดิต' },
+        { icon: '💳', label: 'บัตรเดบิต' },
+        { icon: '📱', label: 'True Money Wallet' },
+        { icon: '📱', label: 'ShopeePay' },
+        { icon: '📱', label: 'Alipay' },
+        { icon: '📱', label: 'WeChat Pay' },
+        { icon: '🔲', label: 'QR PromptPay' }
+      ],
+      fanBenefitPrices: ['6,900', '5,900', '5,500', '5,000', '4,500', '3,000', '2,000', '1,500'],
+      fanBenefitRows: [
+        { label: 'สั่งซื้อ Official Merchandise ล่วงหน้า + ช่องทางรับพิเศษหน้างาน', cells: ['ALL', 'ALL', 'ALL', '-', '-', '-', '-', '-'] },
+        { label: 'LYKN REFLEXION OFFICIAL ID LANYARD', cells: ['ALL', 'ALL', '-', '-', '-', '-', '-', '-'] },
+        { label: 'SOUND CHECK', cells: ['ALL', 'ALL', 'ALL', 'ALL', '-', '-', '-', '-'] },
+        { label: 'HI-TOUCH', cells: ['ALL', '-', '-', '-', '-', '-', '-', '-'] },
+        { label: 'HI-SESSION', cells: ['-', 'ALL', 'ALL', 'Random 100', '-', '-', '-', '-'] },
+        { label: 'SIGNED OFFICIAL POSTER', cells: ['Random 500', '-', '-', '-', '-', '-', '-', '-'] },
+        { label: 'OFFICIAL POSTER', cells: ['ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL'] }
+      ],
+      pickupOptions: { owner: ['ตัวเอง', 'เพื่อน'], bookedId: ['ตัวเอง', 'เพื่อน'], picker: ['ตัวเอง', 'เพื่อน', 'บุคคลที่ 3'] },
+      pickupOwner: this.state.pickupOwner,
+      pickupBookedId: this.state.pickupBookedId,
+      pickupPicker: this.state.pickupPicker,
+      setPickupOwner: (e) => this.setState({ pickupOwner: e.target.value }),
+      setPickupBookedId: (e) => this.setState({ pickupBookedId: e.target.value }),
+      setPickupPicker: (e) => this.setState({ pickupPicker: e.target.value }),
+      pickupResult: (() => {
+        const match = this.pickupCasesData().find(c => c.owner === this.state.pickupOwner && c.bookedId === this.state.pickupBookedId && c.picker === this.state.pickupPicker);
+        return match ? match.docs : null;
+      })(),
+      hasNoPickupResult: !this.pickupCasesData().find(c => c.owner === this.state.pickupOwner && c.bookedId === this.state.pickupBookedId && c.picker === this.state.pickupPicker),
+      stopProp: (e) => e.stopPropagation(),
+
+      tipSections: [
+        { title: '⚙️ 1. การตั้งค่าและเตรียมตัวล่วงหน้า', items: [
+          { icon: '🚫', label: 'ปิดบล็อก Pop-up', text: 'เข้า Settings ของเบราว์เซอร์ > ไปที่ ป๊อปอัปและการเปลี่ยนเส้นทาง (Pop-ups and redirects) แล้วเลือก อนุญาต/ปิดการบล็อก เพื่อไม่ให้ติดปัญหาตอนเด้งไปหน้าชำระเงิน' },
+          { icon: '⏰', label: 'ล็อกอินล่วงหน้า 30 นาที', text: 'เข้าสู่ระบบ ThaiTicketMajor ไว้ก่อนเริ่มเข้าคิวอย่างน้อยครึ่งชั่วโมง เพื่อเลี่ยงปัญหาเว็บหน่วงจนล็อกอินไม่ทัน' },
+          { icon: '🌐', label: 'เบราว์เซอร์แนะนำ', text: 'หลาย ๆ คนแนะนำ Brave หรือ Opera', badges: [{ src: './assets/brave-logo.png' }, { src: './assets/opera-logo.png' }] }
+        ] },
+        { title: '🎯 2. เทคนิคการกระจายความเสี่ยงตอนรันคิว (ระบบสุ่มคิว)', items: [
+          { icon: '🧑‍💻', label: '1 เบราว์เซอร์ = 1 บัญชี', text: 'แยกเปิดหลายๆ เบราว์เซอร์และใช้บัญชีไม่ซ้ำกัน' },
+          { icon: '🕐', label: 'กระจายเวลาเข้าหน้าเว็บ', text: 'เข้าแต่ละเบราว์เซอร์ในเวลาต่างกันเพื่อกระจายโอกาส เช่น นาทีที่ 20, 30, 35, 40 และ 45' },
+          { icon: '⚠️', label: 'วิธีแก้หน้าจอ Error', text: 'หากขึ้นเตือน "We are sorry, your access has been restricted" ให้สลับไปใช้เบราว์เซอร์อื่นทันที หรือกดล้างประวัติ/แคชข้อมูลการท่องเว็บใหม่' }
+        ] },
+        { title: '🎫 3. ขั้นตอนหลังหลุดคิวเข้าหน้าซื้อบัตร', items: [
+          { icon: '🔢', label: 'กรอกเลขบัตรและต่อรูปภาพ (Captcha)', text: 'กรอกเลขบัตรประชาชน/พาสปอร์ตให้ถูกต้อง และตั้งสติค่อยๆ ลากเรียงรูปภาพ ไม่ต้องรีบจนผิด' },
+          { icon: '⌨️', label: 'ทริคแก้ปัญหากดชนที่นั่ง', text: 'หากจิ้มแล้วไม่มีเครื่องหมายติ๊กถูก (มีคนกดไปก่อน) ให้กด ESC บนคีย์บอร์ดเพื่อปิดกล่องแจ้งเตือน Pop-up ทันที จะไวกว่าการใช้เมาส์เลื่อนไปกดปิด' },
+          { icon: '🔁', label: 'ข้อควรระวังการกดซ้ำ', text: 'หากกดรอบแรกสำเร็จแล้วต้องการกดใหม่อีกรอบ ต้องไปเริ่มต่อคิวใหม่ และหลีกเลี่ยงการใช้เลขบัตรประชาชนเดิมทันที เพราะระบบอาจล็อกไว้ว่าใช้สิทธิ์ไปแล้ว ต้องรอเวลาบัตรเดิมปลดล็อกประมาณ 10–15 นาที' }
+        ] }
+      ],
+      faqs: [
+        { q: 'ตอนกดซื้อบัตรต้องใช้ข้อมูลอะไรบ้าง และทำไมถึงห้ามกรอกผิด?', a: 'ต้องกรอกเลขบัตรประชาชน หรือเลขพาสปอร์ตให้ถูกต้องก่อนเลือกที่นั่ง เพราะตอนไปรับบัตรจริง เลขที่กรอกไว้จะต้องตรงกับบัตรตัวจริงเท่านั้นถึงจะรับบัตรได้' },
+        { q: '1 คน (1 เลขบัตร) สามารถกดซื้อบัตรได้กี่ใบ และกดได้กี่ครั้ง?', a: '1 เลขบัตรกดได้รอบละ 1 ครั้ง และซื้อได้สูงสุดรอบละไม่เกิน 4 ใบ (ถ้ามี 2 รอบการแสดง จะซื้อได้รวมสูงสุด 8 ใบ) เช่น ใช้เลขบัตรประชาชนของตัวเอง กดบัตรรอบวันเสาร์ 1 ครั้ง จำนวน 4 ใบ และกดบัตรรอบวันอาทิตย์อีก 1 ครั้ง จำนวน 4 ใบ — ทำรายการสำเร็จ ได้บัตรทั้งหมด 8 ใบ (ครบโควตาสูงสุดของทั้ง 2 รอบ)' },
+        { q: 'รับบัตรจริงได้ที่ไหน ต้องใช้อะไรไปรับบ้าง และส่งไปรษณีย์ได้ไหม?', a: 'ต้องพกบัตรประชาชนหรือพาสปอร์ตตัวจริงที่มีเลขตรงกับตอนซื้อไปรับเท่านั้น โดยไปรับได้ที่ไทยทิคเก็ตเมเจอร์ 11 สาขาหลักตามเวลาที่กำหนด หรือไปรับที่หน้างานในวันแสดง (รับได้เฉพาะรอบของวันนั้น) และงานนี้ไม่มีบริการส่งบัตรทางไปรษณีย์' },
+        { q: 'พอเข้าถึงหน้าเลือกที่นั่งได้แล้ว มีเวลาให้ทำรายการกี่นาที?', a: 'ระบบจะมีเวลานับถอยหลังจำกัดให้ทำรายการประมาณ 10–15 นาที (ขึ้นอยู่กับแต่ละงาน) หากทำรายการไม่ทันในเวลา บัตรจะหลุดกลับเข้าระบบทันที' },
+        { q: 'จะได้รับบัตรเมื่อไหร่และอย่างไร?', a: 'รับบัตรได้ที่ไทยทิคเก็ตเมเจอร์ 11 สาขาหลักตามช่วงเวลาที่กำหนด หรือรับที่บูธหน้างานในวันแสดง (เฉพาะรอบที่ซื้อ) ไม่สามารถรับทางไปรษณีย์ได้ ต้องแสดงบัตรประชาชน/พาสปอร์ตตัวจริงที่ตรงกับข้อมูลลงทะเบียน' },
+        { q: 'ชำระเงินช่องทางไหนได้บ้าง?', a: 'บัตรเครดิต, บัตรเดบิต, True Money Wallet, ShopeePay, Alipay, WeChat Pay, QR PromptPay มีค่าธรรมเนียมการชำระเงิน 3%' },
+        { q: 'ดู Live Streaming และ RERUN ได้อย่างไร?', a: 'ระบบจะส่งลิงก์และโค้ดรับชมไปยังอีเมลที่ลงทะเบียนไว้ภายใน 24 ชั่วโมงหลังซื้อ 1 โค้ดเข้าระบบได้ 1 อุปกรณ์ในเวลาเดียวกัน ความละเอียดสูงสุด 1080p' },
+        { q: 'ขอคืนเงินหรือเปลี่ยนรอบได้ไหม?', a: 'บัตรที่ซื้อแล้วไม่สามารถคืนเงินหรือยกเลิกได้ในทุกกรณี' },
+        { q: 'เด็กต้องซื้อบัตรเข้าชมไหม?', a: 'เด็กที่มีส่วนสูงเกิน 90 ซม. ต้องใช้บัตรเข้าชมการแสดง' }
+      ],
+
+      seatSections: this.seatRaw().map(s => {
+        const colors = this.seatColors();
+        const clickable = s.price !== null;
+        const isWhiteDeco = !!s.deco;
+        const isTech = s.id === 'stage' || s.id === 'FOH' || s.id === 'blankL' || s.id === 'blankR';
+        return {
+          label: s.label,
+          left: (s.x / 640 * 100).toFixed(1) + '%',
+          top: (s.y / 760 * 100).toFixed(1) + '%',
+          width: (s.w / 640 * 100).toFixed(1) + '%',
+          height: (s.h / 760 * 100).toFixed(1) + '%',
+          rotate: s.rot || 0,
+          color: isWhiteDeco ? '#f4f4f2' : (isTech ? 'rgba(255,255,255,0.1)' : colors[s.price]),
+          textColor: isTech ? '#c9d6d4' : (s.price === 5500 || s.price === 2000 ? '#1a1a1a' : '#ffffff'),
+          border: s.id === 'SB' || s.id === 'SN' ? '1px dashed rgba(255,255,255,0.5)' : 'none',
+          clip: s.clip || 'none',
+          radius: s.radius || '4px',
+          cursor: clickable ? 'pointer' : 'default',
+          onClick: clickable ? () => this.setState({ selectedSeat: { name: s.label, priceLabel: s.price.toLocaleString('th-TH') } }) : () => {}
+        };
+      }),
+      priceLegend: Object.entries(this.seatColors()).sort((a, b) => Number(b[0]) - Number(a[0])).map(([price, color]) => ({ price: Number(price).toLocaleString('th-TH'), color })),
+      hasSelectedSeat: !!this.state.selectedSeat,
+      selectedSeat: this.state.selectedSeat || {},
+
+      gachaBacks: this.gachaCards().map((c, i) => ({ ...c, stackOffset: -i * 1.2, stackRot: (i % 2 === 0 ? -1 : 1) * (i * 0.6) })),
+      drawCard: () => this.drawCard(),
+      isDrawing: this.state.isDrawing,
+      shuffleSrc: this.state.shuffleSrc || './assets/cards/5.png',
+      hasResult: !!this.state.resultCard && !this.state.isDrawing,
+      resultCard: this.state.resultCard || { src: './assets/cards/5.png' },
+      closeResult: () => this.setState({ resultCard: null }),
+      drawAgain: () => this.drawCard()
+    };
+  }
+}
+
+</script>
+</body>
+</html>
