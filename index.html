@@ -224,7 +224,10 @@
           </table>
         </div>
 
-        <h2 style="font-size:20px;font-weight:600;margin:0 0 14px;color:#6fe0d6">กำหนดการแบบละเอียด</h2>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <h2 style="font-size:20px;font-weight:600;margin:0;color:#6fe0d6">กำหนดการแบบละเอียด</h2>
+          <div onClick="{{ downloadIcs }}" style="display:flex;align-items:center;gap:6px;background:rgba(111,224,214,0.12);border:1px solid rgba(111,224,214,0.4);color:#6fe0d6;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;cursor:pointer;white-space:nowrap">📅 เพิ่มกำหนดการลงปฏิทิน</div>
+        </div>
         <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:8px 20px">
           <sc-for list="{{ groupedSchedule }}" as="grp" hint-placeholder-count="6">
             <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08)">
@@ -534,6 +537,45 @@ class Component extends DCLogic {
     ];
   }
 
+  icsPad(n) { return String(n).padStart(2, '0'); }
+  icsDate(iso) {
+    const d = new Date(iso);
+    return d.getUTCFullYear() + this.icsPad(d.getUTCMonth() + 1) + this.icsPad(d.getUTCDate()) + 'T' +
+      this.icsPad(d.getUTCHours()) + this.icsPad(d.getUTCMinutes()) + this.icsPad(d.getUTCSeconds()) + 'Z';
+  }
+  icsEscape(s) {
+    return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+  }
+  downloadScheduleIcs() {
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//LYKN Reflexion Concert//TH', 'CALSCALE:GREGORIAN'];
+    const stamp = this.icsDate(new Date().toISOString());
+    this.scheduleData().forEach((ev, i) => {
+      const start = new Date(ev.dt);
+      let durMin = 30;
+      if (ev.label.includes('เริ่มการแสดง')) durMin = 180;
+      else if (ev.label.includes('ประตูเปิด')) durMin = 60;
+      const end = new Date(start.getTime() + durMin * 60000);
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:lykn-reflexion-' + i + '-' + start.getTime() + '@lykn-reflexion-concert');
+      lines.push('DTSTAMP:' + stamp);
+      lines.push('DTSTART:' + this.icsDate(ev.dt));
+      lines.push('DTEND:' + this.icsDate(end.toISOString()));
+      lines.push('SUMMARY:' + this.icsEscape('LYKN Reflexion Concert - ' + ev.label));
+      lines.push('LOCATION:' + this.icsEscape('อิมแพ็ค อารีน่า เมืองทองธานี'));
+      lines.push('END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lykn-reflexion-concert.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   seatColors() {
     return { 6900: '#3d2a7a', 5900: '#3f6fd1', 5500: '#7fb8e8', 5000: '#7b3fb0', 4500: '#e0558f', 3000: '#6b6f75', 2000: '#a9a06a', 1500: '#d9d9c8' };
   }
@@ -708,6 +750,7 @@ class Component extends DCLogic {
       ],
 
       groupedSchedule,
+      downloadIcs: () => this.downloadScheduleIcs(),
 
       openBuyModal: () => this.setState({ isBuyModalOpen: true }),
       openPickupModal: () => this.setState({ isPickupModalOpen: true }),
