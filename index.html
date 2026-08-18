@@ -158,7 +158,7 @@
         <div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:32px">
           <div style="flex:1 1 420px;min-width:300px">
             <div style="border-radius:12px;overflow:hidden;margin-bottom:16px">
-              <img src="./assets/seatplan-final.png" alt="ผังที่นั่ง อิมแพ็ค อารีน่า เมืองทองธานี" style="width:100%;height:auto;display:block">
+              <img src="./assets/seatplan-final.png" alt="ผังที่นั่ง อิมแพ็ค อารีน่า เมืองทองธานี" loading="lazy" style="width:100%;height:auto;display:block">
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <sc-for list="{{ priceLegend }}" as="lg" hint-placeholder-count="7">
@@ -285,7 +285,7 @@
                       <div style="display:flex;gap:8px">
                         <sc-for list="{{ it.badges }}" as="b" hint-placeholder-count="2">
                           <sc-if value="{{ b.src }}" hint-placeholder-val="{{ false }}">
-                            <img src="{{ b.src }}" style="width:26px;height:26px;border-radius:6px;object-fit:contain">
+                            <img src="{{ b.src }}" loading="lazy" style="width:26px;height:26px;border-radius:6px;object-fit:contain">
                           </sc-if>
                         </sc-for>
                       </div>
@@ -345,7 +345,7 @@
           <div style="position:fixed;inset:0;background:rgba(3,8,10,0.88);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeResult }}">
             <div style="background:linear-gradient(165deg,#123a3a,#0c1f22);border:1px solid rgba(111,224,214,0.4);border-radius:20px;padding:28px;max-width:340px;text-align:center" onClick="{{ stopProp }}">
               <sc-if value="{{ resultCard.src }}" hint-placeholder-val="{{ false }}">
-                <img src="{{ resultCard.src }}" style="width:100%;border-radius:14px;margin-bottom:20px;display:block">
+                <img src="{{ resultCard.src }}" loading="lazy" style="width:100%;border-radius:14px;margin-bottom:20px;display:block">
               </sc-if>
               <div style="display:flex;gap:10px;justify-content:center">
                 <a href="{{ resultCard.src }}" download="lykn-lucky-draw.png" style="text-decoration:none;flex:1;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">ดาวน์โหลด</a>
