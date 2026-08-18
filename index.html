@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LYKN Reflexion Concert</title>
 <meta name="description" content="LYKN Reflexion Concert — 24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี รายละเอียดบัตร ผังที่นั่ง และกำหนดการ">
-<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16.png">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/favicon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="./assets/favicon-512.png">
-<link rel="shortcut icon" href="./assets/favicon.ico">
-<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-512.png">
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon.ico">
+<link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/apple-touch-icon.png">
 <meta property="og:title" content="LYKN Reflexion Concert">
 <meta property="og:description" content="24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี">
-<meta property="og:image" content="./assets/logo.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/logo.png">
 <meta property="og:type" content="website">
 <script>
   if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
@@ -70,7 +70,7 @@
 <div style="min-height:100vh;background:#000000;color:#f2f7f6;padding-bottom:84px">
 
   <nav class="nav-desktop" style="display:flex;position:fixed;top:0;left:0;right:0;z-index:50;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(5,13,16,0.88);backdrop-filter:blur(8px);border-bottom:1px solid rgba(111,224,214,0.15)">
-    <img src="./assets/lykn-nav-logo.png" alt="LYKN" onClick="{{ goHome }}" style="height:44px;cursor:pointer">
+    <img src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/lykn-nav-logo.png" alt="LYKN" onClick="{{ goHome }}" style="height:44px;cursor:pointer">
     <div style="display:flex;align-items:center;gap:16px">
       <div style="display:flex;gap:8px">
         <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="5">
@@ -112,7 +112,7 @@
 
         <div style="position:relative;font-size:13px;letter-spacing:4px;color:#6fe0d6;font-weight:600;margin-bottom:18px">R E F L E X I O N &nbsp; C O U N T D O W N</div>
         <div style="position:relative;max-width:520px;margin:0 auto 8px">
-          <img src="./assets/logo.png" alt="LYKN REFLEXION CONCERT" style="width:100%;height:220px;object-fit:contain;display:block">
+          <img src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/logo.png" alt="LYKN REFLEXION CONCERT" style="width:100%;height:220px;object-fit:contain;display:block">
         </div>
         <div style="position:relative;font-size:17px;color:#a9c4c2;margin-top:4px">{{ t.home.dateLine }}</div>
 
@@ -182,7 +182,7 @@
         <div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:32px">
           <div style="flex:1 1 420px;min-width:300px">
             <div style="border-radius:12px;overflow:hidden;margin-bottom:16px">
-              <img src="./assets/seatplan-final.png" alt="{{ t.details.seatplanAlt }}" loading="lazy" style="width:100%;height:auto;display:block">
+              <img src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/seatplan-final.png" alt="{{ t.details.seatplanAlt }}" loading="lazy" style="width:100%;height:auto;display:block">
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <sc-for list="{{ priceLegend }}" as="lg" hint-placeholder-count="7">
@@ -741,7 +741,8 @@ class Component extends DCLogic {
   }
 
   gachaCards() {
-    return [5, 6, 7, 8, 9, 10, 11, 12, 13].map(n => ({ src: './assets/cards-sm/' + n + '.png', full: './assets/cards/' + n + '.png' }));
+    const cdn = 'https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/';
+    return [5, 6, 7, 8, 9, 10, 11, 12, 13].map(n => ({ src: cdn + 'cards-sm/' + n + '.png', full: cdn + 'cards/' + n + '.png' }));
   }
 
   faqData() {
@@ -1052,7 +1053,7 @@ class Component extends DCLogic {
         { title: '⚙️ 1. Setup & Preparation', items: [
           { icon: '🚫', label: 'Disable pop-up blocking', text: "Go to your browser's Settings > Pop-ups and redirects, then allow/disable blocking so you don't get stuck when it opens the payment page." },
           { icon: '⏰', label: 'Log in 30 minutes early', text: 'Log into ThaiTicketMajor at least 30 minutes before the queue opens, to avoid site lag making you miss the login.' },
-          { icon: '🌐', label: 'Recommended browsers', text: 'Many people recommend Brave or Opera.', badges: [{ src: './assets/brave-logo.png' }, { src: './assets/opera-logo.png' }] }
+          { icon: '🌐', label: 'Recommended browsers', text: 'Many people recommend Brave or Opera.', badges: [{ src: 'https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/brave-logo.png' }, { src: 'https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/opera-logo.png' }] }
         ] },
         { title: '🎯 2. Hedging Your Bets in the Queue (Random Queue System)', items: [
           { icon: '🧑‍💻', label: '1 Browser = 1 Account', text: 'Open several different browsers, each with a different account.' },
@@ -1068,7 +1069,7 @@ class Component extends DCLogic {
         { title: '⚙️ 1. การตั้งค่าและเตรียมตัวล่วงหน้า', items: [
           { icon: '🚫', label: 'ปิดบล็อก Pop-up', text: 'เข้า Settings ของเบราว์เซอร์ > ไปที่ ป๊อปอัปและการเปลี่ยนเส้นทาง (Pop-ups and redirects) แล้วเลือก อนุญาต/ปิดการบล็อก เพื่อไม่ให้ติดปัญหาตอนเด้งไปหน้าชำระเงิน' },
           { icon: '⏰', label: 'ล็อกอินล่วงหน้า 30 นาที', text: 'เข้าสู่ระบบ ThaiTicketMajor ไว้ก่อนเริ่มเข้าคิวอย่างน้อยครึ่งชั่วโมง เพื่อเลี่ยงปัญหาเว็บหน่วงจนล็อกอินไม่ทัน' },
-          { icon: '🌐', label: 'เบราว์เซอร์แนะนำ', text: 'หลาย ๆ คนแนะนำ Brave หรือ Opera', badges: [{ src: './assets/brave-logo.png' }, { src: './assets/opera-logo.png' }] }
+          { icon: '🌐', label: 'เบราว์เซอร์แนะนำ', text: 'หลาย ๆ คนแนะนำ Brave หรือ Opera', badges: [{ src: 'https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/brave-logo.png' }, { src: 'https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/opera-logo.png' }] }
         ] },
         { title: '🎯 2. เทคนิคการกระจายความเสี่ยงตอนรันคิว (ระบบสุ่มคิว)', items: [
           { icon: '🧑‍💻', label: '1 เบราว์เซอร์ = 1 บัญชี', text: 'แยกเปิดหลายๆ เบราว์เซอร์และใช้บัญชีไม่ซ้ำกัน' },
@@ -1115,9 +1116,9 @@ class Component extends DCLogic {
       gachaBacks: this.gachaCards().map((c, i) => ({ ...c, stackOffset: -i * 1.2, stackRot: (i % 2 === 0 ? -1 : 1) * (i * 0.6) })),
       drawCard: () => this.drawCard(),
       isDrawing: this.state.isDrawing,
-      shuffleSrc: this.state.shuffleSrc || './assets/cards/5.png',
+      shuffleSrc: this.state.shuffleSrc || 'https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/cards/5.png',
       hasResult: !!this.state.resultCard && !this.state.isDrawing,
-      resultCard: this.state.resultCard || { src: './assets/cards/5.png' },
+      resultCard: this.state.resultCard || { src: 'https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/cards/5.png' },
       closeResult: () => this.setState({ resultCard: null }),
       drawAgain: () => this.drawCard()
     };
