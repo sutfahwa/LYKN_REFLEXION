@@ -16,7 +16,7 @@
 <meta property="og:image" content="./assets/logo.png">
 <meta property="og:type" content="website">
 <script>
-  if (location.hostname.includes('--') || location.hostname.startsWith('localhost') || location.hostname.startsWith('127.0.0.1')) {
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
     var robotsMeta = document.createElement('meta');
     robotsMeta.name = 'robots';
     robotsMeta.content = 'noindex, nofollow';
