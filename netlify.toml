@@ -2,6 +2,13 @@
   publish = "."
   command = ""
 
+# main branch -> production domain
+[context.production]
+
+# dev branch (and any other non-main branch) -> its own preview URL,
+# e.g. https://dev--<sitename>.netlify.app
+[context.branch-deploy]
+
 [[headers]]
   for = "/*"
   [headers.values]

@@ -15,6 +15,15 @@
 <meta property="og:description" content="24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี">
 <meta property="og:image" content="./assets/logo.png">
 <meta property="og:type" content="website">
+<script>
+  if (location.hostname.includes('--') || location.hostname.startsWith('localhost') || location.hostname.startsWith('127.0.0.1')) {
+    var robotsMeta = document.createElement('meta');
+    robotsMeta.name = 'robots';
+    robotsMeta.content = 'noindex, nofollow';
+    document.head.appendChild(robotsMeta);
+    document.title = '[TEST] ' + document.title;
+  }
+</script>
 <script src="./support.js"></script>
 </head>
 <body>
