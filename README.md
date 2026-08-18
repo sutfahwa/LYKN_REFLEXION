@@ -6,13 +6,29 @@ Static single-page site built with the Claude Design (`dc-runtime`) format — `
 `<x-dc>` template + a small React-based component (`support.js` interprets it, loading React/ReactDOM/Babel
 from a CDN at runtime). No build step required; it's plain static files.
 
+`index.html` loads `support.js` and every file in `assets/` from jsDelivr
+(`cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/...`) instead of this repo's own Netlify domain — jsDelivr
+serves straight from this public GitHub repo for free with no meaningful bandwidth cap, so none of that
+traffic counts against Netlify's credits. Only `index.html` itself is actually served by Netlify. This means
+**any change to `support.js` or `assets/` only takes effect after it's pushed to `main`** (jsDelivr also
+caches branch content for a while — see "Updating assets/support.js" below if you need it to refresh sooner).
+
 ## Structure
 
 - `index.html` — the page (nav, countdown, concert details, tips, FAQ, lucky-draw gacha)
-- `support.js` — dc-runtime that parses/renders the `<x-dc>` template (generated, do not hand-edit)
-- `image-slot.js` — user-fillable image slot custom element (unused on this page, kept for parity with the design source)
-- `assets/` — logo, nav logo, seat plan, payment badges, gacha cards, favicons
+- `support.js` — dc-runtime that parses/renders the `<x-dc>` template (generated, do not hand-edit); served via jsDelivr, not Netlify
+- `assets/` — logo, nav logo, seat plan, payment badges, gacha cards, favicons; all served via jsDelivr, not Netlify
 - `netlify.toml` — Netlify deploy config
+
+## Updating assets/support.js
+
+Since these are loaded from jsDelivr's `@main` (branch) URL rather than a pinned commit, changes go live
+after push but jsDelivr's cache can take a while to catch up on its own. To force an immediate refresh after
+pushing, hit the purge endpoint for the changed file, e.g.:
+
+```bash
+curl https://purge.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/logo.png
+```
 
 ## Favicon
 
@@ -33,6 +49,10 @@ triggers on localhost/file paths, never on the deployed Netlify domain.
 
 Workflow: edit → `./test-local.sh` → check it in the browser → only then commit and push to
 `main`, which is what Netlify deploys.
+
+Note: `support.js` and everything in `assets/` load from jsDelivr even during local testing, so local edits
+to those specific files won't show up until pushed (rarely relevant — `support.js` isn't meant to be
+hand-edited, and assets change infrequently). Editing `index.html` itself tests locally as normal.
 
 ## Deploy to Netlify
 
