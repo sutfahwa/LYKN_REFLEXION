@@ -38,6 +38,17 @@
     .nav-desktop { display: flex !important; }
     .nav-mobile { display: none !important; }
   }
+  @media (max-width: 560px) {
+    .countdown-wrap { gap: 10px !important; flex-wrap: nowrap !important; }
+    .countdown-block { min-width: 0 !important; flex: 1 1 0 !important; }
+    .countdown-block-label { font-size: 10.5px !important; margin-bottom: 10px !important; white-space: nowrap; }
+    .countdown-units { gap: 0 !important; }
+    .countdown-num-box { min-width: 0 !important; flex: 1 1 0; padding: 0 1px; }
+    .countdown-num-value { font-size: 22px !important; }
+    .countdown-num-label { font-size: 8px !important; letter-spacing: 0.5px !important; }
+    .countdown-colon { font-size: 18px !important; padding: 0 1px 10px !important; }
+    .countdown-note { font-size: 10.5px !important; margin-top: 8px !important; }
+  }
   @keyframes cardSpin { 0% { transform: rotateY(0deg) scale(1); } 50% { transform: rotateY(180deg) scale(1.05); } 100% { transform: rotateY(360deg) scale(1); } }
   @keyframes floatFlareA { 0%,100% { transform: translate(0,0); opacity:0.5; } 50% { transform: translate(20px,-30px); opacity:0.9; } }
   @keyframes floatFlareB { 0%,100% { transform: translate(0,0); opacity:0.4; } 50% { transform: translate(-24px,26px); opacity:0.8; } }
@@ -81,43 +92,43 @@
         </div>
         <div style="position:relative;font-size:17px;color:#a9c4c2;margin-top:4px">24 - 25 ตุลาคม 2569 &nbsp;|&nbsp; อิมแพ็ค อารีน่า เมืองทองธานี</div>
 
-        <div style="position:relative;display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-top:44px">
-          <div style="min-width:280px">
-            <div style="font-size:13px;letter-spacing:2px;color:#6fe0d6;font-weight:600;margin-bottom:16px">เปิดจำหน่ายบัตรในอีก</div>
-            <div style="display:flex;gap:2px;justify-content:center;align-items:baseline">
+        <div class="countdown-wrap" style="position:relative;display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-top:44px">
+          <div class="countdown-block" style="min-width:280px">
+            <div class="countdown-block-label" style="font-size:13px;letter-spacing:2px;color:#6fe0d6;font-weight:600;margin-bottom:16px">เปิดจำหน่ายบัตรในอีก</div>
+            <div class="countdown-units" style="display:flex;gap:2px;justify-content:center;align-items:baseline">
               <sc-for list="{{ presaleUnits }}" as="u" hint-placeholder-count="4">
                 <div style="display:flex;align-items:baseline">
-                  <div style="min-width:64px;text-align:center">
-                    <div style="font-size:44px;font-weight:700;color:#fff">{{ u.value }}</div>
-                    <div style="font-size:10.5px;letter-spacing:1.5px;color:#a9c4c2;margin-top:2px">{{ u.label }}</div>
+                  <div class="countdown-num-box" style="min-width:64px;text-align:center">
+                    <div class="countdown-num-value" style="font-size:44px;font-weight:700;color:#fff">{{ u.value }}</div>
+                    <div class="countdown-num-label" style="font-size:10.5px;letter-spacing:1.5px;color:#a9c4c2;margin-top:2px">{{ u.label }}</div>
                   </div>
                   <sc-if value="{{ u.hasColon }}" hint-placeholder-val="{{ true }}">
-                    <div style="font-size:36px;font-weight:300;color:#3a5f5c;padding:0 2px 18px">:</div>
+                    <div class="countdown-colon" style="font-size:36px;font-weight:300;color:#3a5f5c;padding:0 2px 18px">:</div>
                   </sc-if>
                 </div>
               </sc-for>
             </div>
-            <div style="font-size:12.5px;color:#a9c4c2;margin-top:10px">เสาร์ที่ 22 สิงหาคม 2569, 10:00 น.</div>
+            <div class="countdown-note" style="font-size:12.5px;color:#a9c4c2;margin-top:10px">เสาร์ที่ 22 สิงหาคม 2569, 10:00 น.</div>
           </div>
 
           <div style="width:1px;background:rgba(111,224,214,0.25);align-self:stretch"></div>
 
-          <div style="min-width:280px">
-            <div style="font-size:13px;letter-spacing:2px;color:#6fe0d6;font-weight:600;margin-bottom:16px">วันจัดคอนเสิร์ตในอีก</div>
-            <div style="display:flex;gap:2px;justify-content:center;align-items:baseline">
+          <div class="countdown-block" style="min-width:280px">
+            <div class="countdown-block-label" style="font-size:13px;letter-spacing:2px;color:#6fe0d6;font-weight:600;margin-bottom:16px">วันจัดคอนเสิร์ตในอีก</div>
+            <div class="countdown-units" style="display:flex;gap:2px;justify-content:center;align-items:baseline">
               <sc-for list="{{ concertUnits }}" as="u" hint-placeholder-count="4">
                 <div style="display:flex;align-items:baseline">
-                  <div style="min-width:64px;text-align:center">
-                    <div style="font-size:44px;font-weight:700;color:#fff">{{ u.value }}</div>
-                    <div style="font-size:10.5px;letter-spacing:1.5px;color:#a9c4c2;margin-top:2px">{{ u.label }}</div>
+                  <div class="countdown-num-box" style="min-width:64px;text-align:center">
+                    <div class="countdown-num-value" style="font-size:44px;font-weight:700;color:#fff">{{ u.value }}</div>
+                    <div class="countdown-num-label" style="font-size:10.5px;letter-spacing:1.5px;color:#a9c4c2;margin-top:2px">{{ u.label }}</div>
                   </div>
                   <sc-if value="{{ u.hasColon }}" hint-placeholder-val="{{ true }}">
-                    <div style="font-size:36px;font-weight:300;color:#3a5f5c;padding:0 2px 18px">:</div>
+                    <div class="countdown-colon" style="font-size:36px;font-weight:300;color:#3a5f5c;padding:0 2px 18px">:</div>
                   </sc-if>
                 </div>
               </sc-for>
             </div>
-            <div style="font-size:12.5px;color:#a9c4c2;margin-top:10px">เสาร์ที่ 24 และ อาทิตย์ที่ 25 ตุลาคม 2569</div>
+            <div class="countdown-note" style="font-size:12.5px;color:#a9c4c2;margin-top:10px">เสาร์ที่ 24 และ อาทิตย์ที่ 25 ตุลาคม 2569</div>
           </div>
         </div>
 
