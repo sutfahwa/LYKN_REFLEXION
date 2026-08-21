@@ -143,11 +143,6 @@
       </div>
 
 
-      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:36px">
-        <div onClick="{{ openBuyModal }}" style="background:{{ buyBtnBg }};border:1px solid #6fe0d6;color:{{ buyBtnColor }};font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all 0.15s">{{ t.details.buyBtn }}</div>
-        <div onClick="{{ openPickupModal }}" style="background:{{ pickupBtnBg }};border:1px solid #6fe0d6;color:{{ pickupBtnColor }};font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all 0.15s">{{ t.details.pickupBtn }}</div>
-      </div>
-
       <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">{{ t.fanBenefit.heading }}</h2>
       <div style="overflow-x:auto;margin-bottom:32px;border-radius:12px;border:1px solid rgba(255,255,255,0.1)">
         <table style="width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap">
@@ -204,155 +199,6 @@
 
   </main>
 
-  <!-- BUY MODAL -->
-  <sc-if value="{{ isBuyModalOpen }}" hint-placeholder-val="{{ false }}">
-    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeModal }}">
-      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:32px;max-width:640px;width:100%;max-height:88vh;overflow-y:auto" onClick="{{ stopProp }}">
-        <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:16px">{{ t.buyModal.title }}</div>
-
-        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.limitLabel }}</div>
-        <ul style="padding-left:20px;margin:0 0 18px;font-size:14.5px;line-height:1.8;color:#eafffb">
-          <sc-for list="{{ t.buyModal.limits }}" as="l" hint-placeholder-count="2">
-            <li>{{ l }}</li>
-          </sc-for>
-        </ul>
-
-        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.paymentLabel }}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
-          <sc-for list="{{ paymentMethods }}" as="pm" hint-placeholder-count="7">
-            <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 12px">
-              <span style="font-size:15px">{{ pm.icon }}</span>
-              <span style="font-size:13px;color:#eafffb">{{ pm.label }}</span>
-            </div>
-          </sc-for>
-        </div>
-
-        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.priceFeeLabel }}</div>
-        <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.1);margin-bottom:4px">
-          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
-            <thead>
-              <tr style="background:#0891b2">
-                <th style="padding:8px 12px;color:#fff;font-weight:700;text-align:left">{{ t.buyModal.priceCol }}</th>
-                <th style="padding:8px 12px;color:#fff;font-weight:700;text-align:right">{{ t.buyModal.priceFeeCol }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <sc-for list="{{ priceWithFee }}" as="pf" hint-placeholder-count="8">
-                <tr style="background:rgba(111,224,214,0.06)">
-                  <td style="padding:8px 12px;color:#eafffb;border-top:1px solid rgba(255,255,255,0.08)">{{ pf.base }} {{ t.currency }}</td>
-                  <td style="padding:8px 12px;color:#ffd400;font-weight:600;text-align:right;border-top:1px solid rgba(255,255,255,0.08)">{{ pf.total }} {{ t.currency }}</td>
-                </tr>
-              </sc-for>
-            </tbody>
-          </table>
-        </div>
-
-        <div onClick="{{ closeModal }}" style="margin-top:22px;text-align:center;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">{{ t.buyModal.close }}</div>
-      </div>
-    </div>
-  </sc-if>
-
-  <!-- PICKUP MODAL -->
-  <sc-if value="{{ isPickupModalOpen }}" hint-placeholder-val="{{ false }}">
-    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeModal }}">
-      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:32px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto" onClick="{{ stopProp }}">
-        <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:16px">{{ t.pickupModal.title }}</div>
-        <ul style="padding-left:20px;margin:0 0 20px;font-size:14.5px;line-height:1.9;color:#eafffb">
-          <sc-for list="{{ t.pickupModal.rules }}" as="r" hint-placeholder-count="4">
-            <li>{{ r }}</li>
-          </sc-for>
-        </ul>
-        <div style="background:#f5f7f6;border-radius:14px;padding:20px;margin-bottom:6px">
-          <div style="font-size:15px;font-weight:700;color:#0c2226;margin-bottom:12px">{{ t.pickupModal.caseLabel }}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-            <div style="flex:1;min-width:140px">
-              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.ownerLabel }}</div>
-              <div style="position:relative">
-                <div onClick="{{ pickupOwnerDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
-                  <span>{{ pickupOwnerDropdown.currentLabel }}</span>
-                  <span style="color:#8a9997;font-size:10px">▼</span>
-                </div>
-                <sc-if value="{{ pickupOwnerDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
-                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
-                    <sc-for list="{{ pickupOwnerDropdown.options }}" as="opt" hint-placeholder-count="2">
-                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
-                        <span>{{ opt.label }}</span>
-                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
-                          <span style="color:#0891b2;font-weight:700">✓</span>
-                        </sc-if>
-                      </div>
-                    </sc-for>
-                  </div>
-                </sc-if>
-              </div>
-            </div>
-            <div style="flex:1;min-width:140px">
-              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.bookedLabel }}</div>
-              <div style="position:relative">
-                <div onClick="{{ pickupBookedIdDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
-                  <span>{{ pickupBookedIdDropdown.currentLabel }}</span>
-                  <span style="color:#8a9997;font-size:10px">▼</span>
-                </div>
-                <sc-if value="{{ pickupBookedIdDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
-                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
-                    <sc-for list="{{ pickupBookedIdDropdown.options }}" as="opt" hint-placeholder-count="2">
-                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
-                        <span>{{ opt.label }}</span>
-                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
-                          <span style="color:#0891b2;font-weight:700">✓</span>
-                        </sc-if>
-                      </div>
-                    </sc-for>
-                  </div>
-                </sc-if>
-              </div>
-            </div>
-            <div style="flex:1;min-width:140px">
-              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.pickerLabel }}</div>
-              <div style="position:relative">
-                <div onClick="{{ pickupPickerDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
-                  <span>{{ pickupPickerDropdown.currentLabel }}</span>
-                  <span style="color:#8a9997;font-size:10px">▼</span>
-                </div>
-                <sc-if value="{{ pickupPickerDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
-                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
-                    <sc-for list="{{ pickupPickerDropdown.options }}" as="opt" hint-placeholder-count="3">
-                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
-                        <span>{{ opt.label }}</span>
-                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
-                          <span style="color:#0891b2;font-weight:700">✓</span>
-                        </sc-if>
-                      </div>
-                    </sc-for>
-                  </div>
-                </sc-if>
-              </div>
-            </div>
-          </div>
-
-        <sc-if value="{{ pickupResult }}" hint-placeholder-val="{{ true }}">
-          <div style="background:#0891b2;border-radius:10px;padding:12px 14px;margin-bottom:10px">
-            <div style="font-size:13px;color:#e0f7fa;font-weight:700;margin-bottom:6px">{{ t.pickupModal.docsLabel }}</div>
-            <ul style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.7;color:#dcece9">
-              <sc-for list="{{ pickupResult }}" as="d" hint-placeholder-count="3">
-                <li>{{ d }}</li>
-              </sc-for>
-            </ul>
-          </div>
-        </sc-if>
-        <sc-if value="{{ hasNoPickupResult }}" hint-placeholder-val="{{ false }}">
-          <div style="background:rgba(255,212,0,0.12);border:1px dashed rgba(255,150,0,0.5);border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;color:#3a2c00">{{ t.pickupModal.noMatch }}</div>
-        </sc-if>
-        </div>
-        <div style="font-size:12.5px;color:#8ea6a3;margin-bottom:16px">{{ t.pickupModal.noteFooter }}</div>
-        <div onClick="{{ closeModal }}" style="margin-top:22px;text-align:center;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">{{ t.pickupModal.close }}</div>
-      </div>
-    </div>
-  </sc-if>
-
 </div>
 
 </x-dc>
@@ -362,11 +208,6 @@ class Component extends DCLogic {
   state = {
     lang: getStoredLang(),
     now: Date.now(),
-    isBuyModalOpen: false,
-    isPickupModalOpen: false,
-    pickupOwner: 'ตัวเอง',
-    pickupBookedId: 'ตัวเอง',
-    pickupPicker: 'ตัวเอง',
     openDropdown: null
   };
 
@@ -433,6 +274,7 @@ class Component extends DCLogic {
 
     const detailsTabs = [
       { key: 'overview', label: en ? 'Overview' : 'ภาพรวม', href: '/details/overview/index.html' },
+      { key: 'howto', label: en ? 'How to Buy' : 'วิธีการกดบัตร', href: '/details/howto/index.html' },
       { key: 'seat', label: "Where's My Seat", href: '/details/seat/index.html' }
     ].map(tb => ({
       label: tb.label,
@@ -450,33 +292,6 @@ class Component extends DCLogic {
       if (!group) { group = { dateLabel: item.dateLabel, items: [] }; groupedSchedule.push(group); }
       group.items.push(row);
     });
-
-    const pickupOptionsRaw = {
-      owner: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }],
-      bookedId: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }],
-      picker: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }, { value: 'บุคคลที่ 3', label: en ? 'Third party' : 'บุคคลที่ 3' }]
-    };
-    const buildPickupDropdown = (optionsKey, stateKey) => {
-      const currentValue = this.state[stateKey];
-      return {
-        options: pickupOptionsRaw[optionsKey].map(o => ({
-          label: o.label,
-          selected: o.value === currentValue,
-          bg: o.value === currentValue ? '#e3fbf8' : 'transparent',
-          color: o.value === currentValue ? '#0c7a72' : '#0c2226',
-          onClick: () => this.setState({ [stateKey]: o.value, openDropdown: null })
-        })),
-        isOpen: this.state.openDropdown === stateKey,
-        toggle: () => this.toggleDropdown(stateKey),
-        currentLabel: (pickupOptionsRaw[optionsKey].find(o => o.value === currentValue) || {}).label || currentValue
-      };
-    };
-    const pickupOwnerDropdown = buildPickupDropdown('owner', 'pickupOwner');
-    const pickupBookedIdDropdown = buildPickupDropdown('bookedId', 'pickupBookedId');
-    const pickupPickerDropdown = buildPickupDropdown('picker', 'pickupPicker');
-
-    const cases = pickupCasesData(en);
-    const matchedCase = cases.find(c => c.owner === this.state.pickupOwner && c.bookedId === this.state.pickupBookedId && c.picker === this.state.pickupPicker);
 
     const seatColors = { 6900: '#3d2a7a', 5900: '#3f6fd1', 5500: '#7fb8e8', 5000: '#7b3fb0', 4500: '#e0558f', 3000: '#6b6f75', 2000: '#a9a06a', 1500: '#d9d9c8' };
 
@@ -562,34 +377,6 @@ class Component extends DCLogic {
       groupedSchedule,
       downloadIcs: () => this.downloadScheduleIcs(),
 
-      openBuyModal: () => this.setState({ isBuyModalOpen: true }),
-      openPickupModal: () => this.setState({ isPickupModalOpen: true }),
-      closeModal: () => this.setState({ isBuyModalOpen: false, isPickupModalOpen: false }),
-      isBuyModalOpen: this.state.isBuyModalOpen,
-      isPickupModalOpen: this.state.isPickupModalOpen,
-      buyBtnBg: this.state.isBuyModalOpen ? '#6fe0d6' : 'transparent',
-      buyBtnColor: this.state.isBuyModalOpen ? '#0a1a1d' : '#6fe0d6',
-      pickupBtnBg: this.state.isPickupModalOpen ? '#6fe0d6' : 'transparent',
-      pickupBtnColor: this.state.isPickupModalOpen ? '#0a1a1d' : '#6fe0d6',
-      priceWithFee: [
-        { base: '6,900', total: '7,137' },
-        { base: '5,900', total: '6,107' },
-        { base: '5,500', total: '5,695' },
-        { base: '5,000', total: '5,180' },
-        { base: '4,500', total: '4,665' },
-        { base: '3,000', total: '3,120' },
-        { base: '2,000', total: '2,090' },
-        { base: '1,500', total: '1,575' }
-      ],
-      paymentMethods: [
-        { icon: '💳', label: en ? 'Credit Card' : 'บัตรเครดิต' },
-        { icon: '💳', label: en ? 'Debit Card' : 'บัตรเดบิต' },
-        { icon: '📱', label: 'True Money Wallet' },
-        { icon: '📱', label: 'ShopeePay' },
-        { icon: '📱', label: 'Alipay' },
-        { icon: '📱', label: 'WeChat Pay' },
-        { icon: '🔲', label: 'QR PromptPay' }
-      ],
       fanBenefitPrices: ['6,900', '5,900', '5,500', '5,000', '4,500', '3,000', '2,000', '1,500'],
       fanBenefitRows: [
         { label: en ? 'Pre-order Official Merch + Priority pickup lane' : 'สั่งซื้อ Official Merchandise ล่วงหน้า + ช่องทางรับพิเศษหน้างาน', cells: ['ALL', 'ALL', 'ALL', '-', '-', '-', '-', '-'] },
@@ -600,14 +387,6 @@ class Component extends DCLogic {
         { label: 'SIGNED OFFICIAL POSTER', cells: ['Random 500', '-', '-', '-', '-', '-', '-', '-'] },
         { label: 'OFFICIAL POSTER', cells: ['ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL'] }
       ],
-      pickupOwnerDropdown,
-      pickupBookedIdDropdown,
-      pickupPickerDropdown,
-      pickupResult: matchedCase ? matchedCase.docs : null,
-      hasNoPickupResult: !matchedCase,
-      stopProp: (e) => e.stopPropagation(),
-      closeDropdown: () => this.closeDropdown(),
-
       priceLegend: Object.entries(seatColors).sort((a, b) => Number(b[0]) - Number(a[0])).map(([price, color]) => ({ price: Number(price).toLocaleString('th-TH'), color }))
     };
   }

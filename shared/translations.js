@@ -19,7 +19,7 @@ function buildTranslations(en) {
       seatplanAlt: en ? 'Seat map, Impact Arena Muang Thong Thani' : 'ผังที่นั่ง อิมแพ็ค อารีน่า เมืองทองธานี',
       channelHeading: en ? 'Where to Buy' : 'ช่องทางการซื้อ',
       openSaleLabel: en ? 'On sale' : 'เปิดขาย',
-      buyBtn: en ? 'Buying Details' : 'รายละเอียดการซื้อบัตร',
+      buyBtn: en ? 'Buying Details' : 'รายละเอียดราคาบัตร',
       pickupBtn: en ? 'Pickup Details' : 'รายละเอียดการรับบัตร',
       scheduleHeading: en ? 'Detailed Schedule' : 'กำหนดการแบบละเอียด',
       addCalendarBtn: en ? '📅 Add Schedule to Calendar' : '📅 เพิ่มกำหนดการลงปฏิทิน',
@@ -104,8 +104,93 @@ function buildTranslations(en) {
       pickerLabel: en ? "Who's picking up" : 'คนไปรับ',
       docsLabel: en ? 'Documents Required' : 'ต้องใช้เอกสาร',
       noMatch: en ? 'No matching case found. Please contact onsite staff or Call Center 02-262-3456.' : 'ไม่พบเงื่อนไขสำหรับกรณีนี้ กรุณาติดต่อเจ้าหน้าที่หน้างานหรือ Call Center 02-262-3456',
-      noteFooter: en ? "For any case using a photocopy, it must note: power of attorney / order number / picker's name." : 'ทุกกรณีที่ใช้สำเนาบัตร สำเนาต้องระบุ: มอบอำนาจ / เลขออเดอร์ / ชื่อผู้มารับ',
-      close: en ? 'Close' : 'ปิด'
+      noteFooter: en ? [
+        'You must bring your order confirmation to pick up the ticket (printed or shown on your phone is fine).',
+        "For any case using a photocopy, it must note: power of attorney / order number / picker's name.",
+        'Pick up at any of the 11 main Thai Ticket Major branches during the scheduled window, or at the onsite TTM booth on show day.'
+      ] : [
+        'ต้องนำใบยืนยันการสั่งซื้อ ไปแสดงเพื่อรับบัตร (ปริ้นหรือเปิดจากมือถือได้)',
+        'ทุกกรณีที่ใช้สำเนาบัตร สำเนาต้องเขียนระบุ: มอบอำนาจ / เลขออเดอร์ / ชื่อผู้มารับ'      ],
+      close: en ? 'Close' : 'ปิด',
+
+      lostProofHeading: en ? 'If Your Payment Proof Is Lost or Damaged' : 'กรณีหลักฐานการชำระเงินหาย หรือชำรุด',
+      lostProofIntro: en ? '(e.g. the original receipt, an ATM slip, or a bank counter payment slip)' : '(เช่น ใบเสร็จชำระเงินตัวจริง สลิปจากตู้เอทีเอ็ม หรือใบรับชำระจากเคาน์เตอร์ธนาคาร)',
+      lostProofSeatHeading: en ? 'For seat-assigned tickets' : 'สำหรับบัตรระบุที่นั่ง',
+      lostProofSeatDocs: en ? [
+        "Order owner's ID card (or a signed copy noting who's authorized to pick up instead)",
+        "If you're not the order owner, also bring a copy of the owner's ID card",
+        'An original police report',
+        'Contact the onsite TTM booth on show day to request your ticket'
+      ] : [
+        'บัตรประชาชนตัวจริงของเจ้าของออเดอร์ (หรือสำเนา เซ็นระบุมอบอำนาจว่าให้ใครรับแทน)',
+        'ถ้าไม่ใช่เจ้าของออเดอร์ ต้องมีสำเนาบัตรประชาชนของเจ้าของออเดอร์ไปด้วย',
+        'ใบแจ้งความตัวจริง',
+        'ติดต่อบูธ TTM หน้างานแสดง เพื่อขอรับบัตร'
+      ],
+      lostProofStandingHeading: en ? 'For standing / no-seat tickets' : 'สำหรับบัตรไม่ระบุที่นั่ง / บัตรยืน',
+      lostProofStandingDocs: en ? [
+        'Same documents as seat-assigned tickets (ID card + original police report)',
+        'Contact the onsite TTM booth on show day'
+      ] : [
+        'เอกสารเหมือนกรณีบัตรระบุที่นั่ง (บัตรประชาชน + ใบแจ้งความตัวจริง)',
+        'ติดต่อบูธ TTM หน้างานแสดง'
+      ],
+      lostProofStandingWarning: en ? 'For this ticket type, the company reserves the right not to reissue a new ticket under any circumstances — please keep your payment proof safe.' : 'สำหรับบัตรประเภทนี้ ทางบริษัทขอสงวนสิทธิ์ไม่ออกบัตรใหม่ให้ในทุกกรณี กรุณาเก็บหลักฐานการชำระเงินไว้ให้ดี',
+
+      cardPaymentHeading: en ? 'Pickup When Paid by Credit/Debit Card' : 'รับบัตรกรณีชำระด้วยบัตรเครดิต/เดบิต',
+      cardPaymentSelfHeading: en ? 'Cardholder picking up in person' : 'เจ้าของบัตรมารับด้วยตนเอง',
+      cardPaymentSelfDocs: en ? [
+        'Order confirmation slip',
+        'The credit/debit card used to pay',
+        "Cardholder's original ID card"
+      ] : [
+        'ใบยืนยันคำสั่งซื้อ',
+        'บัตรเครดิต/เดบิตใบที่ใช้ชำระเงิน',
+        'บัตรประชาชนตัวจริงของเจ้าของบัตร'
+      ],
+      cardPaymentOtherHeading: en ? 'Someone else picking up instead' : 'ให้คนอื่นรับแทน',
+      cardPaymentOtherDocs: en ? [
+        'Order confirmation slip + a filled-out authorization form (with the last 4 digits of the card)',
+        'A signed copy of the card used (both front and back)',
+        "A signed copy of the cardholder's ID card",
+        "A copy of the picker's ID card",
+        "The picker's original ID card"
+      ] : [
+        'ใบยืนยันคำสั่งซื้อ พร้อมกรอกแบบฟอร์มใบมอบอำนาจ (ระบุเลขบัตร 4 หลักสุดท้าย)',
+        'สำเนาบัตรที่ใช้สั่งซื้อ (ทั้งด้านหน้า-หลัง เซ็นสำเนาถูกต้อง)',
+        'สำเนาบัตรประชาชนของเจ้าของบัตร (เซ็นสำเนาถูกต้อง)',
+        'สำเนาบัตรประชาชนของผู้รับ',
+        'บัตรประชาชนตัวจริงของผู้รับมอบอำนาจ'
+      ]
+    },
+    howto: {
+      title: en ? 'How to Buy Tickets' : 'วิธีการกดบัตร',
+      subtitle: en ? 'A simplified, step-by-step guide to buying on thaiticketmajor.com' : 'สรุปขั้นตอนการซื้อบัตรบน thaiticketmajor.com แบบเข้าใจง่าย ทำตามได้เลย',
+      moreLabel: en ? 'Want more detail on buying or pickup?' : 'อยากรู้รายละเอียดเพิ่มเติมเรื่องการซื้อหรือรับบัตร?',
+      stepLabel: en ? 'Step' : 'ขั้นตอนที่',
+      steps: en ? [
+        'Pick the show you want. When it\'s time to join the queue, a button will appear for you to click and get your queue number.',
+        'Before 10:00 AM, the system takes you to a queue-waiting page with a countdown timer, so you\'re ready to get your queue number right at 10:00 AM.',
+        'At exactly 10:00 AM, the countdown screen automatically switches to the queue-ticket page.',
+        'Enter your ID card or passport number carefully to verify your identity — this number must exactly match your real ID when you pick up the ticket later.',
+        'Choose your seat: click a zone to see available seats, pick one, then click "Buy Now" to confirm.',
+        'Once you\'ve picked your seat, click the confirm-seat button, and the system takes you to the payment method page. After choosing a payment method, double-check your order — at this step, deselect Ticket Protect if you don\'t want it (it costs extra) — then click "Confirm Order."',
+        'Once confirmed, complete your payment — that\'s it, you\'ve successfully bought your ticket.'
+      ] : [
+        'เลือกรายการแสดงที่ต้องการ เมื่อถึงเวลารับคิว จะแสดงปุ่มเพื่อกดให้รับคิว',
+        'ก่อนเวลา 10:00 น. ระบบจะพาเข้าสู่หน้ารอคิว ลูกค้าจะเข้าสู่หน้าจอแสดงเวลานับถอยหลัง เพื่อรอรับคิวในเวลา 10:00 น. ตรง',
+        'เวลา 10:00 น. หน้าจอแสดงเวลานับถอยหลัง จะเปลี่ยนไปยังหน้ารับบัตรคิวโดยอัตโนมัติ',
+        'กรอกเลขบัตรประชาชนหรือพาสปอร์ตให้ถูกต้อง เพื่อยืนยันตัวตน — เลขนี้ต้องตรงกับบัตรตัวจริงตอนไปรับบัตรเป๊ะๆ',
+        'คลิกโซนที่ต้องการเพื่อดูที่นั่งว่าง หลังจากนั้นกดเลือกที่นั่งที่ต้องการ (ถ้าเลือกสำเร็จจะขึ้นเครื่องหมายถูกตรงที่เลือก) หลังจากนั้น "ยืนยันที่นั่ง"',
+        'เมื่อเลือกที่นั่งได้แล้วกดปุ่มยืนยันที่นั่ง และระบบจะพาไปที่หน้าเลือกวิธีการชำระเงิน เมื่อเลือกวิธีการชำระเงินแล้ว ตรวจสอบรายการสั่งซื้อให้ถูกต้อง ในขั้นตอนนี้กดยกเลิกการเลือก Ticket Protect ออกกรณีไม่ต้องการ (อันนี้เสียตังเพิ่ม) แล้วกด "ยืนยันคำสั่งซื้อ"',
+        'เมื่อกดยืนยันแล้ว ชำระเงินให้เรียบร้อย ถือเป็นการกดบัตรสำเร็จ'
+      ],
+      step5Sub: en
+        ? 'If someone else has already booked that seat, a warning pop-up will appear — close it and pick a different seat.'
+        : 'กรณีที่ที่นั่งมีการจองไปมีคนเลือกไปแล้วหรือไม่สามารถเลือกได้จะแสดง pop-up แจ้งเตือน ให้กดปิดและเลือกที่นั่งใหม่',
+      zoneWarning: en
+        ? 'One order can only include seats within the same zone. If you want a different zone, or tickets for another day, you\'ll need to join the queue again.'
+        : 'ใน 1 รายการคำสั่งซื้อกดได้แค่ภายในโซนเดียวกันเท่านั้น ถ้าต้องการโซนอื่นเพิ่มเติม หรือกดของวันอื่นต้องต่อคิวใหม่อีกครั้ง'
     },
     tips: {
       title: en ? 'Ticket-Buying Tips' : 'เคล็ดลับการกดบัตร',

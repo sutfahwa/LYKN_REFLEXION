@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>วิธีการกดบัตร — LYKN Reflexion Concert</title>
+<meta name="description" content="LYKN Reflexion Concert — 24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี รายละเอียดบัตร ผังที่นั่ง และกำหนดการ">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-512.png">
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon.ico">
+<link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/apple-touch-icon.png">
+<meta property="og:title" content="LYKN Reflexion Concert">
+<meta property="og:description" content="24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/logo.png">
+<meta property="og:type" content="website">
+<script>
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
+    var robotsMeta = document.createElement('meta');
+    robotsMeta.name = 'robots';
+    robotsMeta.content = 'noindex, nofollow';
+    document.head.appendChild(robotsMeta);
+    document.title = '[TEST] ' + document.title;
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/support.js"></script>
+<script src="/shared/nav.js"></script>
+<script src="/shared/translations.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/base.css">
+</helmet>
+
+<div style="min-height:100vh;background:#000000;color:#f2f7f6;padding-bottom:40px">
+
+  <nav style="display:flex;position:fixed;top:0;left:0;right:0;z-index:50;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(5,13,16,0.88);backdrop-filter:blur(8px);border-bottom:1px solid rgba(111,224,214,0.15)">
+    <a href="/index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+      <img src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/lykn-nav-logo.png" alt="LYKN" style="height:36px;cursor:pointer;display:block">
+      <span style="color:#eafffb;font-size:14px;font-weight:600">{{ homeLabel }}</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="position:relative">
+        <button type="button" class="hamburger-btn" onClick="{{ toggleMenu }}" aria-label="Menu" style="width:38px;height:38px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.06);color:#eafffb;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">☰</button>
+        <sc-if value="{{ isMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:59" onClick="{{ closeMenu }}"></div>
+          <div style="position:absolute;top:calc(100% + 8px);right:0;z-index:60;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;min-width:210px;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+            <sc-for list="{{ menuItems }}" as="item" hint-placeholder-count="5">
+              <a href="{{ item.href }}" class="menu-item" style="display:block;padding:11px 14px;border-radius:8px;font-size:14.5px;font-weight:500;background:{{ item.bg }};color:{{ item.color }};text-decoration:none">{{ item.label }}</a>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position:relative">
+        <button type="button" class="hamburger-btn" onClick="{{ toggleLangMenu }}" aria-label="Language" style="display:flex;align-items:center;gap:6px;height:38px;padding:0 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.06);color:#eafffb;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+          <span style="font-size:15px">{{ langSelector.currentFlag }}</span>
+          <span>{{ langSelector.currentShortLabel }}</span>
+          <span style="font-size:9px;color:#8ea6a3">▼</span>
+        </button>
+        <sc-if value="{{ isLangMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:59" onClick="{{ closeLangMenu }}"></div>
+          <div style="position:absolute;top:calc(100% + 8px);right:0;z-index:60;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;min-width:170px;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+            <sc-for list="{{ langSelector.options }}" as="opt" hint-placeholder-count="2">
+              <div onClick="{{ opt.onClick }}" class="menu-item" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
+                <span style="font-size:16px">{{ opt.flag }}</span>
+                <span>{{ opt.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top:66px;max-width:1100px;margin:0 auto">
+
+    <section style="padding:28px 20px 60px">
+      <h1 style="font-size:30px;font-weight:700;margin:0 0 6px">{{ t.details.title }}</h1>
+      <p style="color:#6fe0d6;font-size:19px;font-weight:600;letter-spacing:0.5px;margin:0 0 24px">{{ t.details.subtitle }}</p>
+
+      <div style="display:inline-flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:4px;margin-bottom:28px">
+        <sc-for list="{{ detailsTabs }}" as="tb" hint-placeholder-count="3">
+          <a href="{{ tb.href }}" style="padding:9px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:{{ tb.bg }};color:{{ tb.color }};text-decoration:none;display:inline-block">{{ tb.label }}</a>
+        </sc-for>
+      </div>
+
+      <h2 style="font-size:22px;font-weight:700;margin:0 0 6px;color:#eafffb">{{ t.howto.title }}</h2>
+      <p style="color:#a9c4c2;font-size:15px;line-height:1.7;margin:0 0 24px;max-width:640px">{{ t.howto.subtitle }}</p>
+
+      <div style="margin-bottom:14px">
+        <div style="position:relative;border-radius:16px;overflow:hidden;background:#0d1117;border:1px solid rgba(255,255,255,0.1)">
+          <img src="{{ currentHowtoStep.image }}" alt="{{ t.howto.stepLabel }} {{ currentHowtoStep.num }}" loading="lazy" style="width:100%;aspect-ratio:16/9;object-fit:contain;display:block">
+          <div onClick="{{ prevHowtoStep }}" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);height:40px;width:40px;border-radius:50%;background:rgba(5,13,16,0.75);border:1px solid rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;opacity:{{ prevArrowOpacity }}">‹</div>
+          <div onClick="{{ nextHowtoStep }}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);height:40px;width:40px;border-radius:50%;background:rgba(5,13,16,0.75);border:1px solid rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;opacity:{{ nextArrowOpacity }}">›</div>
+        </div>
+
+        <div style="display:flex;justify-content:center;gap:7px;margin:14px 0">
+          <sc-for list="{{ howtoStepsData }}" as="s" hint-placeholder-count="8">
+            <div onClick="{{ s.onDotClick }}" style="width:8px;height:8px;border-radius:50%;cursor:pointer;background:{{ s.dotColor }}"></div>
+          </sc-for>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px 22px">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="flex-shrink:0;min-width:26px;height:26px;padding:0 8px;border-radius:13px;background:rgba(111,224,214,0.15);color:#6fe0d6;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center">{{ currentHowtoStep.num }}</div>
+            <div style="font-size:15px;line-height:1.8;color:#eafffb">{{ currentHowtoStep.text }}</div>
+          </div>
+          <sc-if value="{{ currentHowtoStep.warning }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:8px;align-items:flex-start;background:rgba(255,212,0,0.1);border:1px solid rgba(255,212,0,0.5);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:13px;color:#ffd400;line-height:1.6">⚠️ {{ currentHowtoStep.warning }}</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="background:rgba(79,195,187,0.1);border:1px solid rgba(111,224,214,0.25);border-radius:14px;padding:18px 20px">
+        <div style="font-size:14.5px;font-weight:600;color:#6fe0d6;margin-bottom:12px">{{ t.howto.moreLabel }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <div onClick="{{ openBuyModal }}" style="background:{{ buyBtnBg }};border:1px solid #6fe0d6;color:{{ buyBtnColor }};font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all 0.15s">{{ t.details.buyBtn }}</div>
+          <div onClick="{{ openPickupModal }}" style="background:{{ pickupBtnBg }};border:1px solid #6fe0d6;color:{{ pickupBtnColor }};font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all 0.15s">{{ t.details.pickupBtn }}</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- BUY MODAL -->
+  <sc-if value="{{ isBuyModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:32px;max-width:640px;width:100%;max-height:88vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:16px">{{ t.buyModal.title }}</div>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.limitLabel }}</div>
+        <ul style="padding-left:20px;margin:0 0 18px;font-size:14.5px;line-height:1.8;color:#eafffb">
+          <sc-for list="{{ t.buyModal.limits }}" as="l" hint-placeholder-count="2">
+            <li>{{ l }}</li>
+          </sc-for>
+        </ul>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.paymentLabel }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+          <sc-for list="{{ paymentMethods }}" as="pm" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 12px">
+              <span style="font-size:15px">{{ pm.icon }}</span>
+              <span style="font-size:13px;color:#eafffb">{{ pm.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.priceFeeLabel }}</div>
+        <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.1);margin-bottom:4px">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+            <thead>
+              <tr style="background:#0891b2">
+                <th style="padding:8px 12px;color:#fff;font-weight:700;text-align:left">{{ t.buyModal.priceCol }}</th>
+                <th style="padding:8px 12px;color:#fff;font-weight:700;text-align:right">{{ t.buyModal.priceFeeCol }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ priceWithFee }}" as="pf" hint-placeholder-count="8">
+                <tr style="background:rgba(111,224,214,0.06)">
+                  <td style="padding:8px 12px;color:#eafffb;border-top:1px solid rgba(255,255,255,0.08)">{{ pf.base }} {{ t.currency }}</td>
+                  <td style="padding:8px 12px;color:#ffd400;font-weight:600;text-align:right;border-top:1px solid rgba(255,255,255,0.08)">{{ pf.total }} {{ t.currency }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+
+        <div onClick="{{ closeModal }}" style="margin-top:22px;text-align:center;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">{{ t.buyModal.close }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PICKUP MODAL -->
+  <sc-if value="{{ isPickupModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:32px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:16px">{{ t.pickupModal.title }}</div>
+        <ul style="padding-left:20px;margin:0 0 20px;font-size:14.5px;line-height:1.9;color:#eafffb">
+          <sc-for list="{{ t.pickupModal.rules }}" as="r" hint-placeholder-count="4">
+            <li>{{ r }}</li>
+          </sc-for>
+        </ul>
+        <div style="background:#f5f7f6;border-radius:14px;padding:20px;margin-bottom:24px">
+          <div style="font-size:15px;font-weight:700;color:#0c2226;margin-bottom:12px">{{ t.pickupModal.caseLabel }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.ownerLabel }}</div>
+              <div style="position:relative">
+                <div onClick="{{ pickupOwnerDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                  <span>{{ pickupOwnerDropdown.currentLabel }}</span>
+                  <span style="color:#8a9997;font-size:10px">▼</span>
+                </div>
+                <sc-if value="{{ pickupOwnerDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
+                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
+                    <sc-for list="{{ pickupOwnerDropdown.options }}" as="opt" hint-placeholder-count="2">
+                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
+                        <span>{{ opt.label }}</span>
+                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
+                          <span style="color:#0891b2;font-weight:700">✓</span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.bookedLabel }}</div>
+              <div style="position:relative">
+                <div onClick="{{ pickupBookedIdDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                  <span>{{ pickupBookedIdDropdown.currentLabel }}</span>
+                  <span style="color:#8a9997;font-size:10px">▼</span>
+                </div>
+                <sc-if value="{{ pickupBookedIdDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
+                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
+                    <sc-for list="{{ pickupBookedIdDropdown.options }}" as="opt" hint-placeholder-count="2">
+                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
+                        <span>{{ opt.label }}</span>
+                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
+                          <span style="color:#0891b2;font-weight:700">✓</span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.pickerLabel }}</div>
+              <div style="position:relative">
+                <div onClick="{{ pickupPickerDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                  <span>{{ pickupPickerDropdown.currentLabel }}</span>
+                  <span style="color:#8a9997;font-size:10px">▼</span>
+                </div>
+                <sc-if value="{{ pickupPickerDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
+                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
+                    <sc-for list="{{ pickupPickerDropdown.options }}" as="opt" hint-placeholder-count="3">
+                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
+                        <span>{{ opt.label }}</span>
+                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
+                          <span style="color:#0891b2;font-weight:700">✓</span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+
+        <sc-if value="{{ pickupResult }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#0891b2;border-radius:10px;padding:12px 14px;margin-bottom:10px">
+            <div style="font-size:13px;color:#e0f7fa;font-weight:700;margin-bottom:6px">{{ t.pickupModal.docsLabel }}</div>
+            <ul style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.7;color:#dcece9">
+              <sc-for list="{{ pickupResult }}" as="d" hint-placeholder-count="3">
+                <li>{{ d }}</li>
+              </sc-for>
+            </ul>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasNoPickupResult }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,212,0,0.12);border:1px dashed rgba(255,150,0,0.5);border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;color:#3a2c00">{{ t.pickupModal.noMatch }}</div>
+        </sc-if>
+        </div>
+        <ul style="padding-left:20px;margin:0 0 22px;font-size:14px;line-height:1.9;color:#eafffb">
+          <sc-for list="{{ t.pickupModal.noteFooter }}" as="n" hint-placeholder-count="3">
+            <li>{{ n }}</li>
+          </sc-for>
+        </ul>
+
+        <div style="height:1px;background:rgba(255,255,255,0.1);margin-bottom:20px"></div>
+
+        <div style="font-size:15px;font-weight:700;color:#6fe0d6;margin-bottom:4px">{{ t.pickupModal.lostProofHeading }}</div>
+        <div style="font-size:12.5px;color:#8ea6a3;margin-bottom:12px">{{ t.pickupModal.lostProofIntro }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px">
+          <div style="flex:1;min-width:220px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px">
+            <div style="font-size:13.5px;font-weight:700;color:#eafffb;margin-bottom:8px">{{ t.pickupModal.lostProofSeatHeading }}</div>
+            <ul style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.7;color:#dcece9">
+              <sc-for list="{{ t.pickupModal.lostProofSeatDocs }}" as="d" hint-placeholder-count="4">
+                <li>{{ d }}</li>
+              </sc-for>
+            </ul>
+          </div>
+          <div style="flex:1;min-width:220px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px">
+            <div style="font-size:13.5px;font-weight:700;color:#eafffb;margin-bottom:8px">{{ t.pickupModal.lostProofStandingHeading }}</div>
+            <ul style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.7;color:#dcece9">
+              <sc-for list="{{ t.pickupModal.lostProofStandingDocs }}" as="d" hint-placeholder-count="2">
+                <li>{{ d }}</li>
+              </sc-for>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-start;background:rgba(255,150,0,0.1);border:1px dashed rgba(255,150,0,0.4);border-radius:10px;padding:10px 12px;margin-bottom:22px;font-size:12.5px;color:#ffcf80;line-height:1.6">⚠️ {{ t.pickupModal.lostProofStandingWarning }}</div>
+
+        <div style="font-size:15px;font-weight:700;color:#6fe0d6;margin-bottom:10px">{{ t.pickupModal.cardPaymentHeading }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:4px">
+          <div style="flex:1;min-width:220px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px">
+            <div style="font-size:13.5px;font-weight:700;color:#eafffb;margin-bottom:8px">{{ t.pickupModal.cardPaymentSelfHeading }}</div>
+            <ul style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.7;color:#dcece9">
+              <sc-for list="{{ t.pickupModal.cardPaymentSelfDocs }}" as="d" hint-placeholder-count="3">
+                <li>{{ d }}</li>
+              </sc-for>
+            </ul>
+          </div>
+          <div style="flex:1;min-width:220px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px">
+            <div style="font-size:13.5px;font-weight:700;color:#eafffb;margin-bottom:8px">{{ t.pickupModal.cardPaymentOtherHeading }}</div>
+            <ul style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.7;color:#dcece9">
+              <sc-for list="{{ t.pickupModal.cardPaymentOtherDocs }}" as="d" hint-placeholder-count="5">
+                <li>{{ d }}</li>
+              </sc-for>
+            </ul>
+          </div>
+        </div>
+
+        <div onClick="{{ closeModal }}" style="margin-top:22px;text-align:center;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">{{ t.pickupModal.close }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = {
+    lang: getStoredLang(),
+    isBuyModalOpen: false,
+    isPickupModalOpen: false,
+    pickupOwner: 'ตัวเอง',
+    pickupBookedId: 'ตัวเอง',
+    pickupPicker: 'ตัวเอง',
+    openDropdown: null,
+    howtoStep: 0
+  };
+
+  setLang(lang) {
+    if (lang === this.state.lang) return;
+    setStoredLang(lang);
+    this.setState({ lang, openDropdown: null });
+    document.documentElement.lang = lang;
+  }
+
+  toggleDropdown(key) { this.setState({ openDropdown: this.state.openDropdown === key ? null : key }); }
+  closeDropdown() { this.setState({ openDropdown: null }); }
+
+  prevHowtoStep() { this.setState({ howtoStep: Math.max(0, this.state.howtoStep - 1) }); }
+  nextHowtoStep(max) { this.setState({ howtoStep: Math.min(max, this.state.howtoStep + 1) }); }
+
+  renderVals() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+
+    const detailsTabs = [
+      { key: 'overview', label: en ? 'Overview' : 'ภาพรวม', href: '/details/overview/index.html' },
+      { key: 'howto', label: en ? 'How to Buy' : 'วิธีการกดบัตร', href: '/details/howto/index.html' },
+      { key: 'seat', label: "Where's My Seat", href: '/details/seat/index.html' }
+    ].map(tb => ({
+      label: tb.label,
+      href: tb.href,
+      bg: tb.key === 'howto' ? 'rgba(111,224,214,0.15)' : 'transparent',
+      color: tb.key === 'howto' ? '#6fe0d6' : '#dcece9'
+    }));
+
+    const cdn = 'https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/';
+    const howtoStepDefs = [
+      { label: '1', text: t.howto.steps[0], file: 'step1.png' },
+      { label: '2', text: t.howto.steps[1], file: 'step2.png' },
+      { label: '3', text: t.howto.steps[2], file: 'step3.png' },
+      { label: '4', text: t.howto.steps[3], file: 'step4.png' },
+      { label: '5', text: t.howto.steps[4], file: 'step5.png', warning: t.howto.zoneWarning },
+      { label: '5.1', text: t.howto.step5Sub, file: 'step5.1.png' },
+      { label: '6', text: t.howto.steps[5], file: 'step6.png' },
+      { label: '7', text: t.howto.steps[6], file: 'step7.png' }
+    ];
+    const howtoStepsData = howtoStepDefs.map((s, i) => ({
+      num: s.label,
+      text: s.text,
+      warning: s.warning || null,
+      image: cdn + s.file,
+      dotColor: i === this.state.howtoStep ? '#6fe0d6' : 'rgba(255,255,255,0.25)',
+      onDotClick: () => this.setState({ howtoStep: i })
+    }));
+    const howtoStepIndex = Math.min(Math.max(this.state.howtoStep, 0), howtoStepsData.length - 1);
+    const currentHowtoStep = howtoStepsData[howtoStepIndex];
+
+    const pickupOptionsRaw = {
+      owner: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }],
+      bookedId: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }],
+      picker: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }, { value: 'บุคคลที่ 3', label: en ? 'Third party' : 'บุคคลที่ 3' }]
+    };
+    const buildPickupDropdown = (optionsKey, stateKey) => {
+      const currentValue = this.state[stateKey];
+      return {
+        options: pickupOptionsRaw[optionsKey].map(o => ({
+          label: o.label,
+          selected: o.value === currentValue,
+          bg: o.value === currentValue ? '#e3fbf8' : 'transparent',
+          color: o.value === currentValue ? '#0c7a72' : '#0c2226',
+          onClick: () => this.setState({ [stateKey]: o.value, openDropdown: null })
+        })),
+        isOpen: this.state.openDropdown === stateKey,
+        toggle: () => this.toggleDropdown(stateKey),
+        currentLabel: (pickupOptionsRaw[optionsKey].find(o => o.value === currentValue) || {}).label || currentValue
+      };
+    };
+    const pickupOwnerDropdown = buildPickupDropdown('owner', 'pickupOwner');
+    const pickupBookedIdDropdown = buildPickupDropdown('bookedId', 'pickupBookedId');
+    const pickupPickerDropdown = buildPickupDropdown('picker', 'pickupPicker');
+
+    const cases = pickupCasesData(en);
+    const matchedCase = cases.find(c => c.owner === this.state.pickupOwner && c.bookedId === this.state.pickupBookedId && c.picker === this.state.pickupPicker);
+
+    return {
+      menuItems: buildMenuItems('details', en),
+      isMenuOpen: this.state.openDropdown === 'mainMenu',
+      toggleMenu: () => this.toggleDropdown('mainMenu'),
+      closeMenu: () => this.closeDropdown(),
+      homeLabel: homeLabel(en),
+      langSelector: buildLangSelector(en, (lang) => this.setLang(lang)),
+      isLangMenuOpen: this.state.openDropdown === 'langMenu',
+      toggleLangMenu: () => this.toggleDropdown('langMenu'),
+      closeLangMenu: () => this.closeDropdown(),
+      t,
+      detailsTabs,
+      howtoStepsData,
+      currentHowtoStep,
+      prevArrowOpacity: howtoStepIndex === 0 ? 0.35 : 1,
+      nextArrowOpacity: howtoStepIndex === howtoStepsData.length - 1 ? 0.35 : 1,
+      prevHowtoStep: () => this.prevHowtoStep(),
+      nextHowtoStep: () => this.nextHowtoStep(howtoStepsData.length - 1),
+
+      openBuyModal: () => this.setState({ isBuyModalOpen: true }),
+      openPickupModal: () => this.setState({ isPickupModalOpen: true }),
+      closeModal: () => this.setState({ isBuyModalOpen: false, isPickupModalOpen: false }),
+      isBuyModalOpen: this.state.isBuyModalOpen,
+      isPickupModalOpen: this.state.isPickupModalOpen,
+      buyBtnBg: this.state.isBuyModalOpen ? '#6fe0d6' : 'transparent',
+      buyBtnColor: this.state.isBuyModalOpen ? '#0a1a1d' : '#6fe0d6',
+      pickupBtnBg: this.state.isPickupModalOpen ? '#6fe0d6' : 'transparent',
+      pickupBtnColor: this.state.isPickupModalOpen ? '#0a1a1d' : '#6fe0d6',
+      priceWithFee: [
+        { base: '6,900', total: '7,137' },
+        { base: '5,900', total: '6,107' },
+        { base: '5,500', total: '5,695' },
+        { base: '5,000', total: '5,180' },
+        { base: '4,500', total: '4,665' },
+        { base: '3,000', total: '3,120' },
+        { base: '2,000', total: '2,090' },
+        { base: '1,500', total: '1,575' }
+      ],
+      paymentMethods: [
+        { icon: '💳', label: en ? 'Credit Card' : 'บัตรเครดิต' },
+        { icon: '💳', label: en ? 'Debit Card' : 'บัตรเดบิต' },
+        { icon: '📱', label: 'True Money Wallet' },
+        { icon: '📱', label: 'ShopeePay' },
+        { icon: '📱', label: 'Alipay' },
+        { icon: '📱', label: 'WeChat Pay' },
+        { icon: '🔲', label: 'QR PromptPay' }
+      ],
+      pickupOwnerDropdown,
+      pickupBookedIdDropdown,
+      pickupPickerDropdown,
+      pickupResult: matchedCase ? matchedCase.docs : null,
+      hasNoPickupResult: !matchedCase,
+      stopProp: (e) => e.stopPropagation()
+    };
+  }
+}
+
+</script>
+</body>
+</html>
