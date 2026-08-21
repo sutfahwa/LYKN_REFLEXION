@@ -284,7 +284,7 @@ function watchlistData(en) {
         { label: en ? 'GMM25 (Live)' : 'GMM25 (ถ่ายทอดสด)', noLink: true },
         { label: en ? 'OneD App (Rerun)' : 'แอป OneD (ดูย้อนหลัง)', noLink: true }
       ] },
-      { title: 'Twenty One เราลองมารักกันสัก 21 วันดูไหม', poster: cdn + '21วัน.jpg', members: ['Nut', 'Hong'], membersLabel: 'Nut, Hong', channels: [
+      { title: 'Twenty One เราลองมารักกันสัก 21 วันดูไหม', poster: cdn + '21วัน.png', members: ['Nut', 'Hong'], membersLabel: 'Nut, Hong', channels: [
         { label: 'เร็วๆนี้', noLink: true }
       ] }
     ],
