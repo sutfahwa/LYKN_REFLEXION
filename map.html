@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D POV - Perfect Center & Auto Fit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  button, input, select, textarea { font-family: inherit; }
+  body {
+    height: 100vh; background: #0d1117; display: flex;
+    flex-direction: column; align-items: center; font-family: 'Noto Sans Thai', sans-serif;
+    color: #ffffff; overflow: hidden; /* ล็อคหน้าจอไม่ให้ขยับตอนซูม */
+  }
+
+  /* พื้นที่แสดงผล 3 มิติ */
+  #map-wrapper {
+    perspective: 1200px; /* ความลึกของมุมกล้อง */
+    width: 100%; flex: 1; min-height: 0;
+    display: flex; justify-content: center; align-items: center;
+    cursor: crosshair;
+  }
+
+  #seat-map {
+    width: 100%; max-width: 650px;
+    transform-style: preserve-3d;
+    transform-origin: 50% 50%; /* ล็อคจุดศูนย์กลางแผนที่ไว้ที่เดิมเสมอ เพื่อแอนิเมชันที่สมูท */
+  }
+
+  /* ตั้งค่ากล่องที่สามารถคลิกได้ (Zone) */
+  path.zone {
+    cursor: pointer; outline: none; transition: fill 0.2s ease, filter 0.2s;
+  }
+  path.zone:hover { fill: #00f2fe !important; filter: drop-shadow(0 0 10px #00f2fe); }
+  path.zone.selected { fill: #ff0055 !important; filter: drop-shadow(0 0 15px #ff0055); }
+
+  /* Tooltip */
+  #tooltip {
+    position: fixed; pointer-events: none; background: rgba(13, 17, 23, 0.95);
+    border: 1px solid #30363d; color: #fff; padding: 10px 14px; border-radius: 6px;
+    font-size: 13px; opacity: 0; transition: opacity 0.15s ease; z-index: 9999;
+  }
+
+  /* การ์ดข้อมูลโซน แสดงค้างไว้หลังคลิก (มือถือไม่มี hover) */
+  #zone-card {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(140%);
+    background: rgba(13, 17, 23, 0.96); border: 1px solid #30363d; border-radius: 12px;
+    padding: 14px 20px; color: #fff; z-index: 10000; min-width: 240px; text-align: center;
+    opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none;
+  }
+  #zone-card.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+  #zone-card .zc-name { font-size: 20px; font-weight: 900; color: #00f2fe; letter-spacing: 1px; }
+  #zone-card .zc-level { font-size: 12px; color: #8b949e; margin-top: 2px; }
+  #zone-card .zc-blindspot { font-size: 13px; margin-top: 8px; font-weight: 600; color: #ffd166; line-height: 1.5; }
+  #zone-card .zc-blindspot.ok { color: #6fe0d6; }
+  #zone-card .zc-blindspot.pending { color: #8b949e; font-weight: 500; }
+  #zc-view-btn {
+    margin-top: 12px; width: 100%; padding: 9px 14px; border-radius: 8px; border: none;
+    background: #00f2fe; color: #0d1117; font-weight: 800; font-size: 13px; cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+  #zc-view-btn:active { transform: scale(0.98); }
+  #zc-reset-btn {
+    margin-top: 8px; width: 100%; padding: 8px 14px; border-radius: 8px;
+    border: 1px solid #30363d; background: transparent; color: #c9d1d9;
+    font-weight: 600; font-size: 12.5px; cursor: pointer;
+  }
+  #zc-reset-btn:active { transform: scale(0.98); }
+
+  /* Overlay ผังที่นั่งรายโซน - backdrop เต็มจอ + panel ที่พอดีกับเนื้อหา */
+  #seat-grid-overlay {
+    position: fixed; inset: 0; background: rgba(5, 7, 10, 0.88); z-index: 20000;
+    display: none; align-items: center; justify-content: center;
+    padding: 16px; opacity: 0; transition: opacity 0.24s ease;
+  }
+  #seat-grid-overlay.show { opacity: 1; }
+  #seat-grid-overlay .sg-panel {
+    position: relative; background: #11161c; border: 1px solid #30363d; border-radius: 16px;
+    width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto;
+    padding: 20px 16px 18px; display: flex; flex-direction: column; align-items: center;
+    transform: translateY(10px) scale(0.98); transition: transform 0.24s cubic-bezier(0.16,1,0.3,1);
+  }
+  #seat-grid-overlay.show .sg-panel { transform: translateY(0) scale(1); }
+  #seat-grid-overlay .sg-close {
+    position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid #30363d; background: rgba(255,255,255,0.06); color: #fff; font-size: 16px;
+    cursor: pointer; line-height: 1; z-index: 2;
+  }
+  #seat-grid-overlay .sg-back {
+    display: flex; align-items: center; gap: 6px; align-self: flex-start;
+    background: rgba(255,255,255,0.06); border: 1px solid #30363d; color: #c9d1d9;
+    font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 20px;
+    cursor: pointer; margin-bottom: 10px;
+  }
+  #seat-grid-overlay .sg-back:hover { background: rgba(255,255,255,0.12); }
+  #seat-grid-overlay .sg-title { font-size: 19px; font-weight: 900; color: #00f2fe; text-align: center; }
+  #seat-grid-overlay .sg-note {
+    font-size: 11px; color: #8b949e; max-width: 480px; text-align: center; margin: 4px 0 14px;
+    line-height: 1.5;
+  }
+  #seat-grid-overlay .sg-stage {
+    background: #fff; color: #000; font-weight: 900; font-size: 13px; letter-spacing: 3px;
+    padding: 7px 36px; border-radius: 6px; margin-bottom: 16px; text-align: center;
+  }
+  .sg-scroll-area {
+    width: 100%; max-height: 46vh; overflow: auto; text-align: center;
+    background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px 6px;
+  }
+  #sg-body { display: inline-block; text-align: left; transform-origin: top center; transition: transform 0.15s ease; }
+  #seat-grid-overlay .sg-zoom-controls {
+    display: flex; gap: 8px; margin-top: 10px;
+  }
+  #seat-grid-overlay .sg-zoom-controls button {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid #30363d;
+    background: rgba(255,255,255,0.06); color: #fff; font-size: 17px; font-weight: 700;
+    cursor: pointer; line-height: 1;
+  }
+  #seat-grid-overlay .sg-zoom-controls button:active { transform: scale(0.94); }
+  #seat-grid-overlay .sg-price-note {
+    font-size: 11.5px; color: #ffd166; max-width: 480px; text-align: center; margin-top: 14px;
+    line-height: 1.6; padding: 9px 12px; background: rgba(255,209,102,0.08);
+    border: 1px dashed rgba(255,209,102,0.35); border-radius: 10px;
+  }
+  .seat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .seat-row .row-label { width: 22px; font-size: 11px; color: #8b949e; text-align: center; flex-shrink: 0; }
+  .seat-dots { display: flex; gap: 3px; flex-wrap: nowrap; }
+  .seat-dot {
+    width: 19px; height: 19px; border-radius: 50%; background: #3a4048;
+    border: 1px solid #57606a; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: #c9d1d9; font-weight: 600;
+  }
+  .seat-aisle { width: 14px; flex-shrink: 0; }
+  .seat-spacer { width: 19px; height: 19px; flex-shrink: 0; }
+
+  /* แถบค้นหาที่นั่ง */
+  #seat-search-bar {
+    flex-shrink: 0; width: 100%;
+    background: rgba(13, 17, 23, 0.95);
+    border-bottom: 1px solid #30363d; box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    padding: 7px 10px; position: relative; z-index: 15000;
+  }
+  .ssb-inner { max-width: 560px; margin: 0 auto; }
+  .ssb-header { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+  .ssb-header .ssb-icon { font-size: 12.5px; line-height: 1; }
+  .ssb-header .ssb-title { font-size: 11.5px; font-weight: 700; color: #6fe0d6; letter-spacing: 0.2px; }
+  .ssb-fields {
+    display: flex; gap: 6px; align-items: flex-end;
+  }
+  .ssb-field { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+  .ssb-field label { font-size: 9.5px; font-weight: 700; color: #8b949e; letter-spacing: 0.3px; }
+  #seat-search-bar input {
+    min-width: 0; width: 100%; background: rgba(255,255,255,0.06); border: 1px solid #30363d;
+    color: #fff; font-size: 12.5px; padding: 7px 20px 7px 6px; border-radius: 7px; outline: none;
+    font-family: inherit; text-align: center;
+  }
+  #seat-search-bar input::placeholder { color: #6b7280; font-size: 10.5px; }
+  #seat-search-bar input:focus { border-color: #00f2fe; }
+  #seat-search-bar input:disabled { opacity: 0.5; cursor: not-allowed; }
+  .ssb-clear {
+    display: none; position: absolute; right: 4px; bottom: 6px; width: 16px; height: 16px;
+    border: none; border-radius: 50%; background: rgba(255,255,255,0.12); color: #c9d1d9;
+    font-size: 11px; line-height: 1; cursor: pointer; align-items: center; justify-content: center;
+    font-family: inherit; padding: 0;
+  }
+  .ssb-field.has-value .ssb-clear { display: flex; }
+  .ssb-field.has-value input { padding-right: 22px; }
+  .ssb-dropdown {
+    display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 15001;
+    background: #171c24; border: 1px solid #30363d; border-radius: 8px;
+    max-height: 160px; overflow-y: auto; box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  }
+  .ssb-dropdown.show { display: block; }
+  .ssb-dropdown .ssb-option {
+    padding: 7px 10px; font-size: 12px; color: #eafffb; cursor: pointer; text-align: left;
+  }
+  .ssb-dropdown .ssb-option:hover, .ssb-dropdown .ssb-option.active { background: rgba(0,242,254,0.12); }
+  .ssb-dropdown .ssb-empty { padding: 7px 10px; font-size: 11.5px; color: #6b7280; }
+  #seat-search-btn {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 4px;
+    background: #00f2fe; color: #0d1117; font-weight: 800; font-size: 12px;
+    border: none; padding: 8px 12px; border-radius: 7px; cursor: pointer;
+    font-family: inherit; white-space: nowrap;
+  }
+  #seat-search-btn:active { transform: scale(0.98); }
+  #seat-search-error {
+    margin-top: 8px; font-size: 11.5px; color: #ff6b6b; text-align: center; line-height: 1.5;
+  }
+  .seat-dot-highlight {
+    background: #00f2fe !important; color: #0d1117 !important; border-color: #00f2fe !important;
+    box-shadow: 0 0 0 4px rgba(0, 242, 254, 0.35); animation: seatPulse 1s ease-in-out 3;
+  }
+  @keyframes seatPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+  }
+</style>
+</head>
+<body>
+
+<div id="seat-search-bar">
+  <div class="ssb-inner">
+    <div class="ssb-header">
+      <span class="ssb-icon">🔍</span>
+      <span class="ssb-title">ค้นหาที่นั่งของคุณ</span>
+    </div>
+    <div class="ssb-fields">
+      <div class="ssb-field">
+        <label for="search-zone">โซน</label>
+        <input type="text" id="search-zone" placeholder="เลือกโซน" autocomplete="off">
+        <button type="button" class="ssb-clear" id="search-zone-clear" aria-label="ล้างโซน">&times;</button>
+        <div class="ssb-dropdown" id="search-zone-dropdown"></div>
+      </div>
+      <div class="ssb-field">
+        <label for="search-row">แถว</label>
+        <input type="text" id="search-row" placeholder="เลือกโซนก่อน" autocomplete="off" disabled>
+        <button type="button" class="ssb-clear" id="search-row-clear" aria-label="ล้างแถว">&times;</button>
+        <div class="ssb-dropdown" id="search-row-dropdown"></div>
+      </div>
+      <div class="ssb-field">
+        <label for="search-seat">เลขที่นั่ง</label>
+        <input type="text" id="search-seat" placeholder="เช่น 5" maxlength="3" inputmode="numeric">
+      </div>
+      <button type="button" id="seat-search-btn"><span>🔍</span> ค้นหา</button>
+    </div>
+    <div id="seat-search-error"></div>
+  </div>
+</div>
+
+<div id="map-wrapper">
+  
+  <svg id="seat-map" viewBox="0 0 816 829" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- พื้นหลังเวทีสีขาว -->
+    <path d="M194 0H621V99.5H595.5V491L551.5 564.5L492 602H324L262 564.5L220.5 491L218 99.5H194V0Z" fill="white"/>
+    <path d="M194.5 0.5H619V97.5H597.5V489.5L553 564.5L493.5 601.5H322.5L264 564.5L218 489.5V97.5H194.5V0.5Z" fill="white"/>
+    
+    <!-- เพิ่มคำว่า STAGE บนเวทีขาว -->
+    <text x="408" y="70" fill="black" font-size="45" font-weight="900" font-family="Arial" text-anchor="middle" letter-spacing="2">STAGE</text>
+    
+    <!-- พื้นที่ดำรอบเวที -->
+    <path d="M574 121H424V287H437L479 315V321H574V121Z" fill="black"/>
+    <path d="M240 121.5H390V287.5H377L335 315.5V321.5H240V121.5Z" fill="black"/>
+    <path d="M240.5 343H334.5V348L377.5 376.5H435L477.5 350.5V343H573.5V490L537 551L490.5 581H325L278.5 551L240.5 489V343Z" fill="black"/>
+    
+    <!-- ทางเดิน -->
+    <path d="M334.5 536.5H311V554H316V550H321.5V547H325V543.5H329V541H334.5V536.5Z" fill="white"/>
+    <path d="M334.5 541V559H311V554M334.5 541V536.5H311V554M334.5 541H329V543.5H325V547H321.5V550H316V554H311" stroke="#FFFAFA"/>
+    <path d="M508.5 536H485V553.5H490V549.5H495.5V546.5H499V543H503V540.5H508.5V536Z" fill="white"/>
+    <path d="M508.5 540.5V558.5H485V553.5M508.5 540.5V536H485V553.5M508.5 540.5H503V543H499V546.5H495.5V549.5H490V553.5H485" stroke="#FFFAFA"/>
+
+    <!-- ================= กล่องที่นั่งจัดระดับชั้น ================= -->
+    
+    <!-- LEVEL 3 -->
+    <path class="zone" data-level="3" data-info="K" data-rows="18 แถว (AA, A-Q)" data-seats="9-13 ที่นั่ง/แถว" data-seat-counts="9,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,13" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว A มีรั้วบัง" d="M384.5 686H432V781.5H384.5V686Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="J" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,3,4,4,4,15,15,15,16,16,17,17,18,18,18,19,9,13,13,13,14" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว T มีรั้วบัง" d="M300.5 687H327.5V725H371.5V783H276.5L300.5 687Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="I" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" d="M216.5 708L197 743L267 780L294 683L278 674.5L250.5 725.5L216.5 708Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="H" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" data-blindspot="แถว H มีรั้วบัง" d="M124 698L193.5 624L208.5 635L182 685L208.5 702L188 739.5L124 698Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="G" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" d="M74 625.5L113 604L129.5 632.5L180 604L188.5 620L117.5 691.5L74 625.5Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="F" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,17,6" data-seat-start="1" data-seat-dir="left" d="M28.5 547.5L131.5 518L142 536.5L90.5 564.5L107.5 595.5L68 617.5L28.5 547.5Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="L" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,3,4,4,4,15,15,15,16,16,17,17,18,18,18,19,9,13,18,17,6" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว G มีรั้วบัง" d="M515 686H488V724H444V782H539L515 686Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="M" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M599 707L618.5 742L548.5 779L521.5 682L537.5 673.5L565 724.5L599 707Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="N" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M691.5 697L622 623L607 634L633.5 684L607 701L627.5 738.5L691.5 697Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="O" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M741.5 624.5L702.5 603L686 631.5L635.5 603L627 619L698 690.5L741.5 624.5Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="P" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,18,17,6" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว A มีรั้วบัง" d="M787 546.5L684 517L673.5 535.5L725 563.5L708 594.5L747.5 616.5L787 546.5Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="E" data-rows="18 แถว (AA, A-Q)" data-seats="10-22 ที่นั่ง/แถว" data-seat-counts="10,12,13,13,13,14,13,13,19,19,19,19,19,21,21,22,22,22" data-seat-start="1" data-seat-dir="left" data-blindspot="แถว G มีรั้วบังจอ, แถว B มีรั้วบังสายตา, แถว I มีรั้วบัง" d="M39.5 439V533.5L131 509.5V456H67.5V439H39.5Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="Q" data-rows="18 แถว (AA, A-Q)" data-seats="10-22 ที่นั่ง/แถว" data-seat-counts="10,12,13,13,13,14,13,13,19,19,19,20,20,21,21,22,22,22" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว AA มีรั้วบังนิดหน่อย, แถว Q มีรั้วบังจอ, แถว B ที่นั่ง 4 มีรั้วบังเวที, แถว H มีรั้วบังเวทีหลัก" d="M773.5 438V532.5L682 508.5V455H745.5V438H773.5Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="C" data-rows="18 แถว (AA, A-Q)" data-seats="10-20 ที่นั่ง/แถว" data-seat-counts="10,13,13,13,13,13,12,10,20,20,20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="left" data-blindspot="ลำโพงห้อยบังบางส่วน และแถว J1, J2 มีรั้วบัง" d="M38.5 231.5H68V247H132V312.5H68V329.5H38.5V231.5Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="D" data-rows="18 แถว (AA, A-Q)" data-seats="10-20 ที่นั่ง/แถว" data-seat-counts="10,13,13,13,13,13,12,10,20,20,20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="left" d="M39 334H68.5V349.5H132.5V415H68.5V432H39V334Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="S" data-rows="18 แถว (AA, A-Q)" data-seats="10-20 ที่นั่ง/แถว" data-seat-counts="10,13,13,13,13,13,12,10,20,20,20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว I ที่นั่ง 3 มีรั้วบัง" d="M775 229H745.5V244.5H681.5V310H745.5V327H775V229Z" fill="#787E7A"/>
+    <path class="zone" data-level="3" data-info="R" data-rows="18 แถว (AA, A-Q)" data-seats="10-20 ที่นั่ง/แถว" data-seat-counts="10,13,13,13,13,13,12,10,20,20,20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว B ที่นั่ง 2 มีเหล็กบัง" d="M774.5 332H745V347.5H681V413H745V430H774.5V332Z" fill="#787E7A"/>
+    
+    <path class="zone" data-level="3" data-info="F" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,17,6" data-seat-start="1" data-seat-dir="left" d="M48 627.5L4 554.5L0 555.5V578.5L35.5 634L48 627.5Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="J" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,3,4,4,4,15,15,15,16,16,17,17,18,18,18,19,9,13,13,13,14" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว T มีรั้วบัง" d="M264.5 828L268 814.5H336.5V827L264.5 828Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="I" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" d="M177 777L183.5 765.5L259 803.5L254 820.5L177 777Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="H" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" data-blindspot="แถว H มีรั้วบัง" d="M92.5 729.5L103 717.5L177.5 759L169.5 773L92.5 729.5Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="G" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" d="M52.5 638.5L41 645L88 722.5L97.5 712.5L52.5 638.5Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="P" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,18,17,6" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว A มีรั้วบัง" d="M767.5 627L811.5 555L815.5 556.5V578L780 633.5L767.5 627Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="L" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,3,4,4,4,15,15,15,16,16,17,17,18,18,18,19,9,13,18,17,6" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว G มีรั้วบัง" d="M551 828.5L546.5 815H478.434V827.5L551 828.5Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="M" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M638.5 776.5L632 765L556 803.5L561.5 820L638.5 776.5Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="N" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M723 729L711.5 717.5L639 758.5L647 772.5L723 729Z" fill="#D9E1D2"/>
+    <path class="zone" data-level="3" data-info="O" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M763 638L774.5 644.5L728.5 721L718.5 710.5L763 638Z" fill="#D9E1D2"/>
+    
+    <path class="zone" data-level="3" data-info="K" data-rows="18 แถว (AA, A-Q)" data-seats="9-13 ที่นั่ง/แถว" data-seat-counts="9,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,13" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว A มีรั้วบัง" d="M384.5 800.5V781H432V800.5H437V811H377V800.5H384.5Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="E" data-rows="18 แถว (AA, A-Q)" data-seats="10-22 ที่นั่ง/แถว" data-seat-counts="10,12,13,13,13,14,13,13,19,19,19,19,19,21,21,22,22,22" data-seat-start="1" data-seat-dir="left" data-blindspot="แถว G มีรั้วบังจอ, แถว B มีรั้วบังสายตา, แถว I มีรั้วบัง" d="M7 439H42.25L44.5 532L7 543V439Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="Q" data-rows="18 แถว (AA, A-Q)" data-seats="10-22 ที่นั่ง/แถว" data-seat-counts="10,12,13,13,13,14,13,13,19,19,19,20,20,21,21,22,22,22" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว AA มีรั้วบังนิดหน่อย, แถว Q มีรั้วบังจอ, แถว B ที่นั่ง 4 มีรั้วบังเวที, แถว H มีรั้วบังเวทีหลัก" d="M806.5 438H772V532L806.5 543V438Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="L" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,3,4,4,4,15,15,15,16,16,17,17,18,18,18,19,9,13,18,17,6" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว G มีรั้วบัง" d="M444 802.296V781.543L538.361 778L548 819H478.498V802.296H444Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="M" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M558 809.5L548 776.5L617 739L633 767L558 809.5Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="N" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M713.5 719.684L689.364 695L624.5 733.286L641.093 762L713.5 719.684Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="O" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="right" d="M720 712L697.5 690L740.5 624L764 638.5L720 712Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="P" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,18,17,6" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว A มีรั้วบัง" d="M786.5 546.5L813 555.5L770 628L745.5 615.5L786.5 546.5Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="J" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,3,4,4,4,15,15,15,16,16,17,17,18,18,18,19,9,13,13,13,14" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว T มีรั้วบัง" d="M371 801.796V781.043L278 778L267 818.5H336.502V801.796H371Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="I" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" d="M257 810.5L267 778.5L199 740L182 768L257 810.5Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="H" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" data-blindspot="แถว H มีรั้วบัง" d="M101.5 719.184L127 695L191 733.5L175.5 762.5L101.5 719.184Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="G" data-rows="21 แถว (A-U)" data-seats="3-20 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,20,20" data-seat-start="1" data-seat-dir="left" d="M96 714L119.5 689.5L76.5 624L51.5 639L96 714Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="F" data-rows="21 แถว (A-U)" data-seats="3-19 ที่นั่ง/แถว" data-seat-counts="3,4,4,5,5,5,5,15,15,16,16,16,17,17,18,18,19,19,19,17,6" data-seat-start="1" data-seat-dir="left" d="M31.5 546.5L2 555L46 628.5L73 615L31.5 546.5Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="C" data-rows="18 แถว (AA, A-Q)" data-seats="10-20 ที่นั่ง/แถว" data-seat-counts="10,13,13,13,13,13,12,10,20,20,20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="left" data-blindspot="ลำโพงห้อยบังบางส่วน และแถว J1, J2 มีรั้วบัง" d="M7.25 231.5H41.25V329.5H7.25V231.5Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="D" data-rows="18 แถว (AA, A-Q)" data-seats="10-20 ที่นั่ง/แถว" data-seat-counts="10,13,13,13,13,13,12,10,20,20,20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="left" d="M7.25 334H41.25V432H7.25V334Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="S" data-rows="18 แถว (AA, A-Q)" data-seats="10-20 ที่นั่ง/แถว" data-seat-counts="10,13,13,13,13,13,12,10,20,20,20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว I ที่นั่ง 3 มีรั้วบัง" d="M770 229H804V327H770V229Z" fill="#B1B590"/>
+    <path class="zone" data-level="3" data-info="R" data-rows="18 แถว (AA, A-Q)" data-seats="10-20 ที่นั่ง/แถว" data-seat-counts="10,13,13,13,13,13,12,10,20,20,20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว B ที่นั่ง 2 มีเหล็กบัง" d="M770 332H804V430H770V332Z" fill="#B1B590"/>
+
+    <!-- LEVEL 2 -->
+    <path class="zone" data-level="2" data-info="SH" data-rows="8 แถว (A-H)" data-seats="19 ที่นั่ง/แถว" data-seat-counts="19,19,19,19,19,19,19,19" data-seat-start="1" data-seat-dir="right" data-blindspot="ไม่มีมุมอับ" d="M364 605H451V671H364V605Z" fill="#683496"/>
+    <path class="zone" data-level="2" data-info="SI" data-rows="8 แถว (A-H)" data-seats="14-20 ที่นั่ง/แถว" data-seat-counts="14,15,16,17,17,18,19,20" data-seat-start="1" data-seat-dir="right" data-blindspot="ไม่มีมุมอับ" d="M455.5 607H491.5L514.5 591L548 648L508.5 670.5H455.5V607Z" fill="#683496"/>
+    <path class="zone" data-level="2" data-info="SG" data-rows="8 แถว (A-H)" data-seats="14-20 ที่นั่ง/แถว" data-seat-counts="14,15,16,17,17,18,19,20" data-seat-start="1" data-seat-dir="left" data-blindspot="ไม่มีมุมอับ" d="M265.5 647.5L304.5 671.5H359V606H322.5L297 590.5L265.5 647.5Z" fill="#683496"/>
+    
+    <path class="zone" data-level="2" data-info="SF" data-rows="8 แถว (A-H)" data-seats="17-23 ที่นั่ง/แถว" data-seat-counts="17,18,19,20,20,21,22,23" data-seat-start="1" data-seat-dir="left" data-blindspot="ไม่มีมุมอับ" d="M182 568.5L238.5 534.5L257 564L291.5 587L261.5 643.5L211.5 615.5L182 568.5Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SE" data-rows="8 แถว (A-H)" data-seats="21-27 ที่นั่ง/แถว" data-seat-counts="21,22,23,23,24,25,26,27" data-seat-start="1" data-seat-dir="left" data-blindspot="ไม่มีมุมอับ" d="M147.5 438H215V494L236.5 529.5L180.5 564.5L147.5 514.5V438Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SD" data-rows="8 แถว (A-H)" data-seats="20 ที่นั่ง/แถว" data-seat-counts="20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="left" d="M147.5 334.5H215.5V435.5H147.5V334.5Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SC" data-rows="8 แถว (A-H)" data-seats="20 ที่นั่ง/แถว" data-seat-counts="20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="left" d="M147 230.5H215.5V329.5H147V230.5Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SB" data-rows="8 แถว (A-H)" data-seats="11-20 ที่นั่ง/แถว" data-seat-counts="10,10,10,10,10,10,10,10" data-seat-start="11" data-seat-dir="left" data-blindspot="มุมมองนี้จำกัดการมองเห็น" d="M149 169V225.5H215V169H149Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SJ" data-rows="8 แถว (A-H)" data-seats="17-23 ที่นั่ง/แถว" data-seat-counts="17,18,19,20,20,21,22,23" data-seat-start="1" data-seat-dir="right" data-blindspot="แถว A16, A17 มุมมองโดนจำกัดการมองเห็น" d="M630.5 568.5L574 534.5L555.5 564L521 587L551 643.5L601 615.5L630.5 568.5Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SK" data-rows="8 แถว (A-H)" data-seats="21-27 ที่นั่ง/แถว" data-seat-counts="21,22,23,23,24,25,26,27" data-seat-start="1" data-seat-dir="right" data-blindspot="ไม่มีมุมอับ" d="M665 438H597.5V494L576 529.5L632 564.5L665 514.5V438Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SL" data-rows="8 แถว (A-H)" data-seats="20 ที่นั่ง/แถว" data-seat-counts="20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="right" data-blindspot="ไม่มีมุมอับ" d="M665 334.5H597V435.5H665V334.5Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SM" data-rows="8 แถว (A-H)" data-seats="20 ที่นั่ง/แถว" data-seat-counts="20,20,20,20,20,20,20,20" data-seat-start="1" data-seat-dir="right" data-blindspot="ไม่มีมุมอับ" d="M665.5 230.5H597V329.5H665.5V230.5Z" fill="#E7698F"/>
+    <path class="zone" data-level="2" data-info="SN" data-rows="8 แถว (A-H)" data-seats="11-20 ที่นั่ง/แถว" data-seat-counts="10,10,10,10,10,10,10,10" data-seat-start="11" data-seat-dir="right" data-blindspot="มุมมองนี้จำกัดการมองเห็น" d="M663.5 169V225.5H597.5V169H663.5Z" fill="#E7698F"/>
+
+    <!-- LEVEL 1 -->
+    <path class="zone" data-level="1" data-info="FF" d="M345 524H384V568H345V524Z" fill="#8AC1E7"/>
+    <path class="zone" data-level="1" data-info="HH" d="M435 524H474V568H435V524Z" fill="#8AC1E7"/>
+    <path class="zone" data-level="1" data-info="C3" d="M499.5 456.5H564V476L547.5 504.5H499.5V456.5Z" fill="#8AC1E7"/>
+    <path class="zone" data-level="1" data-info="C1" d="M250.5 456H313.5V505.5H267L250.5 475V456Z" fill="#8AC1E7"/>
+    
+    <path class="zone" data-level="1" data-info="FOH (Control)" d="M390 524H429V568H390V524Z" fill="#4C4C4A"/>
+    
+    <path class="zone" data-level="1" data-info="C2" d="M326 457H486V505.5H326V457Z" fill="#5169A9"/>
+    <path class="zone" data-level="1" data-info="B1" d="M260.232 363L250.5 377.5V445H313.5V363H260.232Z" fill="#5169A9"/>
+    <path class="zone" data-level="1" data-info="B3" d="M554.268 363L564 377.5V445H501V363H554.268Z" fill="#5169A9"/>
+    <path class="zone" data-level="1" data-info="A1" d="M274.5 170L248 202.5V300H292.5V170H274.5Z" fill="#5169A9"/>
+    <path class="zone" data-level="1" data-info="A1" d="M274.5 170L248 202.5V300H292.5V170H274.5Z" fill="#5169A9"/>
+    <path class="zone" data-level="1" data-info="A4" d="M537 171L563.5 203.5V301H519V171H537Z" fill="#5169A9"/>
+    <path class="zone" data-level="1" data-info="A4" d="M537 171L563.5 203.5V301H519V171H537Z" fill="#5169A9"/>
+    
+    <path class="zone" data-level="1" data-info="B2" d="M325.5 369H343.5L371 387H441L469.5 369H487V445H325.5V369Z" fill="#2B2156"/>
+    <path class="zone" data-level="1" data-info="A3" d="M434.5 169.5H509V300H479L434.5 272V169.5Z" fill="#2B2156"/>
+    <path class="zone" data-level="1" data-info="A3" d="M434.5 169.5H509V300H479L434.5 272V169.5Z" fill="#2B2156"/>
+    <path class="zone" data-level="1" data-info="A2" d="M378.5 170H304V300.5H334L378.5 272.5V170Z" fill="#2B2156"/>
+    <path class="zone" data-level="1" data-info="A2" d="M378.5 170H304V300.5H334L378.5 272.5V170Z" fill="#2B2156"/>
+  </svg>
+</div>
+
+<div id="tooltip"></div>
+<div id="zone-card"></div>
+
+<div id="seat-grid-overlay">
+  <button class="sg-close" id="sg-close-btn">&times;</button>
+  <div class="sg-panel">
+  <button class="sg-back" id="sg-back-btn" type="button">&larr; กลับไปที่ผังหลัก</button>
+  <div class="sg-title" id="sg-title"></div>
+  <div class="sg-note">ผังจำลองจากโครงสร้างที่นั่งจริงของฮอลล์ (จำนวนที่นั่ง/แถวโดยประมาณ)</div>
+  <div class="sg-stage">STAGE</div>
+  <div class="sg-scroll-area" id="sg-scroll-area">
+    <div id="sg-body"></div>
+  </div>
+  <div class="sg-zoom-controls">
+    <button id="sg-zoom-out-btn" type="button" aria-label="ซูมออก">&minus;</button>
+    <button id="sg-zoom-in-btn" type="button" aria-label="ซูมเข้า">+</button>
+  </div>
+  <div class="sg-price-note" id="sg-level2-note" style="display:none;margin-top:10px;">แถวแรกของทุกโซนในชั้น 2 จะติดรั้ว อาจทำให้บังการมองเห็นเล็กน้อย</div>
+  <div class="sg-price-note">ราคาที่นั่งแต่ละโซนจะอัปเดตอีกครั้งหลังผังราคาจริงประกาศ</div>
+  </div>
+</div>
+
+<script>
+  const tooltip = document.getElementById('tooltip');
+  const zoneCard = document.getElementById('zone-card');
+  const seatMap = document.getElementById('seat-map');
+  const zones = document.querySelectorAll('.zone');
+  const wrapper = document.getElementById('map-wrapper');
+  let isPovActive = false;
+
+  // ถ้าเพจนี้ถูกฝังใน iframe (เช่นหน้า Where's My Seat) เลื่อนหน้าพาเรนต์ให้เห็นการ์ด/ปุ่มทันที
+  // ไม่ต้องให้ผู้ใช้เลื่อนหาเอง
+  function focusEmbedIntoView(block) {
+    try {
+      const frameEl = window.frameElement;
+      // scroll-margin-bottom บน iframe (กำหนดไว้ที่หน้าพาเรนต์) จะเผื่อพื้นที่แถบเมนูล่าง
+      // แบบ fixed บนมือถือให้เองผ่าน API มาตรฐาน ไม่บังการ์ด/ปุ่ม
+      if (frameEl && frameEl.scrollIntoView) {
+        frameEl.scrollIntoView({ behavior: 'smooth', block: block || 'end', inline: 'nearest' });
+      }
+    } catch (e) { /* cross-origin หรือไม่มีพาเรนต์ - ข้าม */ }
+  }
+
+  // ===== ผังที่นั่งรายโซน (จำลองจากโครงสร้างที่นั่งจริงของฮอลล์) =====
+  const seatGridOverlay = document.getElementById('seat-grid-overlay');
+  const sgTitle = document.getElementById('sg-title');
+  const sgBody = document.getElementById('sg-body');
+  const sgScrollArea = document.getElementById('sg-scroll-area');
+
+  let sgZoom = 1;
+  function applySgZoom() { sgBody.style.transform = `scale(${sgZoom})`; }
+  document.getElementById('sg-zoom-in-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    sgZoom = Math.min(sgZoom + 0.25, 2.5);
+    applySgZoom();
+  });
+  document.getElementById('sg-zoom-out-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    sgZoom = Math.max(sgZoom - 0.25, 0.5);
+    applySgZoom();
+  });
+
+  function closeSeatGrid() {
+    seatGridOverlay.classList.remove('show');
+    setTimeout(() => { seatGridOverlay.style.display = 'none'; }, 240);
+  }
+  document.getElementById('sg-close-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeSeatGrid();
+  });
+  document.getElementById('sg-back-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeSeatGrid();
+  });
+
+  function rangeLetters(a, b) {
+    const res = [];
+    for (let c = a.charCodeAt(0); c <= b.charCodeAt(0); c++) res.push(String.fromCharCode(c));
+    return res;
+  }
+
+  function parseRows(rowsStr) {
+    // "8 แถว (A-H)" / "18 แถว (AA, A-Q)" / "20-21 แถว (A-T/U)"
+    const m = rowsStr.match(/\(([^)]+)\)/);
+    if (!m) return ['A'];
+    const inner = m[1];
+    let rows = [];
+    if (inner.includes(',')) {
+      inner.split(',').map(s => s.trim()).forEach(p => {
+        if (p.includes('-')) {
+          const [a, b] = p.split('-').map(s => s.trim());
+          rows = rows.concat(rangeLetters(a, b));
+        } else {
+          rows.push(p);
+        }
+      });
+    } else {
+      const range = inner.split('/')[0];
+      const [a, b] = range.split('-').map(s => s.trim());
+      rows = rangeLetters(a, b);
+    }
+    return rows;
+  }
+
+  function parseSeatRange(seatsStr) {
+    const nums = (seatsStr.match(/\d+/g) || []).map(Number);
+    if (nums.length >= 2) return { min: nums[0], max: nums[1] };
+    if (nums.length === 1) return { min: nums[0], max: nums[0] };
+    return { min: 10, max: 10 };
+  }
+
+  // จำนวนที่นั่งต่อแถว: ใช้ data-seat-counts (ตัวเลขจริงต่อแถว) ถ้ามี
+  // ถ้ายังไม่มี (โซนที่ยังไม่ได้รับข้อมูลจริง) จะประมาณแบบเส้นตรงจาก data-seats (min-max) แทน
+  function getSeatCounts(zone, rows) {
+    const countsAttr = zone.getAttribute('data-seat-counts');
+    if (countsAttr) {
+      return countsAttr.split(',').map(n => parseInt(n.trim(), 10));
+    }
+    const { min, max } = parseSeatRange(zone.getAttribute('data-seats') || '');
+    return rows.map((_, i) => Math.round(min + (max - min) * (i / Math.max(rows.length - 1, 1))));
+  }
+
+  function openSeatGrid(zone) {
+    const info = zone.getAttribute('data-info');
+    const rowsStr = zone.getAttribute('data-rows');
+    const seatsStr = zone.getAttribute('data-seats') || '';
+    const rows = parseRows(rowsStr);
+    const counts = getSeatCounts(zone, rows);
+    const seatStart = parseInt(zone.getAttribute('data-seat-start') || '1', 10);
+    const dir = zone.getAttribute('data-seat-dir') || 'left';
+    const level = zone.getAttribute('data-level');
+    const hasAisle = seatsStr.includes('ทางเดินคั่น');
+
+    const maxCount = Math.max(...counts);
+
+    let html = '';
+    rows.forEach((r, i) => {
+      const count = counts[i] || counts[counts.length - 1] || 10;
+      const half = Math.round(count / 2);
+      const seatNums = [];
+      for (let s = 0; s < count; s++) seatNums.push(seatStart + s);
+      if (dir === 'right') seatNums.reverse();
+      let leadGap, trailGap;
+      if (level === '2') {
+        // ชั้น 2: ที่นั่งเลขน้อยสุดของทุกแถวชิดกันเป็นแนวเดียว (ชิดขวาถ้า dir=right, ชิดซ้ายถ้า dir=left)
+        const gap = maxCount - count;
+        leadGap = dir === 'right' ? gap : 0;
+        trailGap = dir === 'right' ? 0 : gap;
+      } else {
+        // ชั้น 3: แถวที่สั้นกว่าแถวยาวสุดของโซนจะจัดกึ่งกลางแนวนอน (ตามผังจริงที่แถวหน้าสุดมักแคบกว่าแถวหลัง)
+        leadGap = Math.floor((maxCount - count) / 2);
+        trailGap = maxCount - count - leadGap;
+      }
+      let dots = '<span class="seat-spacer"></span>'.repeat(leadGap);
+      seatNums.forEach((num, idx) => {
+        dots += `<span class="seat-dot" data-row="${r}" data-seat="${num}">${num}</span>`;
+        if (hasAisle && idx + 1 === half) dots += '<span class="seat-aisle"></span>';
+      });
+      dots += '<span class="seat-spacer"></span>'.repeat(trailGap);
+      html += `<div class="seat-row"><span class="row-label">${r}</span><div class="seat-dots">${dots}</div><span class="row-label">${r}</span></div>`;
+    });
+
+    sgTitle.textContent = `โซน ${info}`;
+    sgBody.innerHTML = html;
+
+    const level2Note = document.getElementById('sg-level2-note');
+    if (level2Note) level2Note.style.display = level === '2' ? 'block' : 'none';
+
+    sgZoom = 1;
+    applySgZoom();
+    if (sgScrollArea) { sgScrollArea.scrollLeft = 0; sgScrollArea.scrollTop = 0; }
+
+    // โมดัลนี้สูงและเริ่มเนื้อหาจากด้านบน (ปุ่มย้อนกลับ + ชื่อโซน) ต่างจากการ์ดเล็กที่ยึดขอบล่าง
+    // จึงเลื่อนให้เห็น "บนสุด" ของโมดัลแทนขอบล่าง
+    focusEmbedIntoView('start');
+    seatGridOverlay.style.display = 'flex';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        seatGridOverlay.classList.add('show');
+        const panel = seatGridOverlay.querySelector('.sg-panel');
+        if (panel) panel.scrollTop = 0; // เริ่มที่หัวข้อ "โซน X" เสมอเวลาเปิดใหม่
+      });
+    });
+  }
+
+  // ตั้งค่ามุมกล้อง (ปรับ 10 องศาตามรีเควสต์)
+  const povConfigs = {
+    '1': { maxScale: 6.5, rotateX: 82 }, // ชั้น 1 แบนราบสุด
+    '2': { maxScale: 5.0, rotateX: 75 }, // ชั้น 2 
+    '3': { maxScale: 3.5, rotateX: 65 }  // ชั้น 3 สูงสุด
+  };
+
+  const zonePriceByFill = {
+    '#2B2156': 6900,
+    '#5169A9': 5900,
+    '#8AC1E7': 5500,
+    '#683496': 5000,
+    '#E7698F': 4500,
+    '#787E7A': 3000,
+    '#B1B590': 2000,
+    '#D9E1D2': 1500,
+  };
+
+  zones.forEach(zone => {
+    // 1. ระบบ Tooltip
+    zone.addEventListener('mousemove', (e) => {
+      if (isPovActive) return;
+      const info = zone.getAttribute('data-info');
+      const level = zone.getAttribute('data-level');
+      const fill = (zone.getAttribute('fill') || '').toUpperCase();
+      const price = zonePriceByFill[fill];
+      let html = `<strong style="color:#00f2fe;">โซน ${info}</strong> · ชั้น ${level}`;
+      html += `<br>${price ? price.toLocaleString('th-TH') + ' บาท' : 'ราคาจะประกาศเร็วๆ นี้'}`;
+      tooltip.innerHTML = html;
+      tooltip.style.left = (e.clientX + 16) + 'px';
+      tooltip.style.top = (e.clientY + 16) + 'px';
+      tooltip.style.opacity = '1';
+    });
+
+    zone.addEventListener('mouseleave', () => tooltip.style.opacity = '0');
+
+    // 2. โลจิก 3D POV - Perfect Center Mathematical Approach
+    zone.addEventListener('click', (e) => {
+      e.stopPropagation();
+      tooltip.style.opacity = '0';
+
+      zones.forEach(z => z.classList.remove('selected'));
+      zone.classList.add('selected');
+
+      // แสดงการ์ดข้อมูลโซนค้างไว้ (ใช้ได้ทั้งคลิกและแตะบนมือถือ)
+      const zInfo = zone.getAttribute('data-info');
+      const zLevel = zone.getAttribute('data-level');
+      const zRows = zone.getAttribute('data-rows');
+      const zSeats = zone.getAttribute('data-seats');
+      const zBlindspot = zone.getAttribute('data-blindspot');
+      let cardHtml = `<div class="zc-name">โซน ${zInfo}</div><div class="zc-level">ชั้น ${zLevel}</div>`;
+      if (zBlindspot) {
+        const isOk = zBlindspot.indexOf('ไม่มี') === 0;
+        cardHtml += `<div class="zc-blindspot${isOk ? ' ok' : ''}">${zBlindspot}</div>`;
+      } else if (zRows) {
+        cardHtml += `<div class="zc-blindspot pending">ยังไม่มีข้อมูลมุมอับสำหรับโซนนี้</div>`;
+      }
+      if (zRows && zSeats) cardHtml += `<button id="zc-view-btn" type="button">ดูผังที่นั่ง</button>`;
+      cardHtml += `<button id="zc-reset-btn" type="button">กลับไปที่ผังคอนเสิร์ต</button>`;
+      zoneCard.innerHTML = cardHtml;
+      zoneCard.classList.add('show');
+      focusEmbedIntoView();
+
+      const viewBtn = document.getElementById('zc-view-btn');
+      if (viewBtn) {
+        viewBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          openSeatGrid(zone);
+        });
+      }
+      const resetBtn = document.getElementById('zc-reset-btn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          resetMap();
+        });
+      }
+
+      // พิกัดของ SVG ดั้งเดิม (กึ่งกลางของ ViewBox)
+      const svgW = 816;
+      const svgH = 829;
+      const OX = svgW / 2; // 408
+      const OY = svgH / 2; // 414.5
+
+      // พิกัดกึ่งกลางของที่นั่งที่คลิก
+      const bbox = zone.getBBox();
+      const cx = bbox.x + (bbox.width / 2);
+      const cy = bbox.y + (bbox.height / 2);
+
+      // พิกัดกึ่งกลางเวที (จุดเป้าหมายให้กล้องหันหา)
+      const stageX = 408; 
+      const stageY = 180; 
+
+      // 1. คำนวณองศาหมุนหาเวที (RotateZ)
+      const angleRad = Math.atan2(stageY - cy, stageX - cx);
+      const rotZ = -90 - (angleRad * 180 / Math.PI);
+
+      // ดึงการตั้งค่าตามชั้น
+      const level = zone.getAttribute('data-level');
+      const config = povConfigs[level] || povConfigs['1'];
+      const rotZ_rad = rotZ * Math.PI / 180;
+      const rotX_rad = config.rotateX * Math.PI / 180;
+
+      // 2. === ระบบ Auto-Fit คำนวณสเกลซูม ===
+      // ใช้ความกว้างจริงของแผนที่บนหน้าจอมาคำนวณ
+      const baseSvgWidth = Math.min(wrapper.clientWidth, 650);
+      const cssPxPerSvgUnit = baseSvgWidth / svgW;
+      
+      const physicalDistToStage = Math.sqrt(Math.pow(stageX - cx, 2) + Math.pow(stageY - cy, 2)) * cssPxPerSvgUnit;
+      
+      const wrapperH = wrapper.offsetHeight;
+      const seatTargetY = wrapperH * 0.85; // ดันที่นั่งไปอยู่ล่างสุดที่ 85% ของหน้าจอ 
+      const stageMinY = 140; // ป้องกันเวทีทะลุไปโดนข้อความด้านบนสุด
+      const maxScreenDist = seatTargetY - stageMinY;
+
+      // คำนวณสเกลให้พอดีเป๊ะ
+      let scale = maxScreenDist / (physicalDistToStage * Math.cos(rotX_rad));
+      scale = Math.min(config.maxScale, Math.max(1, scale));
+
+      // 3. === ระบบ Perfect Center (คณิตศาสตร์เวคเตอร์) ===
+      // คำนวณหาตำแหน่งว่าพิกัดที่นั่ง จะกระเด็นไปอยู่ที่ไหนบนหน้าจอหลังจากถูกหมุนและซูม
+      const Vx = cx - OX;
+      const Vy = cy - OY;
+
+      // หมุน Z
+      const Vx_rotZ = Vx * Math.cos(rotZ_rad) - Vy * Math.sin(rotZ_rad);
+      const Vy_rotZ = Vx * Math.sin(rotZ_rad) + Vy * Math.cos(rotZ_rad);
+
+      // หมุน X
+      const Vx_rotX = Vx_rotZ;
+      const Vy_rotX = Vy_rotZ * Math.cos(rotX_rad);
+
+      // แปลงเป็นพิกัดจริงบนหน้าจอ
+      const finalSeatX_px = Vx_rotX * cssPxPerSvgUnit * scale;
+      const finalSeatY_px = Vy_rotX * cssPxPerSvgUnit * scale;
+
+      // เราต้องการให้ที่นั่งอยู่ "ตรงกลางจอแนวนอนเป๊ะ" และ "แนวตั้งอยู่ที่ 85% ด้านล่าง"
+      const pixelOffsetY = seatTargetY - (wrapperH / 2);
+      const translateX = -finalSeatX_px;
+      const translateY = pixelOffsetY - finalSeatY_px;
+
+      // สั่งทำงาน!
+      seatMap.style.transition = 'transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)';
+      seatMap.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale}) rotateX(${config.rotateX}deg) rotateZ(${rotZ}deg)`;
+
+      isPovActive = true;
+    });
+  });
+
+  // คลิกพื้นที่สีดำ หรือปุ่ม "กลับไปที่ผังหลัก" เพื่อรีเซ็ต
+  function resetMap() {
+    if (isPovActive) {
+      seatMap.style.transform = 'translate(0px, 0px) scale(1) rotateX(0deg) rotateZ(0deg)';
+      zones.forEach(z => z.classList.remove('selected'));
+      zoneCard.classList.remove('show');
+      isPovActive = false;
+    }
+  }
+
+  wrapper.addEventListener('click', () => {
+    resetMap();
+  });
+
+  // ===== ค้นหาที่นั่ง =====
+  function findZoneByCode(code) {
+    const target = (code || '').trim().toUpperCase();
+    if (!target) return null;
+    return [...zones].find(z => (z.getAttribute('data-info') || '').toUpperCase() === target);
+  }
+
+  // รายชื่อโซนทั้งหมดที่มีที่นั่งให้ค้นหา (ไม่รวม FOH ที่ไม่มีที่นั่ง) เรียงตามชั้น 1 → 2 → 3
+  const allZoneCodes = [...new Set(
+    [...zones]
+      .filter(z => z.getAttribute('data-level') !== '1' || !/FOH/i.test(z.getAttribute('data-info') || ''))
+      .map(z => z.getAttribute('data-info'))
+  )].sort((a, b) => {
+    const za = findZoneByCode(a), zb = findZoneByCode(b);
+    const la = za.getAttribute('data-level'), lb = zb.getAttribute('data-level');
+    if (la !== lb) return la.localeCompare(lb);
+    return a.localeCompare(b);
+  });
+
+  let selectedZone = null;
+
+  // combobox แบบพิมพ์-ค้นหา ใช้ได้ทั้งโซนและแถว
+  function setupCombobox(inputId, dropdownId, clearId, getOptions, onSelect) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    const clearBtn = document.getElementById(clearId);
+    const field = input.closest('.ssb-field');
+
+    function setValue(val) {
+      input.value = val || '';
+      field.classList.toggle('has-value', !!val);
+    }
+
+    function renderOptions(filter) {
+      const q = (filter || '').trim().toUpperCase();
+      const options = getOptions().filter(opt => !q || opt.toUpperCase().includes(q));
+      dropdown.innerHTML = '';
+      if (options.length === 0) {
+        dropdown.innerHTML = '<div class="ssb-empty">ไม่พบตัวเลือก</div>';
+      } else {
+        options.forEach(opt => {
+          const item = document.createElement('div');
+          item.className = 'ssb-option';
+          item.textContent = opt;
+          item.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            setValue(opt);
+            dropdown.classList.remove('show');
+            onSelect(opt);
+          });
+          dropdown.appendChild(item);
+        });
+      }
+      dropdown.classList.add('show');
+    }
+
+    input.addEventListener('focus', () => { if (!input.disabled) renderOptions(input.value); });
+    input.addEventListener('input', () => { field.classList.toggle('has-value', !!input.value); onSelect(null, true); renderOptions(input.value); });
+    input.addEventListener('blur', () => { setTimeout(() => dropdown.classList.remove('show'), 120); });
+    input.addEventListener('click', (e) => e.stopPropagation());
+    clearBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setValue('');
+      onSelect(null, true);
+      input.focus();
+      renderOptions('');
+    });
+
+    return { setValue };
+  }
+
+  setupCombobox('search-zone', 'search-zone-dropdown', 'search-zone-clear', () => allZoneCodes, (opt, isTyping) => {
+    const rowInput = document.getElementById('search-row');
+    const rowField = rowInput.closest('.ssb-field');
+    if (isTyping) {
+      selectedZone = null;
+      rowInput.disabled = true;
+      rowInput.value = '';
+      rowField.classList.remove('has-value');
+      rowInput.placeholder = 'เลือกโซนก่อน';
+      return;
+    }
+    selectedZone = findZoneByCode(opt);
+    if (selectedZone) {
+      rowInput.disabled = false;
+      rowInput.value = '';
+      rowField.classList.remove('has-value');
+      rowInput.placeholder = 'เลือกแถว';
+    }
+  });
+
+  setupCombobox('search-row', 'search-row-dropdown', 'search-row-clear', () => {
+    if (!selectedZone) return [];
+    return parseRows(selectedZone.getAttribute('data-rows'));
+  }, () => {});
+
+  function runSeatSearch() {
+    const errorEl = document.getElementById('seat-search-error');
+    document.querySelectorAll('.seat-dot-highlight').forEach(d => d.classList.remove('seat-dot-highlight'));
+
+    const zoneVal = document.getElementById('search-zone').value.trim();
+    const rowVal = document.getElementById('search-row').value.trim();
+    const seatVal = document.getElementById('search-seat').value.trim();
+
+    if (!zoneVal || !rowVal || !seatVal) {
+      errorEl.textContent = 'กรุณาเลือกโซน แถว และกรอกเลขที่นั่งให้ครบ';
+      return;
+    }
+    const zone = findZoneByCode(zoneVal);
+    if (!zone) {
+      errorEl.textContent = `ไม่พบโซน "${zoneVal}" กรุณาเลือกจากรายการ`;
+      return;
+    }
+
+    const rowTarget = rowVal.toUpperCase();
+    const isCleanInteger = /^\d+$/.test(seatVal);
+    const seatTarget = isCleanInteger ? parseInt(seatVal, 10) : NaN;
+    const rows = parseRows(zone.getAttribute('data-rows'));
+    const rowIdx = rows.indexOf(rowTarget);
+    let seatIsValid = false;
+    if (isCleanInteger && rowIdx !== -1) {
+      const counts = getSeatCounts(zone, rows);
+      const count = counts[rowIdx];
+      const seatStart = parseInt(zone.getAttribute('data-seat-start') || '1', 10);
+      seatIsValid = seatTarget >= seatStart && seatTarget < seatStart + count;
+    }
+
+    if (!seatIsValid) {
+      errorEl.textContent = `ไม่พบที่นั่งแถว ${rowTarget} เลข ${seatVal} ในโซน ${zone.getAttribute('data-info')} โปรดตรวจสอบข้อมูลใหม่อีกครั้ง`;
+      return;
+    }
+
+    errorEl.textContent = '';
+    openSeatGrid(zone);
+
+    setTimeout(() => {
+      const dot = sgBody.querySelector(`.seat-dot[data-row="${rowTarget}"][data-seat="${seatTarget}"]`);
+      if (dot) {
+        dot.classList.add('seat-dot-highlight');
+        // เลื่อนเฉพาะแถบเลื่อนแนวนอน/แนวตั้งของกริดที่นั่งเท่านั้น ไม่แตะ scroll ของ panel หลัก
+        // (native scrollIntoView จะไล่เลื่อนทุก ancestor ที่ scroll ได้ ทำให้ panel เลื่อนไปกลางๆ ด้วย)
+        const scrollLeftTarget = sgScrollArea.scrollLeft + dot.getBoundingClientRect().left + dot.offsetWidth / 2 - sgScrollArea.getBoundingClientRect().left - sgScrollArea.clientWidth / 2;
+        const scrollTopTarget = sgScrollArea.scrollTop + dot.getBoundingClientRect().top + dot.offsetHeight / 2 - sgScrollArea.getBoundingClientRect().top - sgScrollArea.clientHeight / 2;
+        sgScrollArea.scrollTo({ left: scrollLeftTarget, top: scrollTopTarget, behavior: 'smooth' });
+      }
+    }, 400);
+  }
+
+  document.getElementById('seat-search-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    runSeatSearch();
+  });
+  document.getElementById('search-seat').addEventListener('click', (e) => e.stopPropagation());
+  document.getElementById('search-seat').addEventListener('input', (e) => {
+    e.target.closest('.ssb-field').classList.toggle('has-value', !!e.target.value);
+  });
+  document.getElementById('search-seat').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') runSeatSearch();
+  });
+
+</script>
+
+</body>
+</html>

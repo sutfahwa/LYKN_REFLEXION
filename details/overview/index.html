@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รายละเอียดคอนเสิร์ต — LYKN Reflexion Concert</title>
+<meta name="description" content="LYKN Reflexion Concert — 24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี รายละเอียดบัตร ผังที่นั่ง และกำหนดการ">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-512.png">
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon.ico">
+<link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/apple-touch-icon.png">
+<meta property="og:title" content="LYKN Reflexion Concert">
+<meta property="og:description" content="24-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/logo.png">
+<meta property="og:type" content="website">
+<script>
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
+    var robotsMeta = document.createElement('meta');
+    robotsMeta.name = 'robots';
+    robotsMeta.content = 'noindex, nofollow';
+    document.head.appendChild(robotsMeta);
+    document.title = '[TEST] ' + document.title;
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/support.js"></script>
+<script src="/shared/nav.js"></script>
+<script src="/shared/translations.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/base.css">
+</helmet>
+
+<div style="min-height:100vh;background:#000000;color:#f2f7f6;padding-bottom:40px">
+
+  <nav style="display:flex;position:fixed;top:0;left:0;right:0;z-index:50;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(5,13,16,0.88);backdrop-filter:blur(8px);border-bottom:1px solid rgba(111,224,214,0.15)">
+    <a href="/index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+      <img src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/lykn-nav-logo.png" alt="LYKN" style="height:36px;cursor:pointer;display:block">
+      <span style="color:#eafffb;font-size:14px;font-weight:600">{{ homeLabel }}</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="position:relative">
+        <button type="button" class="hamburger-btn" onClick="{{ toggleMenu }}" aria-label="Menu" style="width:38px;height:38px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.06);color:#eafffb;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">☰</button>
+        <sc-if value="{{ isMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:59" onClick="{{ closeMenu }}"></div>
+          <div style="position:absolute;top:calc(100% + 8px);right:0;z-index:60;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;min-width:210px;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+            <sc-for list="{{ menuItems }}" as="item" hint-placeholder-count="5">
+              <a href="{{ item.href }}" class="menu-item" style="display:block;padding:11px 14px;border-radius:8px;font-size:14.5px;font-weight:500;background:{{ item.bg }};color:{{ item.color }};text-decoration:none">{{ item.label }}</a>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position:relative">
+        <button type="button" class="hamburger-btn" onClick="{{ toggleLangMenu }}" aria-label="Language" style="display:flex;align-items:center;gap:6px;height:38px;padding:0 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.06);color:#eafffb;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+          <span style="font-size:15px">{{ langSelector.currentFlag }}</span>
+          <span>{{ langSelector.currentShortLabel }}</span>
+          <span style="font-size:9px;color:#8ea6a3">▼</span>
+        </button>
+        <sc-if value="{{ isLangMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:59" onClick="{{ closeLangMenu }}"></div>
+          <div style="position:absolute;top:calc(100% + 8px);right:0;z-index:60;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;min-width:170px;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+            <sc-for list="{{ langSelector.options }}" as="opt" hint-placeholder-count="2">
+              <div onClick="{{ opt.onClick }}" class="menu-item" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
+                <span style="font-size:16px">{{ opt.flag }}</span>
+                <span>{{ opt.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top:66px;max-width:1100px;margin:0 auto">
+
+    <section style="padding:28px 20px 60px">
+      <h1 style="font-size:30px;font-weight:700;margin:0 0 6px">{{ t.details.title }}</h1>
+      <p style="color:#6fe0d6;font-size:19px;font-weight:600;letter-spacing:0.5px;margin:0 0 24px">{{ t.details.subtitle }}</p>
+
+      <div style="display:inline-flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:4px;margin-bottom:28px">
+        <sc-for list="{{ detailsTabs }}" as="tb" hint-placeholder-count="2">
+          <a href="{{ tb.href }}" style="padding:9px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:{{ tb.bg }};color:{{ tb.color }};text-decoration:none;display:inline-block">{{ tb.label }}</a>
+        </sc-for>
+      </div>
+
+      <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">{{ t.details.venueHeading }}</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:32px">
+        <sc-for list="{{ venues }}" as="v" hint-placeholder-count="3">
+          <div style="flex:{{ v.flex }};min-width:{{ v.minWidth }};background:{{ v.bg }};border:{{ v.border }};box-shadow:{{ v.shadow }};border-radius:14px;padding:{{ v.padding }}">
+            <div style="font-weight:700;font-size:{{ v.nameSize }};margin-bottom:10px;color:{{ v.nameColor }}">{{ v.name }}</div>
+            <sc-for list="{{ v.lines }}" as="ln" hint-placeholder-count="3">
+              <div style="display:flex;gap:8px;font-size:15px;color:#c7ddda;line-height:1.6;margin-bottom:4px"><span>{{ ln.icon }}</span><span>{{ ln.text }}</span></div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+
+      <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">{{ t.details.priceHeading }}</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:32px">
+        <div style="flex:1 1 420px;min-width:300px">
+          <div style="border-radius:12px;overflow:hidden;margin-bottom:16px">
+            <img src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/seatplan-final.png" alt="{{ t.details.seatplanAlt }}" loading="lazy" style="width:100%;height:auto;display:block">
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ priceLegend }}" as="lg" hint-placeholder-count="7">
+              <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border-radius:8px;padding:5px 10px">
+                <div style="width:12px;height:12px;border-radius:3px;background:{{ lg.color }}"></div>
+                <div style="font-size:12px;color:#eafffb">{{ lg.price }} {{ t.currency }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:1 1 260px;min-width:260px;display:flex;flex-direction:column;gap:16px">
+          <sc-for list="{{ ticketGroups }}" as="g" hint-placeholder-count="3">
+            <div style="background:rgba(79,195,187,0.14);border:1px solid rgba(111,224,214,0.3);border-radius:14px;padding:20px">
+              <div style="font-weight:700;font-size:15px;letter-spacing:0.5px;margin-bottom:10px">{{ g.title }}</div>
+              <sc-for list="{{ g.lines }}" as="pl" hint-placeholder-count="2">
+                <div style="font-size:14px;line-height:1.9;color:#eafffb">{{ pl }}</div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">{{ t.details.channelHeading }}</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:32px">
+        <sc-for list="{{ channelGroups }}" as="cg" hint-placeholder-count="2">
+          <div style="flex:1;min-width:260px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px">
+            <div style="font-weight:700;font-size:15px;color:#6fe0d6;margin-bottom:4px">{{ cg.title }}</div>
+            <div style="font-size: 16px; color: #FFFFFF; margin-bottom: 12px">{{ t.details.openSaleLabel }} {{ cg.dateNote }}</div>
+            <sc-for list="{{ cg.items }}" as="it" hint-placeholder-count="3">
+              <div style="display:flex;gap:8px;align-items:center;font-size:14px;padding:6px 0;border-top:1px solid rgba(255,255,255,0.06)"><span>{{ it.icon }}</span><span>{{ it.label }}</span></div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+
+
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:36px">
+        <div onClick="{{ openBuyModal }}" style="background:{{ buyBtnBg }};border:1px solid #6fe0d6;color:{{ buyBtnColor }};font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all 0.15s">{{ t.details.buyBtn }}</div>
+        <div onClick="{{ openPickupModal }}" style="background:{{ pickupBtnBg }};border:1px solid #6fe0d6;color:{{ pickupBtnColor }};font-weight:600;font-size:15px;padding:13px 24px;border-radius:10px;cursor:pointer;transition:all 0.15s">{{ t.details.pickupBtn }}</div>
+      </div>
+
+      <h2 style="font-size:20px;font-weight:600;margin:0 0 12px;color:#6fe0d6">{{ t.fanBenefit.heading }}</h2>
+      <div style="overflow-x:auto;margin-bottom:32px;border-radius:12px;border:1px solid rgba(255,255,255,0.1)">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap">
+          <thead>
+            <tr style="background:#0891b2">
+              <th style="text-align:left;padding:10px 14px;color:#fff;font-weight:700;position:sticky;left:0;background:#0891b2">{{ t.fanBenefit.ticketPricesCol }}</th>
+              <sc-for list="{{ fanBenefitPrices }}" as="p" hint-placeholder-count="8">
+                <th style="padding:10px 14px;color:#fff;font-weight:700">{{ p }}</th>
+              </sc-for>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ fanBenefitRows }}" as="row" hint-placeholder-count="7">
+              <tr style="background:rgba(111,224,214,0.06)">
+                <td style="text-align:left;padding:10px 14px;font-weight:600;color:#6fe0d6;position:sticky;left:0;background:#0c2226;border-top:1px solid rgba(255,255,255,0.08)">{{ row.label }}</td>
+                <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="8">
+                  <td style="text-align:center;padding:10px 14px;color:#eafffb;border-top:1px solid rgba(255,255,255,0.08)">{{ c }}</td>
+                </sc-for>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <h2 style="font-size:20px;font-weight:600;margin:0;color:#6fe0d6">{{ t.details.scheduleHeading }}</h2>
+        <div onClick="{{ downloadIcs }}" style="display:flex;align-items:center;gap:6px;background:rgba(111,224,214,0.12);border:1px solid rgba(111,224,214,0.4);color:#6fe0d6;font-weight:600;font-size:13px;padding:8px 14px;border-radius:20px;cursor:pointer;white-space:nowrap">{{ t.details.addCalendarBtn }}</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:8px 20px">
+        <sc-for list="{{ groupedSchedule }}" as="grp" hint-placeholder-count="6">
+          <div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08)">
+            <div style="font-weight:700;font-size:14px;color:#6fe0d6;margin-bottom:6px">{{ grp.dateLabel }}</div>
+            <sc-for list="{{ grp.items }}" as="item" hint-placeholder-count="3">
+              <div style="display:flex;gap:16px;padding:6px 0;opacity:{{ item.opacity }}">
+                <div style="min-width:90px;font-weight:600;color:#ffd400;text-decoration:{{ item.strike }}">{{ item.time }}</div>
+                <div style="font-size:14.5px;text-decoration:{{ item.strike }}">{{ item.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+
+      <h2 style="font-size:20px;font-weight:600;margin:32px 0 14px;color:#6fe0d6">{{ t.details.rulesHeading }}</h2>
+      <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:20px 24px">
+        <ul style="padding-left:20px;margin:0;font-size:14.5px;line-height:1.9;color:#dcece9">
+          <sc-for list="{{ t.details.rules }}" as="r" hint-placeholder-count="7">
+            <li>{{ r }}</li>
+          </sc-for>
+        </ul>
+        <div style="font-size:12.5px;color:#8ea6a3;margin-top:14px">{{ t.details.rulesNote }}</div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- BUY MODAL -->
+  <sc-if value="{{ isBuyModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:32px;max-width:640px;width:100%;max-height:88vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:16px">{{ t.buyModal.title }}</div>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.limitLabel }}</div>
+        <ul style="padding-left:20px;margin:0 0 18px;font-size:14.5px;line-height:1.8;color:#eafffb">
+          <sc-for list="{{ t.buyModal.limits }}" as="l" hint-placeholder-count="2">
+            <li>{{ l }}</li>
+          </sc-for>
+        </ul>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.paymentLabel }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+          <sc-for list="{{ paymentMethods }}" as="pm" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 12px">
+              <span style="font-size:15px">{{ pm.icon }}</span>
+              <span style="font-size:13px;color:#eafffb">{{ pm.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:13px;font-weight:700;color:#a9c4c2;letter-spacing:0.5px;margin-bottom:8px">{{ t.buyModal.priceFeeLabel }}</div>
+        <div style="overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.1);margin-bottom:4px">
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+            <thead>
+              <tr style="background:#0891b2">
+                <th style="padding:8px 12px;color:#fff;font-weight:700;text-align:left">{{ t.buyModal.priceCol }}</th>
+                <th style="padding:8px 12px;color:#fff;font-weight:700;text-align:right">{{ t.buyModal.priceFeeCol }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ priceWithFee }}" as="pf" hint-placeholder-count="8">
+                <tr style="background:rgba(111,224,214,0.06)">
+                  <td style="padding:8px 12px;color:#eafffb;border-top:1px solid rgba(255,255,255,0.08)">{{ pf.base }} {{ t.currency }}</td>
+                  <td style="padding:8px 12px;color:#ffd400;font-weight:600;text-align:right;border-top:1px solid rgba(255,255,255,0.08)">{{ pf.total }} {{ t.currency }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+
+        <div onClick="{{ closeModal }}" style="margin-top:22px;text-align:center;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">{{ t.buyModal.close }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- PICKUP MODAL -->
+  <sc-if value="{{ isPickupModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:32px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:16px">{{ t.pickupModal.title }}</div>
+        <ul style="padding-left:20px;margin:0 0 20px;font-size:14.5px;line-height:1.9;color:#eafffb">
+          <sc-for list="{{ t.pickupModal.rules }}" as="r" hint-placeholder-count="4">
+            <li>{{ r }}</li>
+          </sc-for>
+        </ul>
+        <div style="background:#f5f7f6;border-radius:14px;padding:20px;margin-bottom:6px">
+          <div style="font-size:15px;font-weight:700;color:#0c2226;margin-bottom:12px">{{ t.pickupModal.caseLabel }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.ownerLabel }}</div>
+              <div style="position:relative">
+                <div onClick="{{ pickupOwnerDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                  <span>{{ pickupOwnerDropdown.currentLabel }}</span>
+                  <span style="color:#8a9997;font-size:10px">▼</span>
+                </div>
+                <sc-if value="{{ pickupOwnerDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
+                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
+                    <sc-for list="{{ pickupOwnerDropdown.options }}" as="opt" hint-placeholder-count="2">
+                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
+                        <span>{{ opt.label }}</span>
+                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
+                          <span style="color:#0891b2;font-weight:700">✓</span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.bookedLabel }}</div>
+              <div style="position:relative">
+                <div onClick="{{ pickupBookedIdDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                  <span>{{ pickupBookedIdDropdown.currentLabel }}</span>
+                  <span style="color:#8a9997;font-size:10px">▼</span>
+                </div>
+                <sc-if value="{{ pickupBookedIdDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
+                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
+                    <sc-for list="{{ pickupBookedIdDropdown.options }}" as="opt" hint-placeholder-count="2">
+                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
+                        <span>{{ opt.label }}</span>
+                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
+                          <span style="color:#0891b2;font-weight:700">✓</span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+            <div style="flex:1;min-width:140px">
+              <div style="font-size:12px;color:#4a5a58;margin-bottom:4px">{{ t.pickupModal.pickerLabel }}</div>
+              <div style="position:relative">
+                <div onClick="{{ pickupPickerDropdown.toggle }}" style="width:100%;box-sizing:border-box;background:#fff;color:#0c2226;border:1px solid rgba(12,34,38,0.2);border-radius:8px;padding:9px 10px;font-family:'Noto Sans Thai',sans-serif;font-size:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+                  <span>{{ pickupPickerDropdown.currentLabel }}</span>
+                  <span style="color:#8a9997;font-size:10px">▼</span>
+                </div>
+                <sc-if value="{{ pickupPickerDropdown.isOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:fixed;inset:0;z-index:60" onClick="{{ closeDropdown }}"></div>
+                  <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid rgba(12,34,38,0.15);border-radius:10px;padding:6px;z-index:61;box-shadow:0 14px 30px rgba(0,0,0,0.18);max-height:220px;overflow-y:auto" onClick="{{ stopProp }}">
+                    <sc-for list="{{ pickupPickerDropdown.options }}" as="opt" hint-placeholder-count="3">
+                      <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;background:{{ opt.bg }};color:{{ opt.color }}">
+                        <span>{{ opt.label }}</span>
+                        <sc-if value="{{ opt.selected }}" hint-placeholder-val="{{ false }}">
+                          <span style="color:#0891b2;font-weight:700">✓</span>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+
+        <sc-if value="{{ pickupResult }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#0891b2;border-radius:10px;padding:12px 14px;margin-bottom:10px">
+            <div style="font-size:13px;color:#e0f7fa;font-weight:700;margin-bottom:6px">{{ t.pickupModal.docsLabel }}</div>
+            <ul style="padding-left:18px;margin:0;font-size:13.5px;line-height:1.7;color:#dcece9">
+              <sc-for list="{{ pickupResult }}" as="d" hint-placeholder-count="3">
+                <li>{{ d }}</li>
+              </sc-for>
+            </ul>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasNoPickupResult }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,212,0,0.12);border:1px dashed rgba(255,150,0,0.5);border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;color:#3a2c00">{{ t.pickupModal.noMatch }}</div>
+        </sc-if>
+        </div>
+        <div style="font-size:12.5px;color:#8ea6a3;margin-bottom:16px">{{ t.pickupModal.noteFooter }}</div>
+        <div onClick="{{ closeModal }}" style="margin-top:22px;text-align:center;background:#0891b2;color:#fff;font-weight:600;padding:11px;border-radius:10px;cursor:pointer">{{ t.pickupModal.close }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = {
+    lang: getStoredLang(),
+    now: Date.now(),
+    isBuyModalOpen: false,
+    isPickupModalOpen: false,
+    pickupOwner: 'ตัวเอง',
+    pickupBookedId: 'ตัวเอง',
+    pickupPicker: 'ตัวเอง',
+    openDropdown: null
+  };
+
+  componentDidMount() {
+    this._t = setInterval(() => this.setState({ now: Date.now() }), 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this._t);
+  }
+
+  setLang(lang) {
+    if (lang === this.state.lang) return;
+    setStoredLang(lang);
+    this.setState({ lang, openDropdown: null });
+    document.documentElement.lang = lang;
+  }
+
+  toggleDropdown(key) { this.setState({ openDropdown: this.state.openDropdown === key ? null : key }); }
+  closeDropdown() { this.setState({ openDropdown: null }); }
+
+  icsPad(n) { return String(n).padStart(2, '0'); }
+  icsDate(iso) {
+    const d = new Date(iso);
+    return d.getUTCFullYear() + this.icsPad(d.getUTCMonth() + 1) + this.icsPad(d.getUTCDate()) + 'T' +
+      this.icsPad(d.getUTCHours()) + this.icsPad(d.getUTCMinutes()) + this.icsPad(d.getUTCSeconds()) + 'Z';
+  }
+  icsEscape(s) {
+    return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+  }
+  downloadScheduleIcs() {
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//LYKN Reflexion Concert//TH', 'CALSCALE:GREGORIAN'];
+    const stamp = this.icsDate(new Date().toISOString());
+    scheduleData(this.state.lang === 'en').forEach((ev, i) => {
+      const start = new Date(ev.dt);
+      let durMin = 30;
+      if (ev.time === '18:00') durMin = 180;
+      else if (ev.time === '17:00') durMin = 60;
+      const end = new Date(start.getTime() + durMin * 60000);
+      const venueName = this.state.lang === 'en' ? 'Impact Arena, Muang Thong Thani' : 'อิมแพ็ค อารีน่า เมืองทองธานี';
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:lykn-reflexion-' + i + '-' + start.getTime() + '@lykn-reflexion-concert');
+      lines.push('DTSTAMP:' + stamp);
+      lines.push('DTSTART:' + this.icsDate(ev.dt));
+      lines.push('DTEND:' + this.icsDate(end.toISOString()));
+      lines.push('SUMMARY:' + this.icsEscape('LYKN Reflexion Concert - ' + ev.label));
+      lines.push('LOCATION:' + this.icsEscape(venueName));
+      lines.push('END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lykn-reflexion-concert.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  renderVals() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+
+    const detailsTabs = [
+      { key: 'overview', label: en ? 'Overview' : 'ภาพรวม', href: '/details/overview/index.html' },
+      { key: 'seat', label: "Where's My Seat", href: '/details/seat/index.html' }
+    ].map(tb => ({
+      label: tb.label,
+      href: tb.href,
+      bg: tb.key === 'overview' ? 'rgba(111,224,214,0.15)' : 'transparent',
+      color: tb.key === 'overview' ? '#6fe0d6' : '#dcece9'
+    }));
+
+    const schedFlat = scheduleData(en).slice().sort((a, b) => new Date(a.dt) - new Date(b.dt));
+    const groupedSchedule = [];
+    schedFlat.forEach(item => {
+      const past = new Date(item.dt).getTime() < this.state.now;
+      const row = { time: item.time, label: item.label, strike: past ? 'line-through' : 'none', opacity: past ? 0.45 : 1 };
+      let group = groupedSchedule.find(g => g.dateLabel === item.dateLabel);
+      if (!group) { group = { dateLabel: item.dateLabel, items: [] }; groupedSchedule.push(group); }
+      group.items.push(row);
+    });
+
+    const pickupOptionsRaw = {
+      owner: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }],
+      bookedId: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }],
+      picker: [{ value: 'ตัวเอง', label: en ? 'Myself' : 'ตัวเอง' }, { value: 'เพื่อน', label: en ? 'Friend' : 'เพื่อน' }, { value: 'บุคคลที่ 3', label: en ? 'Third party' : 'บุคคลที่ 3' }]
+    };
+    const buildPickupDropdown = (optionsKey, stateKey) => {
+      const currentValue = this.state[stateKey];
+      return {
+        options: pickupOptionsRaw[optionsKey].map(o => ({
+          label: o.label,
+          selected: o.value === currentValue,
+          bg: o.value === currentValue ? '#e3fbf8' : 'transparent',
+          color: o.value === currentValue ? '#0c7a72' : '#0c2226',
+          onClick: () => this.setState({ [stateKey]: o.value, openDropdown: null })
+        })),
+        isOpen: this.state.openDropdown === stateKey,
+        toggle: () => this.toggleDropdown(stateKey),
+        currentLabel: (pickupOptionsRaw[optionsKey].find(o => o.value === currentValue) || {}).label || currentValue
+      };
+    };
+    const pickupOwnerDropdown = buildPickupDropdown('owner', 'pickupOwner');
+    const pickupBookedIdDropdown = buildPickupDropdown('bookedId', 'pickupBookedId');
+    const pickupPickerDropdown = buildPickupDropdown('picker', 'pickupPicker');
+
+    const cases = pickupCasesData(en);
+    const matchedCase = cases.find(c => c.owner === this.state.pickupOwner && c.bookedId === this.state.pickupBookedId && c.picker === this.state.pickupPicker);
+
+    const seatColors = { 6900: '#3d2a7a', 5900: '#3f6fd1', 5500: '#7fb8e8', 5000: '#7b3fb0', 4500: '#e0558f', 3000: '#6b6f75', 2000: '#a9a06a', 1500: '#d9d9c8' };
+
+    return {
+      menuItems: buildMenuItems('details', en),
+      isMenuOpen: this.state.openDropdown === 'mainMenu',
+      toggleMenu: () => this.toggleDropdown('mainMenu'),
+      closeMenu: () => this.closeDropdown(),
+      homeLabel: homeLabel(en),
+      langSelector: buildLangSelector(en, (lang) => this.setLang(lang)),
+      isLangMenuOpen: this.state.openDropdown === 'langMenu',
+      toggleLangMenu: () => this.toggleDropdown('langMenu'),
+      closeLangMenu: () => this.closeDropdown(),
+      t,
+      detailsTabs,
+
+      venues: en ? [
+        { name: 'Impact Arena, Muang Thong Thani', flex: '1 1 100%', minWidth: '100%', bg: 'linear-gradient(135deg,rgba(111,224,214,0.22),rgba(28,63,143,0.22))', border: '1px solid rgba(111,224,214,0.5)', shadow: '0 0 30px rgba(111,224,214,0.25)', padding: '26px', nameSize: '20px', nameColor: '#6fe0d6',
+          lines: [
+            { icon: '📅', text: 'Saturday, Oct 24 & Sunday, Oct 25, 2026' },
+            { icon: '🚪', text: 'Doors open 5:00 PM' },
+            { icon: '🕕', text: 'Show starts 6:00 PM' }
+          ] },
+        { name: 'Live Streaming by TTM LIVE', flex: '1', minWidth: '240px', bg: 'rgba(111,224,214,0.05)', border: '1px solid rgba(111,224,214,0.18)', shadow: 'none', padding: '18px', nameSize: '15.5px', nameColor: '#dcece9',
+          lines: [
+            { icon: '📅', text: 'Saturday, Oct 24 & Sunday, Oct 25, 2026' },
+            { icon: '🕕', text: 'Live at 6:00 PM (GMT+7) via TTM LIVE' }
+          ] },
+        { name: 'RERUN by TTM LIVE', flex: '1', minWidth: '240px', bg: 'rgba(111,224,214,0.05)', border: '1px solid rgba(111,224,214,0.18)', shadow: 'none', padding: '18px', nameSize: '15.5px', nameColor: '#dcece9',
+          lines: [
+            { icon: '📅', text: 'Rerun of the Oct 24-25, 2026 shows' },
+            { icon: '🕕', text: 'Nov 14–20, 2026 (390 min per code)' }
+          ] }
+      ] : [
+        { name: 'อิมแพ็ค อารีน่า เมืองทองธานี', flex: '1 1 100%', minWidth: '100%', bg: 'linear-gradient(135deg,rgba(111,224,214,0.22),rgba(28,63,143,0.22))', border: '1px solid rgba(111,224,214,0.5)', shadow: '0 0 30px rgba(111,224,214,0.25)', padding: '26px', nameSize: '20px', nameColor: '#6fe0d6',
+          lines: [
+            { icon: '📅', text: 'เสาร์ 24 และ อาทิตย์ 25 ตุลาคม 2569' },
+            { icon: '🚪', text: 'ประตูเปิด 17:00 น.' },
+            { icon: '🕕', text: 'เริ่มแสดง 18:00 น.' }
+          ] },
+        { name: 'Live Streaming by TTM LIVE', flex: '1', minWidth: '240px', bg: 'rgba(111,224,214,0.05)', border: '1px solid rgba(111,224,214,0.18)', shadow: 'none', padding: '18px', nameSize: '15.5px', nameColor: '#dcece9',
+          lines: [
+            { icon: '📅', text: 'เสาร์ 24 และ อาทิตย์ 25 ตุลาคม 2569' },
+            { icon: '🕕', text: 'รับชมสด 18:00 น. (GMT+7) ผ่าน TTM LIVE' }
+          ] },
+        { name: 'RERUN by TTM LIVE', flex: '1', minWidth: '240px', bg: 'rgba(111,224,214,0.05)', border: '1px solid rgba(111,224,214,0.18)', shadow: 'none', padding: '18px', nameSize: '15.5px', nameColor: '#dcece9',
+          lines: [
+            { icon: '📅', text: 'รับชมย้อนหลังรอบ 24-25 ต.ค. 2569' },
+            { icon: '🕕', text: '14–20 พ.ย. 2569 (390 นาที/รหัส)' }
+          ] }
+      ],
+      ticketGroups: en ? [
+        { title: 'Impact Arena, Muang Thong Thani', lines: ['6,900 / 5,900 / 5,500 / 5,000 / 4,500 / 3,000 / 2,000 / 1,500 THB'] },
+        { title: 'Live Streaming', lines: ['1,500 THB (link + code)', '1,520 THB (link + code + souvenir card)'] },
+        { title: 'RERUN', lines: ['1,200 THB (link + code)', '1,220 THB (link + code + souvenir card)'] }
+      ] : [
+        { title: 'อิมแพ็ค อารีน่า เมืองทองธานี', lines: ['6,900 / 5,900 / 5,500 / 5,000 / 4,500 / 3,000 / 2,000 / 1,500 บาท'] },
+        { title: 'Live Streaming', lines: ['1,500 บาท (ลิงก์+โค้ด)', '1,520 บาท (ลิงก์+โค้ด + บัตรพลาสติกที่ระลึก)'] },
+        { title: 'RERUN', lines: ['1,200 บาท (ลิงก์+โค้ด)', '1,220 บาท (ลิงก์+โค้ด + บัตรพลาสติกที่ระลึก)'] }
+      ],
+      channelGroups: en ? [
+        { title: 'Online (opens first)', dateNote: 'Sat, Aug 22, 2026, 10:00 AM', items: [
+          { icon: '🌐', label: 'Website www.thaiticketmajor.com' }
+        ] },
+        { title: 'All channels (regular opening)', dateNote: 'Sun, Aug 23, 2026, 10:00 AM', items: [
+          { icon: '🎫', label: 'Every Thai Ticket Major counter' },
+          { icon: '🎬', label: 'Major Cineplex' },
+          { icon: '📮', label: 'Thailand Post' },
+          { icon: '☎️', label: 'Call Center 02-262-3456' }
+        ] }
+      ] : [
+        { title: 'ช่องทางออนไลน์ (เปิดก่อน)', dateNote: 'เสาร์ 22 ส.ค. 2569, 10:00 น.', items: [
+          { icon: '🌐', label: 'เว็บไซต์ www.thaiticketmajor.com' }
+        ] },
+        { title: 'ทุกช่องทาง (เปิดตามปกติ)', dateNote: 'อาทิตย์ 23 ส.ค. 2569, 10:00 น.', items: [
+          { icon: '🎫', label: 'เคาน์เตอร์ไทยทิคเก็ตเมเจอร์ทุกสาขา' },
+          { icon: '🎬', label: 'เมเจอร์ ซีนีเพล็กซ์' },
+          { icon: '📮', label: 'ไปรษณีย์ไทย' },
+          { icon: '☎️', label: 'Call Center 02-262-3456' }
+        ] }
+      ],
+
+      groupedSchedule,
+      downloadIcs: () => this.downloadScheduleIcs(),
+
+      openBuyModal: () => this.setState({ isBuyModalOpen: true }),
+      openPickupModal: () => this.setState({ isPickupModalOpen: true }),
+      closeModal: () => this.setState({ isBuyModalOpen: false, isPickupModalOpen: false }),
+      isBuyModalOpen: this.state.isBuyModalOpen,
+      isPickupModalOpen: this.state.isPickupModalOpen,
+      buyBtnBg: this.state.isBuyModalOpen ? '#6fe0d6' : 'transparent',
+      buyBtnColor: this.state.isBuyModalOpen ? '#0a1a1d' : '#6fe0d6',
+      pickupBtnBg: this.state.isPickupModalOpen ? '#6fe0d6' : 'transparent',
+      pickupBtnColor: this.state.isPickupModalOpen ? '#0a1a1d' : '#6fe0d6',
+      priceWithFee: [
+        { base: '6,900', total: '7,137' },
+        { base: '5,900', total: '6,107' },
+        { base: '5,500', total: '5,695' },
+        { base: '5,000', total: '5,180' },
+        { base: '4,500', total: '4,665' },
+        { base: '3,000', total: '3,120' },
+        { base: '2,000', total: '2,090' },
+        { base: '1,500', total: '1,575' }
+      ],
+      paymentMethods: [
+        { icon: '💳', label: en ? 'Credit Card' : 'บัตรเครดิต' },
+        { icon: '💳', label: en ? 'Debit Card' : 'บัตรเดบิต' },
+        { icon: '📱', label: 'True Money Wallet' },
+        { icon: '📱', label: 'ShopeePay' },
+        { icon: '📱', label: 'Alipay' },
+        { icon: '📱', label: 'WeChat Pay' },
+        { icon: '🔲', label: 'QR PromptPay' }
+      ],
+      fanBenefitPrices: ['6,900', '5,900', '5,500', '5,000', '4,500', '3,000', '2,000', '1,500'],
+      fanBenefitRows: [
+        { label: en ? 'Pre-order Official Merch + Priority pickup lane' : 'สั่งซื้อ Official Merchandise ล่วงหน้า + ช่องทางรับพิเศษหน้างาน', cells: ['ALL', 'ALL', 'ALL', '-', '-', '-', '-', '-'] },
+        { label: 'LYKN REFLEXION OFFICIAL ID LANYARD', cells: ['ALL', 'ALL', '-', '-', '-', '-', '-', '-'] },
+        { label: 'SOUND CHECK', cells: ['ALL', 'ALL', 'ALL', 'ALL', '-', '-', '-', '-'] },
+        { label: 'HI-TOUCH', cells: ['ALL', '-', '-', '-', '-', '-', '-', '-'] },
+        { label: 'HI-SESSION', cells: ['-', 'ALL', 'ALL', 'Random 100', '-', '-', '-', '-'] },
+        { label: 'SIGNED OFFICIAL POSTER', cells: ['Random 500', '-', '-', '-', '-', '-', '-', '-'] },
+        { label: 'OFFICIAL POSTER', cells: ['ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL', 'ALL'] }
+      ],
+      pickupOwnerDropdown,
+      pickupBookedIdDropdown,
+      pickupPickerDropdown,
+      pickupResult: matchedCase ? matchedCase.docs : null,
+      hasNoPickupResult: !matchedCase,
+      stopProp: (e) => e.stopPropagation(),
+      closeDropdown: () => this.closeDropdown(),
+
+      priceLegend: Object.entries(seatColors).sort((a, b) => Number(b[0]) - Number(a[0])).map(([price, color]) => ({ price: Number(price).toLocaleString('th-TH'), color }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>
