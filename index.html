@@ -97,26 +97,6 @@
 
       <div class="countdown-wrap" style="position:relative;display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-top:44px">
         <div class="countdown-block" style="min-width:280px">
-          <div class="countdown-block-label" style="font-size:13px;letter-spacing:2px;color:#6fe0d6;font-weight:600;margin-bottom:16px">{{ t.home.presaleLabel }}</div>
-          <div class="countdown-units" style="display:flex;gap:2px;justify-content:center;align-items:baseline">
-            <sc-for list="{{ presaleUnits }}" as="u" hint-placeholder-count="4">
-              <div style="display:flex;align-items:baseline">
-                <div class="countdown-num-box" style="min-width:64px;text-align:center">
-                  <div class="countdown-num-value" style="font-size:44px;font-weight:700;color:#fff">{{ u.value }}</div>
-                  <div class="countdown-num-label" style="font-size:10.5px;letter-spacing:1.5px;color:#a9c4c2;margin-top:2px">{{ u.label }}</div>
-                </div>
-                <sc-if value="{{ u.hasColon }}" hint-placeholder-val="{{ true }}">
-                  <div class="countdown-colon" style="font-size:36px;font-weight:300;color:#3a5f5c;padding:0 2px 18px">:</div>
-                </sc-if>
-              </div>
-            </sc-for>
-          </div>
-          <div class="countdown-note" style="font-size:12.5px;color:#a9c4c2;margin-top:10px">{{ t.home.presaleNote }}</div>
-        </div>
-
-        <div style="width:1px;background:rgba(111,224,214,0.25);align-self:stretch"></div>
-
-        <div class="countdown-block" style="min-width:280px">
           <div class="countdown-block-label" style="font-size:13px;letter-spacing:2px;color:#6fe0d6;font-weight:600;margin-bottom:16px">{{ t.home.concertLabel }}</div>
           <div class="countdown-units" style="display:flex;gap:2px;justify-content:center;align-items:baseline">
             <sc-for list="{{ concertUnits }}" as="u" hint-placeholder-count="4">
@@ -205,7 +185,6 @@ class Component extends DCLogic {
       isLangMenuOpen: this.state.openDropdown === 'langMenu',
       toggleLangMenu: () => this.toggleDropdown('langMenu'),
       closeLangMenu: () => this.closeDropdown(),
-      presaleUnits: this.toUnits(this.diffParts('2026-08-22T10:00:00+07:00')),
       concertUnits: this.toUnits(this.diffParts('2026-10-24T18:00:00+07:00')),
       t: buildTranslations(en)
     };
