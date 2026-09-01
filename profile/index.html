@@ -668,8 +668,12 @@
 
         <div style="margin-bottom:14px">
           <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:6px">{{ t.profile.evidenceFileLabel }}</div>
-          <input type="file" id="evidenceFileInput" accept="image/*" onChange="{{ setEvidenceFile }}" style="display:none">
-          <label for="evidenceFileInput" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1.5px dashed rgba(111,224,214,0.35);background:rgba(111,224,214,0.05);color:#6fe0d6;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          <!-- ห้ามใช้ display:none — iOS Safari กับเบราว์เซอร์ Android บางตัว
+               ไม่ยอมเปิด file picker จาก <label for> ถ้า input จริงเป็น display:none
+               (โดยเฉพาะ input ที่ render ผ่าน JS framework แบบนี้) ต้องใช้เทคนิค
+               "ซ่อนแบบมองไม่เห็นแต่ยังอยู่ใน layout" แทนถึงจะกดติดบนมือถือ -->
+          <input type="file" id="evidenceFileInput" accept="image/*" onChange="{{ setEvidenceFile }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
+          <label for="evidenceFileInput" style="position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1.5px dashed rgba(111,224,214,0.35);background:rgba(111,224,214,0.05);color:#6fe0d6;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
             <span>📎</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ evidenceFilePickerLabel }}</span>
           </label>
           <div style="font-size:11px;color:#8ea6a3;margin-top:6px">{{ t.profile.evidenceFileSizeHint }}</div>
