@@ -71,6 +71,11 @@
   #zone-card .zc-blindspot { font-size: 13px; margin-top: 8px; font-weight: 600; color: #ffd166; line-height: 1.5; }
   #zone-card .zc-blindspot.ok { color: #6fe0d6; }
   #zone-card .zc-blindspot.pending { color: #8b949e; font-weight: 500; }
+  #zone-card .zc-seatcount {
+    font-size: 13px; margin-top: 10px; font-weight: 700; color: #eafffb;
+    background: rgba(0,242,254,0.1); border: 1px solid rgba(0,242,254,0.25);
+    border-radius: 20px; padding: 5px 12px; display: inline-block;
+  }
   #zc-view-btn {
     margin-top: 12px; width: 100%; padding: 9px 14px; border-radius: 8px; border: none;
     background: #00f2fe; color: #0d1117; font-weight: 800; font-size: 13px; cursor: pointer;
@@ -143,9 +148,12 @@
   .seat-dots { display: flex; gap: 3px; flex-wrap: nowrap; }
   .seat-dot {
     width: 19px; height: 19px; border-radius: 50%; background: #3a4048;
-    border: 1px solid #57606a; flex-shrink: 0;
+    border: 1px solid #57606a; flex-shrink: 0; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     font-size: 8px; color: #c9d1d9; font-weight: 600;
+  }
+  .seat-dot-picked {
+    box-shadow: 0 0 0 3px rgba(111, 224, 214, 0.8); animation: none !important;
   }
   .seat-aisle { width: 14px; flex-shrink: 0; }
   .seat-spacer { width: 19px; height: 19px; flex-shrink: 0; }
@@ -418,7 +426,6 @@
     <button id="sg-zoom-in-btn" type="button" aria-label="ซูมเข้า">+</button>
   </div>
   <div class="sg-price-note" id="sg-level2-note" style="display:none;margin-top:10px;">แถวแรกของทุกโซนในชั้น 2 จะติดรั้ว อาจทำให้บังการมองเห็นเล็กน้อย</div>
-  <div class="sg-price-note" id="sg-price-approx-note">ราคาที่นั่งแต่ละโซนจะอัปเดตอีกครั้งหลังผังราคาจริงประกาศ</div>
   </div>
 </div>
 
@@ -466,6 +473,21 @@
     seatGridOverlay.classList.remove('show');
     setTimeout(() => { seatGridOverlay.style.display = 'none'; }, 240);
   }
+
+  // คลิกจุดที่นั่งในผังราย โซน -> แจ้งหน้าแม่ให้ auto-fill โซน/แถว/เลขที่นั่ง
+  // ในฟอร์มตรวจสอบที่นั่ง แล้วปิด modal นี้กลับไปให้เห็นฟอร์มที่เพิ่งเติมให้
+  sgBody.addEventListener('click', (e) => {
+    const dot = e.target.closest('.seat-dot');
+    if (!dot || !currentGridZoneInfo) return;
+    window.parent.postMessage({
+      source: 'lykn-seat-map',
+      type: 'seat-selected',
+      zone: currentGridZoneInfo,
+      row: dot.getAttribute('data-row'),
+      seat: dot.getAttribute('data-seat'),
+    }, '*');
+    closeSeatGrid();
+  });
   document.getElementById('sg-close-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     closeSeatGrid();
@@ -560,8 +582,11 @@
     return html;
   }
 
+  let currentGridZoneInfo = null;
+
   function openSeatGrid(zone) {
     const info = zone.getAttribute('data-info');
+    currentGridZoneInfo = info;
     const level = zone.getAttribute('data-level');
     const real = REAL_SEAT_DATA[info];
 
@@ -627,9 +652,6 @@
         sgNote.textContent = 'ผังจำลองจากโครงสร้างที่นั่งจริงของฮอลล์ (จำนวนที่นั่ง/แถวโดยประมาณ)';
       }
     }
-
-    const approxNote = document.getElementById('sg-price-approx-note');
-    if (approxNote) approxNote.style.display = real ? 'none' : 'block';
 
     const level2Note = document.getElementById('sg-level2-note');
     if (level2Note) level2Note.style.display = level === '2' ? 'block' : 'none';
@@ -702,6 +724,18 @@
       const zSeats = zone.getAttribute('data-seats');
       const zBlindspot = zone.getAttribute('data-blindspot');
       const zReal = REAL_SEAT_DATA[zInfo];
+
+      // จำนวนที่นั่งของ "โซนนี้โดยเฉพาะ" (ไม่ใช่รวมทั้งตัวอักษรโซน เพราะโซนตัวอักษร
+      // เดียวกันอาจมีหลาย path คนละราคา/คนละตำแหน่งบนผัง) — ใช้ data-seat-counts ของ
+      // path ที่คลิกก่อน ถ้าไม่มีค่อย fallback ไปนับจากข้อมูลที่นั่งจริง (REAL_SEAT_DATA)
+      const zSeatCountAttr = zone.getAttribute('data-seat-counts');
+      let zSeatTotal = null;
+      if (zSeatCountAttr) {
+        zSeatTotal = zSeatCountAttr.split(',').reduce((sum, n) => sum + (parseInt(n, 10) || 0), 0);
+      } else if (zReal && zReal.r) {
+        zSeatTotal = zReal.r.reduce((sum, row) => sum + row.s.filter(item => typeof item === 'number' || Array.isArray(item)).length, 0);
+      }
+
       let cardHtml = `<div class="zc-name">โซน ${zInfo}</div><div class="zc-level">ชั้น ${zLevel}</div>`;
       if (zBlindspot) {
         const isOk = zBlindspot.indexOf('ไม่มี') === 0;
@@ -709,11 +743,15 @@
       } else if (zRows || zReal) {
         cardHtml += `<div class="zc-blindspot pending">ยังไม่มีข้อมูลมุมอับสำหรับโซนนี้</div>`;
       }
+      if (zSeatTotal) cardHtml += `<div class="zc-seatcount">${zSeatTotal.toLocaleString('th-TH')} ที่นั่ง</div>`;
       if ((zRows && zSeats) || zReal) cardHtml += `<button id="zc-view-btn" type="button">ดูผังที่นั่ง</button>`;
       cardHtml += `<button id="zc-reset-btn" type="button">กลับไปที่ผังคอนเสิร์ต</button>`;
       zoneCard.innerHTML = cardHtml;
       zoneCard.classList.add('show');
       focusEmbedIntoView();
+
+      // แจ้งหน้าแม่ (details/seat) ให้ auto-fill ช่อง "โซน" ในฟอร์มตรวจสอบที่นั่ง
+      window.parent.postMessage({ source: 'lykn-seat-map', type: 'zone-selected', zone: zInfo }, '*');
 
       const viewBtn = document.getElementById('zc-view-btn');
       if (viewBtn) {
@@ -851,6 +889,16 @@
     if (la !== lb) return la.localeCompare(lb);
     return a.localeCompare(b);
   });
+
+  // API สาธารณะให้หน้าแม่ (details/seat) เรียกข้าม iframe เพื่อดึงรายชื่อ
+  // โซน/แถวจริงมาทำ dropdown ในฟอร์มตรวจสอบที่นั่ง โดยไม่ต้อง duplicate ข้อมูลผัง
+  window.LyknSeatMap = {
+    listZones() { return allZoneCodes; },
+    listRows(zoneCode) {
+      const zone = findZoneByCode(zoneCode);
+      return zone ? getZoneRows(zone) : [];
+    },
+  };
 
   let selectedZone = null;
 

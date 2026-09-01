@@ -8,3 +8,70 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# ไฟล์ JS/CSS ใช้ร่วมกันทุกหน้า (nav.js, translations.js, supabaseConfig.js,
+# seatKey.js, base.css) — ก่อนหน้านี้ไม่มี cache header เลย ทำให้ทุกครั้งที่
+# สลับหน้าต้องขอไฟล์พวกนี้ใหม่หมด (นับเป็น web request ของ Netlify ทุกครั้ง)
+# cache ไว้ 10 นาทีพอให้ browser ใช้ของเดิมซ้ำได้ระหว่างเดินดูหลายหน้า แต่ยัง
+# สั้นพอที่จะเห็นการแก้ไขใหม่ได้เร็วระหว่าง dev อยู่
+[[headers]]
+  for = "/shared/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=600"
+
+[[headers]]
+  for = "/shared/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=600"
+
+# รูปภาพ/โลโก้/ไอคอนแทบไม่เปลี่ยนเลย cache ได้นานกว่ามาก
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# map.html (~100KB) ถูกโหลดผ่าน iframe ซ่อนอยู่ 3 หน้า (details/check,
+# details/seat, profile — จุดหลังเป็น iframe 1x1px มองไม่เห็นเลย แค่ดึง
+# dropdown โซน/แถวมาใช้ในฟอร์ม) ก่อนหน้านี้ไม่มี cache header เลย ทุกครั้งที่
+# เปิดหน้าโปรไฟล์ (หน้าที่คนเข้าบ่อยที่สุด) อาจโหลดไฟล์นี้ใหม่ทุกรอบโดยไม่จำเป็น
+[[headers]]
+  for = "/map.html"
+  [headers.values]
+    Cache-Control = "public, max-age=600"
+
+# หน้าที่มีข้อมูลส่วนบุคคล (ระบบตรวจสอบ/ลงทะเบียนที่นั่ง) ใช้นโยบายเข้มกว่าเว็บทั่วไป
+# ตามกติกาความปลอดภัย: noindex/nofollow/noarchive + Referrer-Policy: no-referrer
+[[headers]]
+  for = "/profile/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+
+[[headers]]
+  for = "/details/seat/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+
+# หน้า error ภาษาไทยแบบ friendly แทนหน้า error เปล่าๆ ของ Netlify เอง
+[[redirects]]
+  from = "/*"
+  to = "/errors/429/index.html"
+  status = 429
+
+[[redirects]]
+  from = "/*"
+  to = "/errors/503/index.html"
+  status = 503

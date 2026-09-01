@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ระบบปิดปรับปรุงชั่วคราว — LYKN Reflexion Concert</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-32.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh; background: #000; color: #f2f7f6;
+    font-family: 'Noto Sans Thai', sans-serif;
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .card { max-width: 420px; text-align: center; }
+  .icon { font-size: 40px; margin-bottom: 18px; }
+  h1 { font-size: 21px; font-weight: 700; color: #6fe0d6; margin-bottom: 12px; }
+  p { font-size: 14.5px; color: #a9c4c2; line-height: 1.7; margin-bottom: 26px; }
+  .btn {
+    display: inline-block; background: linear-gradient(120deg,#0891b2,#4fbdb8);
+    color: #fff; font-weight: 700; font-size: 14px; padding: 13px 30px;
+    border-radius: 30px; text-decoration: none; border: none; cursor: pointer;
+    font-family: 'Noto Sans Thai', sans-serif;
+  }
+  .home-link { display: block; margin-top: 16px; font-size: 13px; color: #8ea6a3; text-decoration: none; }
+  .home-link:hover { color: #6fe0d6; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🛠️</div>
+    <h1>ระบบปิดปรับปรุงชั่วคราว</h1>
+    <p>ขณะนี้ระบบกำลังปิดปรับปรุงเป็นการชั่วคราว ขออภัยในความไม่สะดวก กรุณาลองเข้าใช้งานอีกครั้งในอีกสักครู่นะครับ</p>
+    <button class="btn" type="button" id="retry-btn">ลองใหม่อีกครั้ง</button>
+    <a class="home-link" href="/index.html">กลับหน้าแรก</a>
+  </div>
+  <script>
+    document.getElementById('retry-btn').addEventListener('click', function () {
+      location.reload();
+    });
+  </script>
+</body>
+</html>

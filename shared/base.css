@@ -1,5 +1,7 @@
 * { box-sizing: border-box; }
 button, input, select, textarea { font-family: inherit; }
+select { color-scheme: dark; }
+select option { background: #0c2226; color: #eafffb; }
 body { margin: 0; font-family: 'Noto Sans Thai', sans-serif; }
 a { color: #6fe0d6; text-decoration: none; }
 a:hover { color: #ffd400; }
@@ -15,6 +17,59 @@ a:hover { color: #ffd400; }
   .countdown-num-label { font-size: 8px !important; letter-spacing: 0.5px !important; }
   .countdown-colon { font-size: 18px !important; padding: 0 1px 10px !important; }
   .countdown-note { font-size: 10.5px !important; margin-top: 8px !important; }
+  /* แถบแท็บหน้ารายละเอียดคอนเสิร์ต (ภาพรวม/วิธีกดบัตร/Where's My Seat/ตรวจสอบที่นั่ง) —
+     บนมือถือพื้นที่ไม่พอให้ 4 แท็บอยู่แถวเดียวแบบปกติ จึงตัดขึ้นบรรทัดใหม่ทีละ 2 แท็บแทน
+     (กริด 2 คอลัมน์) ให้แต่ละปุ่มมีพื้นที่พอดี ไม่บีบจนคำตัดมั่ว */
+  .details-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .details-tabs a {
+    flex: 1 1 calc(50% - 4px) !important;
+    min-width: calc(50% - 4px) !important;
+    max-width: calc(50% - 4px) !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    white-space: normal !important;
+    padding: 9px 8px !important;
+    font-size: 13px !important;
+  }
+  /* Sidebar หน้าโปรไฟล์ (การ์ดชื่อ + เมนูแท็บ) — บนมือถือขยายเต็มความกว้างแทนคอลัมน์แคบ
+     220-240px แบบเดสก์ท็อป และเมนูแท็บ (ลงทะเบียนบัตร/จัดการบัตร/วิธีใช้) เรียงเป็นกริด
+     2 คอลัมน์แทนแถวเดียวแนวตั้ง เพื่อประหยัดพื้นที่แนวตั้งบนจอเล็ก */
+  .profile-sidebar {
+    flex: 1 1 100% !important;
+    min-width: 0 !important;
+  }
+  .profile-sidebar-tabs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .profile-sidebar-tabs button {
+    text-align: center !important;
+  }
+  /* เมนู hamburger แบบ candy box — บนมือถือลอยใต้ nav bar เว้นขอบซ้ายขวาไว้นิดนึง
+     สูงพอดีกับเนื้อหาเมนู (ไม่เต็มจอ) พื้นหลังโปร่งแสงแบบเบลอ (desktop/tablet ยังใช้กล่องลอยแบบเดิม) */
+  .candy-menu {
+    position: fixed !important;
+    top: 72px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: calc(100vh - 96px) !important;
+    transform: none !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+    overflow-y: auto !important;
+    background: rgba(12,34,38,0.95) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+  }
 }
 @keyframes cardSpin { 0% { transform: rotateY(0deg) scale(1); } 50% { transform: rotateY(180deg) scale(1.05); } 100% { transform: rotateY(360deg) scale(1); } }
 @keyframes floatFlareA { 0%,100% { transform: translate(0,0); opacity:0.5; } 50% { transform: translate(20px,-30px); opacity:0.9; } }

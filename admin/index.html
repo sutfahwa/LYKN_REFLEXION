@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ระบบจัดการหลังบ้าน — LYKN Reflexion Concert</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-32.png">
+<script>
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
+    document.title = '[TEST] ' + document.title;
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/support.js"></script>
+<script src="/shared/nav.js"></script>
+<script src="/shared/translations.js"></script>
+<script src="/shared/supabaseConfig.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/base.css">
+</helmet>
+
+<div style="min-height:100vh;background:#f2f4f4;color:#1a1a1a;padding-bottom:40px">
+
+  <nav style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#ffffff;border-bottom:1px solid rgba(13,127,117,0.12)">
+    <div style="color:#1a1a1a;font-size:14px;font-weight:700">🛡️ {{ t.admin.title }}</div>
+    <sc-if value="{{ isAuthed }}" hint-placeholder-val="{{ false }}">
+      <button type="button" onClick="{{ logout }}" style="background:#eef2f2;color:#1a1a1a;font-size:12.5px;font-weight:600;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-family:'Noto Sans Thai',sans-serif">{{ t.admin.logoutBtn }}</button>
+    </sc-if>
+  </nav>
+
+  <main style="max-width:1800px;margin:0 auto;padding:24px 20px">
+
+    <sc-if value="{{ showLoginForm }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:360px;margin:60px auto;background:#f5f7f7;border:1px solid #e2e8e8;border-radius:16px;padding:28px">
+        <div style="font-size:18px;font-weight:700;color:#0891b2;margin-bottom:18px">{{ t.admin.loginHeading }}</div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11.5px;color:#5a6b69;margin-bottom:5px">{{ t.admin.emailLabel }}</div>
+          <input type="email" value="{{ loginEmail }}" onChange="{{ setLoginEmail }}" style="width:100%;box-sizing:border-box;padding:11px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+        </div>
+        <div style="margin-bottom:18px">
+          <div style="font-size:11.5px;color:#5a6b69;margin-bottom:5px">{{ t.admin.passwordLabel }}</div>
+          <input type="password" value="{{ loginPassword }}" onChange="{{ setLoginPassword }}" style="width:100%;box-sizing:border-box;padding:11px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+        </div>
+        <button type="button" onClick="{{ submitLogin }}" style="width:100%;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;font-size:14px;padding:12px;border:none;border-radius:9px;cursor:pointer">{{ t.admin.loginBtn }}</button>
+        <sc-if value="{{ hasLoginError }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#a32020;margin-top:12px">{{ loginErrorMsg }}</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showForbidden }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:400px;margin:60px auto;text-align:center;color:#a32020;font-size:14px">{{ t.admin.forbidden }}</div>
+    </sc-if>
+
+    <sc-if value="{{ isAuthed }}" hint-placeholder-val="{{ false }}">
+
+      <div style="display:inline-flex;gap:4px;background:#f5f7f7;border:1px solid #e2e8e8;border-radius:10px;padding:4px;margin-bottom:20px">
+        <button type="button" onClick="{{ setTabApprove }}" style="padding:9px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:{{ approveTabBg }};color:{{ approveTabColor }};font-family:'Noto Sans Thai',sans-serif">{{ t.admin.tabApprove }}</button>
+        <button type="button" onClick="{{ setTabDisputes }}" style="padding:9px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:{{ disputesTabBg }};color:{{ disputesTabColor }};font-family:'Noto Sans Thai',sans-serif">{{ t.admin.tabDisputes }} {{ disputesCountLabel }}</button>
+        <button type="button" onClick="{{ setTabUsers }}" style="padding:9px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:{{ usersTabBg }};color:{{ usersTabColor }};font-family:'Noto Sans Thai',sans-serif">{{ t.admin.tabUsers }}</button>
+        <!-- แท็บ "ประกาศ" พักไว้ก่อน (phase นี้ยังไม่เปิดใช้ระบบแจ้งเตือนกว้าง) —
+             โค้ดเบื้องหลัง (state/methods/return props/markup ด้านล่าง) ยังอยู่ครบ
+             แค่เอาปุ่มนี้ออกจาก UI ไม่ให้กดเข้าไปได้ ถ้าจะกลับมาทำต่อให้เพิ่มปุ่ม
+             onClick="{{ setTabAnnouncements }}" กลับเข้ามาแถวนี้ -->
+      </div>
+
+      <!-- แท็บอนุมัติบัตร -->
+      <sc-if value="{{ isApproveTab }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <input type="text" value="{{ searchQuery }}" onChange="{{ setSearchQuery }}" placeholder="{{ t.admin.searchPlaceholder }}" style="flex:2;min-width:180px;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <input type="text" value="{{ filterZoneQuery }}" onChange="{{ setFilterZoneQuery }}" placeholder="{{ t.admin.colZone }}" style="flex:1;min-width:90px;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <input type="text" value="{{ filterRowQuery }}" onChange="{{ setFilterRowQuery }}" placeholder="{{ t.admin.colRow }}" style="flex:1;min-width:90px;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <input type="text" value="{{ filterSeatQuery }}" onChange="{{ setFilterSeatQuery }}" placeholder="{{ t.admin.colSeat }}" style="flex:1;min-width:90px;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <div style="position:relative">
+            <button type="button" onClick="{{ filterStatusDD.toggle }}" style="padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ filterStatusDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:8px;cursor:pointer">
+              <span>{{ filterStatusDD.displayLabel }}</span>
+              <span style="font-size:9px;color:#6b7d7a">▼</span>
+            </button>
+            <sc-if value="{{ filterStatusDD.isOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:fixed;inset:0;z-index:500" onClick="{{ filterStatusDD.close }}"></div>
+              <div style="position:absolute;top:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;min-width:160px;max-height:280px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                <sc-for list="{{ filterStatusDD.options }}" as="opt" hint-placeholder-count="6">
+                  <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif;white-space:nowrap">{{ opt.label }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="position:relative">
+            <button type="button" onClick="{{ filterRoundDD.toggle }}" style="padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ filterRoundDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:8px;cursor:pointer">
+              <span>{{ filterRoundDD.displayLabel }}</span>
+              <span style="font-size:9px;color:#6b7d7a">▼</span>
+            </button>
+            <sc-if value="{{ filterRoundDD.isOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:fixed;inset:0;z-index:500" onClick="{{ filterRoundDD.close }}"></div>
+              <div style="position:absolute;top:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;min-width:200px;max-height:280px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                <sc-for list="{{ filterRoundDD.options }}" as="opt" hint-placeholder-count="4">
+                  <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif;white-space:nowrap">{{ opt.label }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="position:relative">
+            <button type="button" onClick="{{ filterEvidenceDD.toggle }}" style="padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ filterEvidenceDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:8px;cursor:pointer">
+              <span>{{ filterEvidenceDD.displayLabel }}</span>
+              <span style="font-size:9px;color:#6b7d7a">▼</span>
+            </button>
+            <sc-if value="{{ filterEvidenceDD.isOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:fixed;inset:0;z-index:500" onClick="{{ filterEvidenceDD.close }}"></div>
+              <div style="position:absolute;top:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;min-width:160px;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                <sc-for list="{{ filterEvidenceDD.options }}" as="opt" hint-placeholder-count="3">
+                  <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif;white-space:nowrap">{{ opt.label }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <button type="button" onClick="{{ reloadClaims }}" style="padding:9px 14px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:13px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;white-space:nowrap">↻ {{ t.admin.reloadBtn }}</button>
+        </div>
+
+        <div style="overflow-x:auto;border-radius:12px;background:#fff">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;color:#1a1a1a">
+            <thead>
+              <tr style="background:#e8ecec;border-bottom:2px solid #d0d6d6">
+                <th style="text-align:left;padding:10px 12px;cursor:pointer" onClick="{{ toggleCaseSort }}">{{ t.admin.caseLabel }} {{ caseSortIcon }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colHandle }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colProfileName }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colOwnerName }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colRound }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colZone }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colRow }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colSeat }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colRegisteredAt }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colTimeLeft }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colEvidence }}</th>
+                <th style="text-align:left;padding:10px 12px;cursor:pointer" onClick="{{ toggleStatusSort }}">{{ t.admin.colStatus }} {{ statusSortIcon }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colActions }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ claimRows }}" as="c" hint-placeholder-count="8">
+                <tr style="border-bottom:1px solid #eee;opacity:{{ c.rowOpacity }}">
+                  <td style="padding:9px 12px">
+                    <sc-if value="{{ c.hasCaseNumber }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:11.5px;font-weight:700;color:#a32020;white-space:nowrap">{{ c.caseNumberLabel }}</span>
+                    </sc-if>
+                    <sc-if value="{{ c.hasNoCaseNumber }}" hint-placeholder-val="{{ true }}">
+                      <span style="color:#c7cfcf">—</span>
+                    </sc-if>
+                  </td>
+                  <td style="padding:9px 12px;font-weight:600">@{{ c.xHandle }}</td>
+                  <td style="padding:9px 12px">{{ c.profileName }}</td>
+                  <td style="padding:9px 12px">{{ c.ownerName }}</td>
+                  <td style="padding:9px 12px">{{ c.roundLabel }}</td>
+                  <td style="padding:9px 12px">{{ c.zone }}</td>
+                  <td style="padding:9px 12px">{{ c.row }}</td>
+                  <td style="padding:9px 12px">{{ c.seat }}</td>
+                  <td style="padding:9px 12px">{{ c.registeredAtLabel }}</td>
+                  <td style="padding:9px 12px">
+                    <sc-if value="{{ c.hasDeadline }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:{{ c.deadlineBg }};color:{{ c.deadlineColor }}">{{ c.deadlineLabel }}</span>
+                    </sc-if>
+                  </td>
+                  <td style="padding:9px 12px">
+                    <sc-if value="{{ c.hasEvidence }}" hint-placeholder-val="{{ false }}">
+                      <span onClick="{{ c.onViewDocs }}" style="cursor:pointer;color:#0891b2;text-decoration:underline">{{ c.evidenceLabel }}</span>
+                    </sc-if>
+                    <sc-if value="{{ c.hasNoEvidence }}" hint-placeholder-val="{{ true }}">
+                      <span style="color:#8a8a8a">{{ c.evidenceLabel }}</span>
+                    </sc-if>
+                  </td>
+                  <td style="padding:9px 12px">
+                    <span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:{{ c.statusBg }};color:{{ c.statusColor }}">{{ c.statusLabel }}</span>
+                    <sc-if value="{{ c.isDeleted }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:10px;color:#8a8a8a;margin-top:4px;white-space:normal;max-width:220px">{{ c.deletedInfoLabel }}</div>
+                    </sc-if>
+                    <sc-if value="{{ c.hasRef }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:10px;color:#a32020;margin-top:4px;white-space:normal;max-width:220px">{{ c.refLabel }}</div>
+                    </sc-if>
+                  </td>
+                  <td style="padding:9px 12px">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                      <sc-if value="{{ c.canApprove }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ c.onApprove }}" disabled="{{ c.isApproving }}" style="background:#0891b2;color:#fff;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer;opacity:{{ c.approveOpacity }}">{{ c.approveLabel }}</button>
+                      </sc-if>
+                      <sc-if value="{{ c.canManage }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ c.onChangeStatus }}" style="background:#e8ecec;color:#1a1a1a;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.changeStatusBtn }}</button>
+                      </sc-if>
+                      <sc-if value="{{ c.isDisputed }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ c.onGoToDispute }}" style="background:rgba(255,80,80,0.85);color:#fff;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.manageDisputeBtn }}</button>
+                      </sc-if>
+                      <span onClick="{{ c.onViewDetails }}" style="align-self:center;font-size:11px;color:#0891b2;cursor:pointer;text-decoration:underline">{{ t.admin.viewDetailsBtn }}</span>
+                    </div>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <sc-if value="{{ claimRowsEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:30px;text-align:center;color:#7a8a8a">{{ t.admin.noResultsRow }}</div>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:12px;padding:6px 4px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12.5px;color:#5a6b69">{{ t.admin.pageSizeLabel }}</span>
+            <div style="position:relative">
+              <button type="button" onClick="{{ claimsPageSizeDD.toggle }}" style="padding:7px 10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:6px;cursor:pointer">
+                <span>{{ claimsPageSizeDD.displayLabel }}</span>
+                <span style="font-size:8px;color:#6b7d7a">▼</span>
+              </button>
+              <sc-if value="{{ claimsPageSizeDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ claimsPageSizeDD.close }}"></div>
+                <div style="position:absolute;bottom:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:10px;padding:6px;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                  <sc-for list="{{ claimsPageSizeDD.options }}" as="opt" hint-placeholder-count="4">
+                    <div onClick="{{ opt.onClick }}" style="padding:7px 14px;border-radius:8px;font-size:12.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }}">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12.5px;color:#5a6b69">{{ claimsPageInfoLabel }}</span>
+            <button type="button" onClick="{{ claimsOnPrevPage }}" disabled="{{ claimsHasNoPrevPage }}" style="padding:7px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer">{{ t.admin.prevPageBtn }}</button>
+            <button type="button" onClick="{{ claimsOnNextPage }}" disabled="{{ claimsHasNoNextPage }}" style="padding:7px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer">{{ t.admin.nextPageBtn }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- แท็บคิวข้อพิพาท -->
+      <sc-if value="{{ isDisputesTab }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <input type="text" value="{{ disputesSearchQuery }}" onChange="{{ setDisputesSearchQuery }}" placeholder="{{ t.admin.disputesSearchPlaceholder }}" style="flex:2;min-width:180px;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <input type="text" value="{{ disputesZoneQuery }}" onChange="{{ setDisputesZoneQuery }}" placeholder="{{ t.admin.colZone }}" style="flex:1;min-width:90px;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <input type="text" value="{{ disputesRowQuery }}" onChange="{{ setDisputesRowQuery }}" placeholder="{{ t.admin.colRow }}" style="flex:1;min-width:90px;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <input type="text" value="{{ disputesSeatQuery }}" onChange="{{ setDisputesSeatQuery }}" placeholder="{{ t.admin.colSeat }}" style="flex:1;min-width:90px;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <div style="position:relative">
+            <button type="button" onClick="{{ disputesFilterStatusDD.toggle }}" style="padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ disputesFilterStatusDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:8px;cursor:pointer">
+              <span>{{ disputesFilterStatusDD.displayLabel }}</span>
+              <span style="font-size:9px;color:#6b7d7a">▼</span>
+            </button>
+            <sc-if value="{{ disputesFilterStatusDD.isOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:fixed;inset:0;z-index:500" onClick="{{ disputesFilterStatusDD.close }}"></div>
+              <div style="position:absolute;top:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;min-width:180px;max-height:280px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                <sc-for list="{{ disputesFilterStatusDD.options }}" as="opt" hint-placeholder-count="4">
+                  <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif;white-space:nowrap">{{ opt.label }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <div style="position:relative">
+            <button type="button" onClick="{{ disputesFilterEvidenceDD.toggle }}" style="padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ disputesFilterEvidenceDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:8px;cursor:pointer">
+              <span>{{ disputesFilterEvidenceDD.displayLabel }}</span>
+              <span style="font-size:9px;color:#6b7d7a">▼</span>
+            </button>
+            <sc-if value="{{ disputesFilterEvidenceDD.isOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:fixed;inset:0;z-index:500" onClick="{{ disputesFilterEvidenceDD.close }}"></div>
+              <div style="position:absolute;top:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;min-width:180px;max-height:280px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                <sc-for list="{{ disputesFilterEvidenceDD.options }}" as="opt" hint-placeholder-count="3">
+                  <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif;white-space:nowrap">{{ opt.label }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <button type="button" onClick="{{ reloadDisputes }}" style="padding:9px 14px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:13px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;white-space:nowrap">↻ {{ t.admin.reloadBtn }}</button>
+        </div>
+
+        <div style="overflow-x:auto;border-radius:12px;background:#fff">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;color:#1a1a1a">
+            <thead>
+              <tr style="background:#e8ecec;border-bottom:2px solid #d0d6d6">
+                <th style="text-align:left;padding:10px 12px;cursor:pointer" onClick="{{ toggleDisputesCaseSort }}">{{ t.admin.caseLabel }} {{ disputesCaseSortIcon }}</th>
+                <th style="text-align:left;padding:10px 12px;cursor:pointer" onClick="{{ toggleDisputesSort }}">{{ t.admin.colZone }} {{ disputesSortIcon }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colRow }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colSeat }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.disputeClaimant }}</th>
+                <th style="text-align:left;padding:10px 12px;cursor:pointer" onClick="{{ toggleDisputesOpenedSort }}">{{ t.admin.colOpenedAt }} {{ disputesOpenedSortIcon }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colStatus }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colActions }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ disputeRows }}" as="d" hint-placeholder-count="4">
+                <tr style="border-bottom:1px solid #eee">
+                  <td style="padding:9px 12px;font-weight:700;color:#a32020">{{ d.caseNumberLabel }}</td>
+                  <td style="padding:9px 12px;font-weight:600;white-space:nowrap">{{ d.zoneLabel }}</td>
+                  <td style="padding:9px 12px;font-weight:600;white-space:nowrap">{{ d.rowLabel }}</td>
+                  <td style="padding:9px 12px;font-weight:600;white-space:nowrap">{{ d.seatNumLabel }}</td>
+                  <td style="padding:9px 12px;white-space:normal;min-width:220px">
+                    <sc-for list="{{ d.claimants }}" as="cl" hint-placeholder-count="2">
+                      <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f0">
+                        <div style="font-weight:600">@{{ cl.xHandle }} ({{ cl.profileName }}) · <span style="color:#a32020">{{ cl.caseNumberLabel }}</span> · {{ cl.claimedAtLabel }}</div>
+                        <div style="margin-top:2px">
+                          <sc-if value="{{ cl.hasEvidence }}" hint-placeholder-val="{{ false }}">
+                            <span onClick="{{ cl.onViewDocs }}" style="cursor:pointer;color:#0891b2;text-decoration:underline;font-size:11px">{{ cl.evidenceLabel }}</span>
+                          </sc-if>
+                          <sc-if value="{{ cl.hasNoEvidence }}" hint-placeholder-val="{{ true }}">
+                            <span style="color:#8a8a8a;font-size:11px">{{ cl.evidenceLabel }}</span>
+                          </sc-if>
+                          <sc-if value="{{ cl.hasRequestedEvidence }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-size:10px;color:#a35c00;margin-left:6px">{{ t.admin.evidenceRequestedTag }}</span>
+                          </sc-if>
+                          <span onClick="{{ cl.onRequestEvidence }}" style="cursor:pointer;color:#0891b2;text-decoration:underline;font-size:11px;margin-left:10px">{{ t.admin.requestEvidenceBtn }}</span>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </td>
+                  <td style="padding:9px 12px;white-space:nowrap">{{ d.openedAtLabel }}</td>
+                  <td style="padding:9px 12px">
+                    <span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:{{ d.outcomeBg }};color:{{ d.outcomeColor }}">{{ d.outcomeLabel }}</span>
+                  </td>
+                  <td style="padding:9px 12px">
+                    <button type="button" onClick="{{ d.onResolve }}" style="background:rgba(255,176,32,0.85);color:#1a1200;font-weight:700;font-size:11px;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;white-space:nowrap">{{ t.admin.resolveBtn }}</button>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <sc-if value="{{ disputesEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:30px;text-align:center;color:#7a8a8a">{{ t.admin.noDisputes }}</div>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:12px;padding:6px 4px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12.5px;color:#5a6b69">{{ t.admin.pageSizeLabel }}</span>
+            <div style="position:relative">
+              <button type="button" onClick="{{ disputesPageSizeDD.toggle }}" style="padding:7px 10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:6px;cursor:pointer">
+                <span>{{ disputesPageSizeDD.displayLabel }}</span>
+                <span style="font-size:8px;color:#6b7d7a">▼</span>
+              </button>
+              <sc-if value="{{ disputesPageSizeDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ disputesPageSizeDD.close }}"></div>
+                <div style="position:absolute;bottom:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:10px;padding:6px;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                  <sc-for list="{{ disputesPageSizeDD.options }}" as="opt" hint-placeholder-count="4">
+                    <div onClick="{{ opt.onClick }}" style="padding:7px 14px;border-radius:8px;font-size:12.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }}">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12.5px;color:#5a6b69">{{ disputesPageInfoLabel }}</span>
+            <button type="button" onClick="{{ disputesOnPrevPage }}" disabled="{{ disputesHasNoPrevPage }}" style="padding:7px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer">{{ t.admin.prevPageBtn }}</button>
+            <button type="button" onClick="{{ disputesOnNextPage }}" disabled="{{ disputesHasNoNextPage }}" style="padding:7px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer">{{ t.admin.nextPageBtn }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- แท็บจัดการ user -->
+      <sc-if value="{{ isUsersTab }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <input type="text" value="{{ usersSearchQuery }}" onChange="{{ setUsersSearchQuery }}" placeholder="{{ t.admin.usersSearchPlaceholder }}" style="flex:1;min-width:200px;box-sizing:border-box;padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          <div style="position:relative">
+            <button type="button" onClick="{{ usersFilterStatusDD.toggle }}" style="padding:9px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ usersFilterStatusDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:8px;cursor:pointer">
+              <span>{{ usersFilterStatusDD.displayLabel }}</span>
+              <span style="font-size:9px;color:#6b7d7a">▼</span>
+            </button>
+            <sc-if value="{{ usersFilterStatusDD.isOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:fixed;inset:0;z-index:500" onClick="{{ usersFilterStatusDD.close }}"></div>
+              <div style="position:absolute;top:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;min-width:160px;max-height:280px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                <sc-for list="{{ usersFilterStatusDD.options }}" as="opt" hint-placeholder-count="5">
+                  <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif;white-space:nowrap">{{ opt.label }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <button type="button" onClick="{{ reloadUsers }}" style="padding:9px 14px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:13px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;white-space:nowrap">↻ {{ t.admin.reloadBtn }}</button>
+        </div>
+
+        <div style="overflow-x:auto;border-radius:12px;background:#fff;margin-bottom:24px">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;color:#1a1a1a">
+            <thead>
+              <tr style="background:#e8ecec;border-bottom:2px solid #d0d6d6">
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colEmail }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colProfileName }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colXHandle }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colSignupChannel }}</th>
+                <th style="text-align:left;padding:10px 12px;cursor:pointer" onClick="{{ toggleUsersCreatedSort }}">{{ t.admin.colCreatedAt }} {{ usersCreatedSortIcon }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colUserStatus }}</th>
+                <th style="text-align:left;padding:10px 12px">{{ t.admin.colActions }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ userRows }}" as="u" hint-placeholder-count="6">
+                <tr style="border-bottom:1px solid #eee">
+                  <td style="padding:9px 12px;font-weight:600">{{ u.email }}</td>
+                  <td style="padding:9px 12px">{{ u.profileName }}</td>
+                  <td style="padding:9px 12px">{{ u.xHandle }}</td>
+                  <td style="padding:9px 12px">
+                    <span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:{{ u.signupChannelBg }};color:{{ u.signupChannelColor }}">{{ u.signupChannelLabel }}</span>
+                  </td>
+                  <td style="padding:9px 12px">{{ u.createdAtLabel }}</td>
+                  <td style="padding:9px 12px">
+                    <span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:{{ u.statusBg }};color:{{ u.statusColor }}">{{ u.statusLabel }}</span>
+                  </td>
+                  <td style="padding:9px 12px">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                      <sc-if value="{{ u.showDeactivateBtn }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ u.onDeactivate }}" style="background:#e8ecec;color:#1a1a1a;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.deactivateBtn }}</button>
+                      </sc-if>
+                      <sc-if value="{{ u.showReactivateBtn }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ u.onReactivate }}" style="background:rgba(34,197,94,0.85);color:#06280f;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.reactivateBtn }}</button>
+                      </sc-if>
+                      <sc-if value="{{ u.showResetBtn }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ u.onSendReset }}" style="background:#0891b2;color:#fff;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer;opacity:{{ u.sendResetOpacity }}">{{ u.sendResetLabel }}</button>
+                      </sc-if>
+                      <sc-if value="{{ u.canManage }}" hint-placeholder-val="{{ false }}">
+                        <button type="button" onClick="{{ u.onDelete }}" style="background:rgba(255,80,80,0.85);color:#fff;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.deleteUserBtn }}</button>
+                      </sc-if>
+                      <sc-if value="{{ u.showToast }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:11px;color:#0d7f75;font-weight:600">✓ {{ t.admin.resetSentToast }}</span>
+                      </sc-if>
+                    </div>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <sc-if value="{{ userRowsEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:30px;text-align:center;color:#7a8a8a">{{ t.admin.noUsersFound }}</div>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:12px;margin-bottom:24px;padding:6px 4px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12.5px;color:#5a6b69">{{ t.admin.pageSizeLabel }}</span>
+            <div style="position:relative">
+              <button type="button" onClick="{{ usersPageSizeDD.toggle }}" style="padding:7px 10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;display:flex;align-items:center;gap:6px;cursor:pointer">
+                <span>{{ usersPageSizeDD.displayLabel }}</span>
+                <span style="font-size:8px;color:#6b7d7a">▼</span>
+              </button>
+              <sc-if value="{{ usersPageSizeDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ usersPageSizeDD.close }}"></div>
+                <div style="position:absolute;bottom:calc(100% + 6px);left:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:10px;padding:6px;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                  <sc-for list="{{ usersPageSizeDD.options }}" as="opt" hint-placeholder-count="4">
+                    <div onClick="{{ opt.onClick }}" style="padding:7px 14px;border-radius:8px;font-size:12.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }}">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:12.5px;color:#5a6b69">{{ usersPageInfoLabel }}</span>
+            <button type="button" onClick="{{ usersOnPrevPage }}" disabled="{{ usersHasNoPrevPage }}" style="padding:7px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer">{{ t.admin.prevPageBtn }}</button>
+            <button type="button" onClick="{{ usersOnNextPage }}" disabled="{{ usersHasNoNextPage }}" style="padding:7px 12px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#0891b2;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer">{{ t.admin.nextPageBtn }}</button>
+          </div>
+        </div>
+
+        <div onClick="{{ toggleUserLog }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:12px">
+          <span style="font-size:15px;font-weight:700;color:#0891b2">{{ t.admin.userLogTitle }}</span>
+          <span style="font-size:11px;color:#6b7d7a">{{ userLogToggleIcon }}</span>
+        </div>
+        <sc-if value="{{ isUserLogOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="overflow-x:auto;border-radius:12px;background:#fff">
+            <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;color:#1a1a1a">
+              <thead>
+                <tr style="background:#e8ecec;border-bottom:2px solid #d0d6d6">
+                  <th style="text-align:left;padding:10px 12px">{{ t.admin.colDateTime }}</th>
+                  <th style="text-align:left;padding:10px 12px">{{ t.admin.colProfileName }}</th>
+                  <th style="text-align:left;padding:10px 12px">{{ t.admin.colEmail }}</th>
+                  <th style="text-align:left;padding:10px 12px">{{ t.admin.colActions }}</th>
+                  <th style="text-align:left;padding:10px 12px">{{ t.admin.logByLabel }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ userLogRows }}" as="l" hint-placeholder-count="4">
+                  <tr style="border-bottom:1px solid #eee">
+                    <td style="padding:9px 12px">{{ l.dateTimeLabel }}</td>
+                    <td style="padding:9px 12px">{{ l.profileName }}</td>
+                    <td style="padding:9px 12px">{{ l.email }}</td>
+                    <td style="padding:9px 12px">
+                      <div>{{ l.actionLabel }}</div>
+                      <sc-if value="{{ l.hasNote }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-size:10.5px;color:#6b7d7a;margin-top:2px">{{ l.note }}</div>
+                      </sc-if>
+                    </td>
+                    <td style="padding:9px 12px">{{ l.byLabel }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <sc-if value="{{ userLogEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;padding:30px;color:#6b7d7a">{{ t.admin.userLogEmpty }}</div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- แท็บส่งประกาศ (ANNOUNCEMENT — แจ้งเตือนถึงทุกคนรวมคนที่ยังไม่ login) -->
+      <sc-if value="{{ isAnnouncementsTab }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:520px">
+          <div style="font-size:12px;color:#6b7d7a;background:#f5f7f7;border-radius:8px;padding:10px 14px;margin-bottom:18px;line-height:1.6">{{ t.admin.announceNote }}</div>
+
+          <sc-if value="{{ isEditingAnnouncement }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div style="font-size:13.5px;font-weight:700;color:#0891b2">{{ t.admin.announceEditingHeading }}</div>
+              <span onClick="{{ cancelEditAnnouncement }}" style="font-size:12px;color:#6b7d7a;cursor:pointer;text-decoration:underline">{{ t.admin.announceCancelEditBtn }}</span>
+            </div>
+          </sc-if>
+
+          <div style="margin-bottom:16px">
+            <div style="font-size:12.5px;color:#1a1a1a;font-weight:600;margin-bottom:5px">{{ t.admin.announceTitleLabel }}</div>
+            <input type="text" value="{{ announceTitle }}" onChange="{{ setAnnounceTitle }}" placeholder="{{ t.admin.announceTitlePlaceholder }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid #e2e8e8;background:#fff;color:#1a1a1a;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+          </div>
+
+          <div style="margin-bottom:16px">
+            <div style="font-size:12.5px;color:#1a1a1a;font-weight:600;margin-bottom:5px">{{ t.admin.announceBodyLabel }}</div>
+            <textarea value="{{ announceBody }}" onChange="{{ setAnnounceBody }}" placeholder="{{ t.admin.announceBodyPlaceholder }}" rows="2" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid #e2e8e8;background:#fff;color:#1a1a1a;font-size:14px;font-family:'Noto Sans Thai',sans-serif;resize:vertical"></textarea>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;cursor:pointer" onClick="{{ toggleAnnounceClickable }}">
+            <div style="width:18px;height:18px;border-radius:5px;border:2px solid {{ announceClickableBorder }};background:{{ announceClickableBg }};flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900">{{ announceClickableCheck }}</div>
+            <div style="font-size:13px;color:#1a1a1a">{{ t.admin.announceClickableLabel }}</div>
+          </div>
+
+          <sc-if value="{{ isAnnounceClickable }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-bottom:16px">
+              <div style="font-size:12.5px;color:#1a1a1a;font-weight:600;margin-bottom:5px">{{ t.admin.announceDetailLabel }}</div>
+              <textarea value="{{ announceDetail }}" onChange="{{ setAnnounceDetail }}" placeholder="{{ t.admin.announceDetailPlaceholder }}" rows="4" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid #e2e8e8;background:#fff;color:#1a1a1a;font-size:14px;font-family:'Noto Sans Thai',sans-serif;resize:vertical"></textarea>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasAnnounceError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px;color:#a32020;margin-bottom:12px">{{ announceErrorMsg }}</div>
+          </sc-if>
+          <sc-if value="{{ hasAnnounceSuccess }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px;color:#0d7f75;margin-bottom:12px">{{ t.admin.announceSendSuccess }}</div>
+          </sc-if>
+
+          <button type="button" onClick="{{ submitAnnouncement }}" disabled="{{ isAnnouncePublishing }}" style="background:#0891b2;color:#fff;font-weight:700;font-size:14px;padding:11px 24px;border:none;border-radius:24px;cursor:pointer;opacity:{{ announcePublishOpacity }}">{{ announcePublishLabel }}</button>
+        </div>
+
+        <div style="max-width:640px;margin-top:36px">
+          <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:12px">{{ t.admin.announceListHeading }}</div>
+
+          <sc-if value="{{ announceListEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;padding:24px;color:#6b7d7a;font-size:13px">{{ t.admin.announceListEmpty }}</div>
+          </sc-if>
+
+          <sc-for list="{{ announcementRows }}" as="a" hint-placeholder-count="3">
+            <div style="background:#f5f7f7;border-radius:10px;padding:14px 16px;margin-bottom:8px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                <div style="flex:1">
+                  <div style="font-size:13.5px;font-weight:700;color:#1a1a1a">{{ a.title }}</div>
+                  <div style="font-size:12.5px;color:#5a6b69;margin-top:3px;line-height:1.5">{{ a.body }}</div>
+                  <div style="font-size:11px;color:#8a9a98;margin-top:6px">{{ a.createdAtLabel }} <sc-if value="{{ a.isClickable }}" hint-placeholder-val="{{ false }}"> · {{ t.admin.announceClickableTag }}</sc-if></div>
+                </div>
+                <div style="display:flex;gap:6px;flex:none">
+                  <span onClick="{{ a.onEdit }}" style="font-size:12px;color:#0891b2;cursor:pointer;text-decoration:underline">{{ t.admin.announceEditBtn }}</span>
+                  <span onClick="{{ a.onDelete }}" style="font-size:12px;color:#a32020;cursor:pointer;text-decoration:underline">{{ t.admin.announceDeleteBtn }}</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+    </sc-if>
+
+  </main>
+
+  <!-- Modal: เปลี่ยนสถานะ -->
+  <sc-if value="{{ isChangeStatusOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeChangeStatus }}">
+      <div style="background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:16px;padding:24px;max-width:380px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#0891b2;margin-bottom:16px">{{ t.admin.changeStatusTitle }}</div>
+        <div style="margin-bottom:12px;position:relative">
+          <button type="button" onClick="{{ changeStatusDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ changeStatusDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+            <span>{{ changeStatusDD.displayLabel }}</span>
+            <span style="font-size:9px;color:#6b7d7a">▼</span>
+          </button>
+          <sc-if value="{{ changeStatusDD.isOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed;inset:0;z-index:500" onClick="{{ changeStatusDD.close }}"></div>
+            <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+              <sc-for list="{{ changeStatusDD.options }}" as="opt" hint-placeholder-count="3">
+                <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;color:#5a6b69;margin-bottom:5px">{{ t.admin.changeStatusReasonLabel }}</div>
+          <textarea value="{{ changeStatusNote }}" onChange="{{ setChangeStatusNote }}" rows="3" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif"></textarea>
+          <sc-if value="{{ hasChangeStatusError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px;color:#a32020;margin-top:6px">{{ changeStatusError }}</div>
+          </sc-if>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeChangeStatus }}" style="flex:1;text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.cancelBtn }}</div>
+          <div onClick="{{ submitChangeStatus }}" style="flex:1;text-align:center;background:rgba(111,224,214,0.85);color:#0d1117;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ changeStatusBusyOpacity }}">{{ changeStatusBtnLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ยืนยันการอนุมัติบัตร -->
+  <sc-if value="{{ isApproveConfirmOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeApproveConfirm }}">
+      <div style="background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:16px;padding:24px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#0891b2;margin-bottom:12px">{{ t.admin.approveConfirmTitle }}</div>
+        <div style="font-size:13px;color:#33413f;margin-bottom:6px;font-weight:600">{{ approveConfirmSeatLabel }}</div>
+        <div style="font-size:12.5px;color:#5a6b69;margin-bottom:14px;line-height:1.6">{{ t.admin.approveConfirmBody }}</div>
+        <sc-if value="{{ approveConfirmNoEvidence }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#a35c00;background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.35);border-radius:8px;padding:10px 12px;margin-bottom:16px;line-height:1.6">⚠️ {{ t.admin.approveNoEvidenceWarning }}</div>
+        </sc-if>
+
+        <sc-if value="{{ isRejectClaimMode }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom:12px">
+            <div style="font-size:11px;color:#5a6b69;margin-bottom:5px">{{ t.admin.rejectClaimReasonLabel }}</div>
+            <textarea value="{{ rejectClaimNote }}" onChange="{{ setRejectClaimNote }}" rows="3" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(255,90,90,0.3);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif"></textarea>
+            <sc-if value="{{ hasRejectClaimError }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12.5px;color:#a32020;margin-top:6px">{{ rejectClaimError }}</div>
+            </sc-if>
+          </div>
+          <div style="display:flex;gap:8px">
+            <div onClick="{{ cancelRejectClaim }}" style="flex:1;text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.backBtn }}</div>
+            <div onClick="{{ confirmRejectClaim }}" style="flex:1;text-align:center;background:rgba(255,80,80,0.85);color:#fff;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ rejectClaimBusyOpacity }}">{{ rejectClaimBtnLabel }}</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isApproveChoiceMode }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;gap:8px">
+            <div onClick="{{ closeApproveConfirm }}" style="flex:1;text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.cancelBtn }}</div>
+            <div onClick="{{ startRejectClaim }}" style="flex:1;text-align:center;background:rgba(255,80,80,0.12);color:#a32020;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.rejectClaimBtn }}</div>
+            <div onClick="{{ confirmApprove }}" style="flex:1;text-align:center;background:rgba(111,224,214,0.85);color:#0d1117;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.approveBtn }}</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: เอกสารหลักฐาน -->
+  <sc-if value="{{ isEvidenceDocsOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeEvidenceDocs }}">
+      <div style="background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:80vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#0891b2;margin-bottom:14px">{{ t.admin.evidenceDocsTitle }}</div>
+        <sc-for list="{{ evidenceDocs }}" as="ev" hint-placeholder-count="3">
+          <div style="background:#f5f7f7;border-radius:10px;padding:12px;margin-bottom:10px">
+            <div style="font-size:13px;color:#1a1a1a;font-weight:600;margin-bottom:4px">{{ ev.typeLabel }} · {{ ev.submittedAtLabel }}</div>
+            <div style="font-size:12px;color:#5a6b69;margin-bottom:8px">{{ t.admin.colStatus }}: {{ ev.resultLabel }}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button type="button" onClick="{{ ev.onOpen }}" style="background:rgba(13,127,117,0.12);color:#0891b2;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.evidenceOpenBtn }}</button>
+              <sc-if value="{{ ev.canJudge }}" hint-placeholder-val="{{ false }}">
+                <button type="button" onClick="{{ ev.onApprove }}" style="background:rgba(111,224,214,0.85);color:#0d1117;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.evidenceApproveBtn }}</button>
+                <button type="button" onClick="{{ ev.onReject }}" style="background:rgba(255,80,80,0.8);color:#fff;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.evidenceRejectBtn }}</button>
+              </sc-if>
+            </div>
+            <sc-if value="{{ ev.isRejecting }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eef2f2">
+                <div style="font-size:11px;color:#5a6b69;margin-bottom:5px">{{ t.admin.evidenceRejectReasonLabel }}</div>
+                <textarea value="{{ ev.rejectNote }}" onChange="{{ ev.setRejectNote }}" rows="2" style="width:100%;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:12.5px;font-family:'Noto Sans Thai',sans-serif"></textarea>
+                <sc-if value="{{ ev.hasRejectError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:11.5px;color:#a32020;margin-top:4px">{{ ev.rejectError }}</div>
+                </sc-if>
+                <div style="display:flex;gap:6px;margin-top:8px">
+                  <button type="button" onClick="{{ ev.cancelReject }}" style="background:#eef2f2;color:#1a1a1a;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.cancelBtn }}</button>
+                  <button type="button" onClick="{{ ev.confirmReject }}" style="background:rgba(255,80,80,0.8);color:#fff;font-weight:600;font-size:11.5px;padding:6px 12px;border:none;border-radius:6px;cursor:pointer">{{ t.admin.evidenceRejectBtn }}</button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <div style="font-size:11px;color:#6b7d7a;margin-top:8px">{{ t.admin.evidenceDeletedNote }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ตัดสินเคสข้อพิพาท -->
+  <sc-if value="{{ isResolveOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeResolve }}">
+      <div style="background:#ffffff;border:1px solid rgba(255,176,32,0.35);border-radius:16px;padding:24px;max-width:420px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#a35c00;margin-bottom:16px">{{ t.admin.resolveTitle }}</div>
+
+        <div style="margin-bottom:12px;position:relative">
+          <div style="font-size:11px;color:#5a6b69;margin-bottom:5px">{{ t.admin.outcomeLabel }}</div>
+          <button type="button" onClick="{{ resolveOutcomeDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ resolveOutcomeDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+            <span>{{ resolveOutcomeDD.displayLabel }}</span>
+            <span style="font-size:9px;color:#6b7d7a">▼</span>
+          </button>
+          <sc-if value="{{ resolveOutcomeDD.isOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed;inset:0;z-index:500" onClick="{{ resolveOutcomeDD.close }}"></div>
+            <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;max-height:240px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+              <sc-for list="{{ resolveOutcomeDD.options }}" as="opt" hint-placeholder-count="5">
+                <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ showWinningClaimSelect }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom:12px;position:relative">
+            <div style="font-size:11px;color:#5a6b69;margin-bottom:5px">{{ t.admin.winningClaimLabel }}</div>
+            <button type="button" onClick="{{ resolveTargetClaimDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:{{ resolveTargetClaimDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+              <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ resolveTargetClaimDD.displayLabel }}</span>
+              <span style="font-size:9px;color:#6b7d7a;flex-shrink:0">▼</span>
+            </button>
+            <sc-if value="{{ resolveTargetClaimDD.isOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:fixed;inset:0;z-index:500" onClick="{{ resolveTargetClaimDD.close }}"></div>
+              <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:12px;padding:6px;max-height:200px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.15)">
+                <sc-for list="{{ resolveTargetClaimDD.options }}" as="opt" hint-placeholder-count="2">
+                  <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;color:#5a6b69;margin-bottom:5px">{{ t.admin.adminNoteLabel }}</div>
+          <textarea value="{{ resolveNote }}" onChange="{{ setResolveNote }}" rows="3" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif"></textarea>
+        </div>
+
+        <sc-if value="{{ hasResolveError }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#a32020;margin-bottom:12px">{{ resolveError }}</div>
+        </sc-if>
+
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeResolve }}" style="flex:1;text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.cancelBtn }}</div>
+          <div onClick="{{ submitResolve }}" style="flex:1;text-align:center;background:rgba(255,176,32,0.85);color:#1a1200;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ resolveBusyOpacity }}">{{ resolveBtnLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ยืนยันปิดใช้งาน user -->
+  <sc-if value="{{ isDeactivateUserOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeDeactivateUser }}">
+      <div style="background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:16px;padding:24px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#0891b2;margin-bottom:12px">{{ t.admin.deactivateConfirmTitle }}</div>
+        <div style="font-size:13px;color:#33413f;margin-bottom:6px;font-weight:600">{{ deactivateTargetEmail }}</div>
+        <div style="font-size:12.5px;color:#5a6b69;margin-bottom:18px;line-height:1.6">{{ t.admin.deactivateConfirmBody }}</div>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeDeactivateUser }}" style="flex:1;text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.cancelBtn }}</div>
+          <div onClick="{{ confirmDeactivateUser }}" style="flex:1;text-align:center;background:rgba(111,224,214,0.85);color:#0d1117;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ deactivateUserBusyOpacity }}">{{ deactivateUserBtnLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ยืนยันเปิดใช้งาน user คืน -->
+  <sc-if value="{{ isReactivateUserOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeReactivateUser }}">
+      <div style="background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:16px;padding:24px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#0891b2;margin-bottom:12px">{{ t.admin.reactivateConfirmTitle }}</div>
+        <div style="font-size:13px;color:#33413f;margin-bottom:6px;font-weight:600">{{ reactivateTargetEmail }}</div>
+        <div style="font-size:12.5px;color:#5a6b69;margin-bottom:18px;line-height:1.6">{{ t.admin.reactivateConfirmBody }}</div>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeReactivateUser }}" style="flex:1;text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.cancelBtn }}</div>
+          <div onClick="{{ confirmReactivateUser }}" style="flex:1;text-align:center;background:rgba(34,197,94,0.85);color:#06280f;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ reactivateUserBusyOpacity }}">{{ reactivateUserBtnLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ยืนยันลบ user ถาวร -->
+  <sc-if value="{{ isDeleteUserOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeDeleteUser }}">
+      <div style="background:#ffffff;border:1px solid rgba(255,90,90,0.4);border-radius:16px;padding:24px;max-width:420px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#a32020;margin-bottom:12px">{{ t.admin.deleteUserConfirmTitle }}</div>
+        <div style="font-size:13px;color:#33413f;margin-bottom:6px;font-weight:600">{{ deleteTargetEmail }}</div>
+        <div style="font-size:12.5px;color:#5a6b69;margin-bottom:14px;line-height:1.6">{{ t.admin.deleteUserConfirmBody }}</div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;color:#5a6b69;margin-bottom:5px">{{ t.admin.deleteUserReasonLabel }}</div>
+          <textarea value="{{ deleteUserReason }}" onChange="{{ setDeleteUserReason }}" rows="2" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif"></textarea>
+        </div>
+        <sc-if value="{{ hasDeleteUserError }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#a32020;margin-bottom:12px">{{ deleteUserError }}</div>
+        </sc-if>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeDeleteUser }}" style="flex:1;text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.cancelBtn }}</div>
+          <div onClick="{{ confirmDeleteUser }}" style="flex:1;text-align:center;background:rgba(255,80,80,0.85);color:#fff;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ deleteUserBusyOpacity }}">{{ deleteUserBtnLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ดูรายละเอียด/log ของ claim หนึ่งใบ -->
+  <sc-if value="{{ isClaimDetailsOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeClaimDetails }}">
+      <div style="background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:16px;padding:24px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#0891b2;margin-bottom:4px">{{ t.admin.claimDetailsTitle }}</div>
+        <div style="font-size:12.5px;color:#5a6b69;margin-bottom:16px">{{ claimDetailsSeatLabel }}</div>
+
+        <sc-if value="{{ claimLogLoading }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:20px;color:#7a8a8a;font-size:13px">{{ t.admin.loadingLabel }}</div>
+        </sc-if>
+        <sc-if value="{{ claimLogEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:20px;color:#7a8a8a;font-size:13px">{{ t.admin.noLogRows }}</div>
+        </sc-if>
+        <sc-for list="{{ claimLogRows }}" as="lg" hint-placeholder-count="4">
+          <div style="background:#f5f7f7;border-radius:10px;padding:12px 14px;margin-bottom:8px">
+            <div style="font-size:12.5px;font-weight:700;color:#1a1a1a">{{ lg.actionLabel }}</div>
+            <div style="font-size:11px;color:#6b7d7a;margin-top:2px">{{ lg.byLabel }} {{ lg.actorEmail }} · {{ lg.atLabel }}</div>
+            <sc-if value="{{ lg.hasDetail }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:11px;color:#33413f;margin-top:6px;white-space:pre-line">{{ lg.detailLabel }}</div>
+            </sc-if>
+          </div>
+        </sc-for>
+
+        <div onClick="{{ closeClaimDetails }}" style="text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;margin-top:8px">{{ t.admin.closeBtn }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: แจ้งเตือนตอนกดดูไฟล์หลักฐานแล้วไฟล์ถูกลบไปแล้ว (เช่น ตรวจผ่าน/ตัดสินเคส
+       ไปแล้ว ระบบลบไฟล์จริงทิ้งอัตโนมัติ เหลือแค่ผลตรวจในประวัติ) -->
+  <sc-if value="{{ isEvidenceFileNotFoundOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.6);display:flex;align-items:center;justify-content:center;z-index:250;padding:20px" onClick="{{ closeEvidenceFileNotFound }}">
+      <div style="background:#ffffff;border:1px solid rgba(255,80,80,0.35);border-radius:16px;padding:24px;max-width:380px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#a32020;margin-bottom:8px">{{ t.admin.evidenceFileNotFoundTitle }}</div>
+        <div style="font-size:13px;color:#3a4a48;line-height:1.6;margin-bottom:18px">{{ t.admin.evidenceFileNotFoundBody }}</div>
+        <div onClick="{{ closeEvidenceFileNotFound }}" style="text-align:center;background:#e8ecec;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.alertOkBtn }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ดูไฟล์หลักฐาน inline (ไม่เปิดแท็บใหม่) -->
+  <sc-if value="{{ isPreviewFileOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.9);display:flex;align-items:center;justify-content:center;z-index:250;padding:20px" onClick="{{ closePreviewFile }}">
+      <div style="max-width:90vw;max-height:85vh;position:relative" onClick="{{ stopProp }}">
+        <sc-if value="{{ isPreviewImage }}" hint-placeholder-val="{{ true }}">
+          <img src="{{ previewFileUrl }}" loading="lazy" style="max-width:90vw;max-height:85vh;border-radius:10px;display:block">
+        </sc-if>
+        <sc-if value="{{ isPreviewVideo }}" hint-placeholder-val="{{ false }}">
+          <video src="{{ previewFileUrl }}" controls autoplay style="max-width:90vw;max-height:85vh;border-radius:10px;display:block"></video>
+        </sc-if>
+        <div onClick="{{ closePreviewFile }}" style="position:absolute;top:-14px;right:-14px;width:32px;height:32px;border-radius:50%;background:#fff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,0.3)">✕</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ขอหลักฐานเพิ่มจากผู้อ้างสิทธิ์รายที่ระบุ -->
+  <sc-if value="{{ isEvidenceRequestOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeEvidenceRequest }}">
+      <div style="background:#ffffff;border:1px solid rgba(13,127,117,0.3);border-radius:16px;padding:24px;max-width:420px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:16px;font-weight:700;color:#0891b2;margin-bottom:12px">{{ t.admin.requestEvidenceTitle }}</div>
+        <div style="font-size:11px;color:#5a6b69;margin-bottom:5px">{{ t.admin.requestEvidenceNoteLabel }}</div>
+        <textarea value="{{ evidenceRequestNote }}" onChange="{{ setEvidenceRequestNote }}" rows="3" style="width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(13,127,117,0.25);background:#f5f7f7;color:#1a1a1a;font-size:13px;font-family:'Noto Sans Thai',sans-serif;margin-bottom:14px"></textarea>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeEvidenceRequest }}" style="flex:1;text-align:center;background:#eef2f2;color:#1a1a1a;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.admin.cancelBtn }}</div>
+          <div onClick="{{ submitEvidenceRequest }}" style="flex:1;text-align:center;background:#0891b2;color:#fff;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ evidenceRequestOpacity }}">{{ evidenceRequestBtnLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const SHOW_ROUNDS = [
+  { id: '2569-10-23', label_th: 'ศุกร์ 23 ต.ค. 2569', label_en: 'Fri Oct 23, 2026' },
+  { id: '2569-10-24', label_th: 'เสาร์ 24 ต.ค. 2569', label_en: 'Sat Oct 24, 2026' },
+  { id: '2569-10-25', label_th: 'อาทิตย์ 25 ต.ค. 2569', label_en: 'Sun Oct 25, 2026' }
+];
+
+const REVIEW_DEADLINE_HOURS = 48;
+
+// เลขเคสข้อพิพาท แสดงเป็น LYKN-0000001 (running เลขจาก reviews.case_number ซึ่ง
+// เป็น bigint identity ของจริง รับประกันไม่ซ้ำกันอยู่แล้วในตัว)
+function formatCaseNumber(n) {
+  return n ? 'LYKN-' + String(n).padStart(7, '0') : '';
+}
+
+class Component extends DCLogic {
+  state = {
+    lang: getStoredLang(),
+    authLoading: true,
+    session: null,
+    isForbidden: false,
+    openDropdown: null,
+
+    loginEmail: '', loginPassword: '', loginErrorMsg: '',
+
+    activeTab: 'approve',
+    claimsStatus: 'idle', claims: [],
+    disputesStatus: 'idle', disputes: [],
+
+    announceTitle: '', announceBody: '', announceIsClickable: false, announceDetail: '',
+    announceStatus: 'idle', announceErrorMsg: '',
+    editingAnnouncementId: null,
+    announcementsStatus: 'idle', announcements: [],
+
+    searchQuery: '', filterZoneQuery: '', filterRowQuery: '', filterSeatQuery: '', filterStatus: '', filterRound: '', filterEvidence: '',
+    statusSortDir: 'none', caseSortDir: 'none',
+
+    changeStatusClaimId: null, changeStatusValue: 'REGISTERED', changeStatusNote: '', changeStatusError: '',
+    approveConfirmClaim: null,
+    rejectClaimMode: false, rejectClaimNote: '', rejectClaimError: '',
+    evidenceDocsClaimId: null, evidenceDocs: [],
+    evidenceRejectTargetId: null, evidenceRejectNote: '', evidenceRejectError: '',
+    resolveReviewId: null, resolveOutcome: 'PENDING', resolveTargetClaimId: '', resolveNote: '', resolveClaimants: [], resolveError: '',
+    nowTick: Date.now(),
+
+    busyAction: null,
+    previewFileUrl: null, previewFileType: null,
+    evidenceFileNotFoundOpen: false,
+    claimDetailsClaim: null, claimLogStatus: 'idle', claimLog: [],
+    evidenceRequestTargetId: null, evidenceRequestNote: '',
+
+    usersStatus: 'idle', users: [], usersSearchQuery: '',
+    usersFilterStatus: '', usersCreatedSortDir: 'none',
+    userLogStatus: 'idle', userLog: [],
+    deactivateTargetUser: null,
+    reactivateTargetUser: null,
+    deleteTargetUser: null, deleteUserReason: '', deleteUserError: '',
+    resetSentToastUserId: '',
+    claimsPage: 1, claimsPageSize: 20,
+    disputesPage: 1, disputesPageSize: 20,
+    usersPage: 1, usersPageSize: 20,
+    isUserLogOpen: false,
+
+    disputesSearchQuery: '', disputesZoneQuery: '', disputesRowQuery: '', disputesSeatQuery: '', disputesSortDir: 'none',
+    // ค่าเริ่มต้นเป็น desc (เรียงจาก case ล่าสุด/ใหม่สุดไปเก่าสุด) ตามที่ขอ —
+    // case_number เป็นเลขไล่ขึ้นเรื่อยๆ desc เลยเท่ากับ "ใหม่สุดก่อน" อยู่แล้ว
+    disputesCaseSortDir: 'desc',
+    disputesOpenedSortDir: 'none',
+    disputesFilterEvidence: '', disputesFilterStatus: ''
+  };
+
+  componentDidMount() {
+    const sb = getSupabaseClient();
+    sb.auth.getSession().then(({ data }) => this.applySession(data.session));
+    this._authSub = sb.auth.onAuthStateChange((_e, session) => this.applySession(session));
+    this._tickInterval = setInterval(() => this.setState({ nowTick: Date.now() }), 60000);
+  }
+  componentWillUnmount() {
+    this._authSub?.data?.subscription?.unsubscribe();
+    clearInterval(this._tickInterval);
+  }
+
+  applySession(session) {
+    this.setState({ authLoading: false, session, isForbidden: false });
+    if (session) { this.loadClaims(); this.loadDisputes(); }
+  }
+
+  toggleDropdown(key) { this.setState({ openDropdown: this.state.openDropdown === key ? null : key }); }
+  closeDropdown() { this.setState({ openDropdown: null }); }
+
+  // สร้าง dropdown ที่ธีมเข้ากับเว็บเอง แทน <select> ธรรมดา — เพราะ popup ของ
+  // <select> เป็น UI ของเบราว์เซอร์/OS เอง คุม CSS ให้เข้าธีมมืดของเว็บไม่ได้เต็มที่
+  // (ปุ่มปิดดูเข้าธีม แต่พอกดเปิดรายการกลายเป็นกล่องขาวของเบราว์เซอร์)
+  makeDropdown(key, items, currentValue, placeholder, onSelect) {
+    const normItems = (items || []).map(it => (it && typeof it === 'object')
+      ? { value: it.id ?? it.value, label: it.label }
+      : { value: it, label: it });
+    const match = normItems.find(it => it.value === currentValue);
+    return {
+      isOpen: this.state.openDropdown === key,
+      toggle: () => this.toggleDropdown(key),
+      close: () => this.closeDropdown(),
+      displayLabel: match ? match.label : placeholder,
+      textColor: match ? '#1a1a1a' : '#6b7d7a',
+      options: normItems.map(it => ({
+        label: it.label,
+        color: it.value === currentValue ? '#0891b2' : '#1a1a1a',
+        bg: it.value === currentValue ? 'rgba(13,127,117,0.12)' : 'transparent',
+        onClick: () => { onSelect(it.value); this.closeDropdown(); }
+      }))
+    };
+  }
+
+  // ตัวช่วยแสดง loading — ห่อ action async ใดๆ ไว้ ระหว่างทำงานปุ่มจะ disable
+  // + เปลี่ยนข้อความเป็น "..." (เช็คจาก busyAction === key ใน renderVals())
+  // กันปัญหาที่ผ่านมา: กดปุ่มแล้วเงียบไปเลยจนกว่า request จะเสร็จ ดูเหมือนค้าง
+  async runBusy(key, fn) {
+    if (this.state.busyAction) return; // กันกดซ้ำระหว่างมี action อื่นทำงานอยู่
+    this.setState({ busyAction: key });
+    try {
+      await fn();
+    } finally {
+      this.setState({ busyAction: null });
+    }
+  }
+
+  setLoginEmail(e) { this.setState({ loginEmail: e.target.value }); }
+  setLoginPassword(e) { this.setState({ loginPassword: e.target.value }); }
+  async submitLogin() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const sb = getSupabaseClient();
+    const { error } = await sb.auth.signInWithPassword({ email: this.state.loginEmail, password: this.state.loginPassword });
+    if (error) { this.setState({ loginErrorMsg: t.admin.loginError }); return; }
+    this.setState({ loginErrorMsg: '' });
+  }
+  async logout() { await getSupabaseClient().auth.signOut(); }
+
+  async authedFetch(fnName, body) {
+    const sb = getSupabaseClient();
+    const { data: sessionData } = await sb.auth.getSession();
+    const token = sessionData.session.access_token;
+    let res;
+    try {
+      res = await fetch(supabaseFunctionUrl(fnName), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+        body: JSON.stringify(body || {})
+      });
+    } catch (err) {
+      // เครือข่ายล่ม/CORS พัง/ฟังก์ชันยังไม่ deploy ฯลฯ — คืน null แทนที่จะปล่อยให้
+      // promise reject ค้าง (จะทำให้ setState('loading') ค้างตลอดไปไม่มี error โผล่)
+      return null;
+    }
+    if (res.status === 403 || res.status === 401) { this.setState({ isForbidden: true }); return null; }
+    try {
+      return await res.json();
+    } catch (err) {
+      return null;
+    }
+  }
+
+  async loadClaims() {
+    this.setState({ claimsStatus: 'loading' });
+    const data = await this.authedFetch('admin-list-claims');
+    if (!data) return;
+    if (!data.ok) { this.setState({ claimsStatus: 'error' }); return; }
+    this.setState({ claimsStatus: 'done', claims: data.claims || [] });
+  }
+  async loadDisputes() {
+    this.setState({ disputesStatus: 'loading' });
+    const data = await this.authedFetch('admin-list-disputes', {});
+    if (!data) return;
+    if (!data.ok) { this.setState({ disputesStatus: 'error' }); return; }
+    this.setState({ disputesStatus: 'done', disputes: data.disputes || [] });
+  }
+
+  setTabApprove() { this.setState({ activeTab: 'approve' }); }
+  setTabDisputes() { this.setState({ activeTab: 'disputes' }); }
+  goToDisputeCase(caseNumber) {
+    this.setState({ activeTab: 'disputes', disputesSearchQuery: caseNumber ? String(caseNumber) : '' });
+  }
+  setTabUsers() {
+    this.setState({ activeTab: 'users' });
+    this.loadUsers();
+    this.loadUserLog();
+  }
+  setTabAnnouncements() {
+    this.setState({ activeTab: 'announcements' });
+    this.loadAnnouncements();
+  }
+
+  async loadAnnouncements() {
+    this.setState({ announcementsStatus: 'loading' });
+    const data = await this.authedFetch('admin-list-announcements');
+    if (!data) return;
+    if (!data.ok) { this.setState({ announcementsStatus: 'error' }); return; }
+    this.setState({ announcementsStatus: 'done', announcements: data.announcements || [] });
+  }
+
+  setAnnounceTitle(e) { this.setState({ announceTitle: e.target.value, announceStatus: 'idle' }); }
+  setAnnounceBody(e) { this.setState({ announceBody: e.target.value, announceStatus: 'idle' }); }
+  setAnnounceDetail(e) { this.setState({ announceDetail: e.target.value, announceStatus: 'idle' }); }
+  toggleAnnounceClickable() { this.setState({ announceIsClickable: !this.state.announceIsClickable, announceStatus: 'idle' }); }
+
+  startEditAnnouncement(a) {
+    this.setState({
+      editingAnnouncementId: a.id,
+      announceTitle: a.title || '',
+      announceBody: a.body || '',
+      announceIsClickable: !!a.is_clickable,
+      announceDetail: a.detail || '',
+      announceStatus: 'idle'
+    });
+  }
+  cancelEditAnnouncement() {
+    this.setState({
+      editingAnnouncementId: null,
+      announceTitle: '', announceBody: '', announceIsClickable: false, announceDetail: '',
+      announceStatus: 'idle'
+    });
+  }
+
+  async submitAnnouncement() {
+    const t = buildTranslations(this.state.lang === 'en');
+    const title = this.state.announceTitle.trim();
+    const body = this.state.announceBody.trim();
+    const isClickable = this.state.announceIsClickable;
+    const detail = this.state.announceDetail.trim();
+    if (!title || !body) {
+      this.setState({ announceStatus: 'error', announceErrorMsg: t.admin.announceMissingFields });
+      return;
+    }
+    if (isClickable && !detail) {
+      this.setState({ announceStatus: 'error', announceErrorMsg: t.admin.announceMissingDetail });
+      return;
+    }
+    this.setState({ announceStatus: 'loading' });
+    const editingId = this.state.editingAnnouncementId;
+    const data = editingId
+      ? await this.authedFetch('admin-edit-announcement', { id: editingId, title, body, is_clickable: isClickable, detail: isClickable ? detail : null })
+      : await this.authedFetch('admin-send-announcement', { title, body, is_clickable: isClickable, detail: isClickable ? detail : null });
+    if (!data || !data.ok) {
+      this.setState({ announceStatus: 'error', announceErrorMsg: editingId ? t.admin.announceEditError : t.admin.announceSendError });
+      return;
+    }
+    this.setState({
+      announceStatus: 'success', editingAnnouncementId: null,
+      announceTitle: '', announceBody: '', announceIsClickable: false, announceDetail: ''
+    });
+    this.loadAnnouncements();
+  }
+
+  async deleteAnnouncement(id) {
+    const t = buildTranslations(this.state.lang === 'en');
+    if (!confirm(t.admin.announceDeleteConfirm)) return;
+    const data = await this.authedFetch('admin-delete-announcement', { id });
+    if (!data || !data.ok) {
+      this.setState({ announceStatus: 'error', announceErrorMsg: t.admin.announceDeleteError });
+      return;
+    }
+    if (this.state.editingAnnouncementId === id) this.cancelEditAnnouncement();
+    this.loadAnnouncements();
+  }
+
+  async loadUsers() {
+    this.setState({ usersStatus: 'loading' });
+    const data = await this.authedFetch('admin-list-users');
+    if (!data) return;
+    if (!data.ok) { this.setState({ usersStatus: 'error' }); return; }
+    this.setState({ usersStatus: 'done', users: data.users || [] });
+  }
+  async loadUserLog() {
+    this.setState({ userLogStatus: 'loading' });
+    const data = await this.authedFetch('admin-list-user-log');
+    if (!data) return;
+    if (!data.ok) { this.setState({ userLogStatus: 'error' }); return; }
+    this.setState({ userLogStatus: 'done', userLog: data.log || [] });
+  }
+  setUsersSearchQuery(e) { this.setState({ usersSearchQuery: e.target.value }); }
+  setUsersFilterStatus(value) { this.setState({ usersFilterStatus: value }); }
+  toggleUsersCreatedSort() {
+    const next = this.state.usersCreatedSortDir === 'none' ? 'asc' : this.state.usersCreatedSortDir === 'asc' ? 'desc' : 'none';
+    this.setState({ usersCreatedSortDir: next });
+  }
+
+  openDeactivateUser(u) { this.setState({ deactivateTargetUser: u }); }
+  closeDeactivateUser() { this.setState({ deactivateTargetUser: null }); }
+  async confirmDeactivateUser() {
+    const u = this.state.deactivateTargetUser;
+    if (!u) return;
+    await this.runBusy('deactivateUser', async () => {
+      await this.authedFetch('admin-deactivate-user', { user_id: u.id, email: u.email, profile_name: u.profile_name });
+      this.setState({ deactivateTargetUser: null });
+      this.loadUsers();
+      this.loadUserLog();
+    });
+  }
+
+  openReactivateUser(u) { this.setState({ reactivateTargetUser: u }); }
+  closeReactivateUser() { this.setState({ reactivateTargetUser: null }); }
+  async confirmReactivateUser() {
+    const u = this.state.reactivateTargetUser;
+    if (!u) return;
+    await this.runBusy('reactivateUser', async () => {
+      await this.authedFetch('admin-reactivate-user', { user_id: u.id, email: u.email, profile_name: u.profile_name });
+      this.setState({ reactivateTargetUser: null });
+      this.loadUsers();
+      this.loadUserLog();
+    });
+  }
+
+  async sendPasswordReset(u) {
+    await this.runBusy('sendReset:' + u.id, async () => {
+      await this.authedFetch('admin-send-password-reset', { user_id: u.id, email: u.email, profile_name: u.profile_name });
+      this.setState({ resetSentToastUserId: u.id });
+      this.loadUserLog();
+      setTimeout(() => {
+        if (this.state.resetSentToastUserId === u.id) this.setState({ resetSentToastUserId: '' });
+      }, 3000);
+    });
+  }
+
+  openDeleteUser(u) { this.setState({ deleteTargetUser: u, deleteUserReason: '', deleteUserError: '' }); }
+  closeDeleteUser() { this.setState({ deleteTargetUser: null }); }
+  setDeleteUserReason(e) { this.setState({ deleteUserReason: e.target.value }); }
+  async confirmDeleteUser() {
+    const u = this.state.deleteTargetUser;
+    if (!u) return;
+    await this.runBusy('deleteUser', async () => {
+    const data = await this.authedFetch('admin-delete-user', {
+      user_id: u.id, email: u.email, profile_name: u.profile_name, reason: this.state.deleteUserReason
+    });
+    if (!data) return;
+    if (!data.ok) {
+      const en = this.state.lang === 'en';
+      const t = buildTranslations(en);
+      this.setState({ deleteUserError: data.error === 'HAS_ACTIVE_DISPUTE' ? t.admin.deleteUserHasDisputeError : t.admin.usersLoadError });
+      return;
+    }
+    this.setState({ deleteTargetUser: null });
+    this.loadUsers();
+    this.loadUserLog();
+    });
+  }
+  setSearchQuery(e) { this.setState({ searchQuery: e.target.value }); }
+  setFilterZoneQuery(e) { this.setState({ filterZoneQuery: e.target.value }); }
+  setFilterRowQuery(e) { this.setState({ filterRowQuery: e.target.value }); }
+  setFilterSeatQuery(e) { this.setState({ filterSeatQuery: e.target.value }); }
+  setFilterStatus(value) { this.setState({ filterStatus: value }); }
+  setFilterRound(value) { this.setState({ filterRound: value }); }
+  setFilterEvidence(value) { this.setState({ filterEvidence: value }); }
+  // จำนวนรายการต่อหน้า: 10/20/50/100 ใช้ร่วมกันได้ทั้ง 3 ตาราง (อนุมัติบัตร,
+  // ข้อพิพาท, ผู้ใช้) เปลี่ยนขนาดหน้าแล้วรีเซ็ตกลับไปหน้า 1 เสมอกันหน้าว่าง
+  paginate(list, page, pageSize) {
+    const totalItems = list.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    const currentPage = Math.min(Math.max(1, page), totalPages);
+    const start = (currentPage - 1) * pageSize;
+    return { rows: list.slice(start, start + pageSize), currentPage, totalPages, totalItems };
+  }
+  setClaimsPage(n) { this.setState({ claimsPage: n }); }
+  setClaimsPageSize(size) { this.setState({ claimsPageSize: size, claimsPage: 1 }); }
+  setDisputesPage(n) { this.setState({ disputesPage: n }); }
+  setDisputesPageSize(size) { this.setState({ disputesPageSize: size, disputesPage: 1 }); }
+  setUsersPage(n) { this.setState({ usersPage: n }); }
+  setUsersPageSize(size) { this.setState({ usersPageSize: size, usersPage: 1 }); }
+  toggleUserLog() { this.setState({ isUserLogOpen: !this.state.isUserLogOpen }); }
+
+  // สร้าง props ของแถบ pagination (dropdown ขนาดหน้า + ปุ่มก่อนหน้า/ถัดไป +
+  // "หน้า X จาก Y") — ใช้ซ้ำได้ทั้ง 3 ตาราง (อนุมัติบัตร/ข้อพิพาท/ผู้ใช้) โดย
+  // ใส่ prefix (key) นำหน้าทุก field กันชื่อชนกันตอนรวมเข้า return ตัวเดียว
+  buildPaginationProps(key, pageSize, currentPage, totalPages, totalItems, setPage, setPageSize) {
+    const t = buildTranslations(this.state.lang === 'en');
+    const pageSizeDD = this.makeDropdown(key + 'PageSize', [10, 20, 50, 100], pageSize, '', (v) => setPageSize(Number(v)));
+    const out = {};
+    out[key + 'PageSizeDD'] = pageSizeDD;
+    out[key + 'PageInfoLabel'] = `${t.admin.pageLabel} ${currentPage} / ${totalPages} (${totalItems})`;
+    out[key + 'HasNoPrevPage'] = currentPage <= 1;
+    out[key + 'HasNoNextPage'] = currentPage >= totalPages;
+    out[key + 'OnPrevPage'] = () => setPage(currentPage - 1);
+    out[key + 'OnNextPage'] = () => setPage(currentPage + 1);
+    return out;
+  }
+
+  toggleStatusSort() {
+    const next = this.state.statusSortDir === 'none' ? 'asc' : this.state.statusSortDir === 'asc' ? 'desc' : 'none';
+    this.setState({ statusSortDir: next });
+  }
+  toggleCaseSort() {
+    const next = this.state.caseSortDir === 'none' ? 'asc' : this.state.caseSortDir === 'asc' ? 'desc' : 'none';
+    this.setState({ caseSortDir: next });
+  }
+  // สอง toggle นี้เป็น "sort คอลัมน์เดียวที่ active" แบบเดียวกัน — กดคอลัมน์ไหน
+  // อีกคอลัมน์จะถูกรีเซ็ตเป็น none เพื่อไม่ให้ผลการเรียงขัดกันเอง
+  toggleDisputesCaseSort() {
+    const next = this.state.disputesCaseSortDir === 'none' ? 'asc' : this.state.disputesCaseSortDir === 'asc' ? 'desc' : 'none';
+    this.setState({ disputesCaseSortDir: next, disputesOpenedSortDir: 'none' });
+  }
+  toggleDisputesOpenedSort() {
+    const next = this.state.disputesOpenedSortDir === 'none' ? 'asc' : this.state.disputesOpenedSortDir === 'asc' ? 'desc' : 'none';
+    this.setState({ disputesOpenedSortDir: next, disputesCaseSortDir: 'none' });
+  }
+
+  openChangeStatus(claim) {
+    // ปุ่มนี้เปิดได้แค่จากบัตร VERIFIED เท่านั้น ตัวเลือกเดียวที่มีคือส่งกลับไป
+    // REGISTERED เพื่อพิจารณาเอกสารใหม่ เลย default ไปที่ค่านั้นเสมอ
+    this.setState({ changeStatusClaimId: claim.id, changeStatusValue: 'REGISTERED', changeStatusNote: '', changeStatusError: '' });
+  }
+  closeChangeStatus() { this.setState({ changeStatusClaimId: null, changeStatusError: '' }); }
+  setChangeStatusValue(value) { this.setState({ changeStatusValue: value }); }
+  setChangeStatusNote(e) { this.setState({ changeStatusNote: e.target.value }); }
+  async submitChangeStatus() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    if (!this.state.changeStatusNote.trim()) {
+      this.setState({ changeStatusError: t.admin.reasonRequiredError });
+      return;
+    }
+    await this.runBusy('changeStatus', async () => {
+      const data = await this.authedFetch('admin-set-claim-status', {
+        claim_id: this.state.changeStatusClaimId, status: this.state.changeStatusValue, admin_note: this.state.changeStatusNote
+      });
+      if (!data || !data.ok) {
+        this.setState({ changeStatusError: t.admin.genericSaveError });
+        return;
+      }
+      this.setState({ changeStatusClaimId: null, changeStatusError: '' });
+      await this.loadClaims();
+    });
+  }
+  async quickApprove(claim) {
+    const evData = await this.authedFetch('admin-list-disputes', { claim_id: claim.id });
+    const evidence = (evData && evData.evidence) || [];
+    const pending = evidence.find((e) => e.review_result === 'PENDING');
+    if (pending) {
+      await this.authedFetch('admin-review-evidence', { evidence_id: pending.id, result: 'APPROVED' });
+    } else {
+      await this.authedFetch('admin-set-claim-status', { claim_id: claim.id, status: 'VERIFIED', admin_note: 'Approved without evidence review' });
+    }
+    await this.loadClaims();
+  }
+
+  openApproveConfirm(claim) { this.setState({ approveConfirmClaim: claim, rejectClaimMode: false, rejectClaimNote: '', rejectClaimError: '' }); }
+  closeApproveConfirm() { this.setState({ approveConfirmClaim: null, rejectClaimMode: false, rejectClaimNote: '', rejectClaimError: '' }); }
+  async confirmApprove() {
+    const claim = this.state.approveConfirmClaim;
+    if (!claim) return;
+    await this.runBusy('approve:' + claim.id, async () => {
+      this.setState({ approveConfirmClaim: null });
+      await this.quickApprove(claim);
+    });
+  }
+
+  startRejectClaim() { this.setState({ rejectClaimMode: true, rejectClaimError: '' }); }
+  cancelRejectClaim() { this.setState({ rejectClaimMode: false, rejectClaimError: '' }); }
+  setRejectClaimNote(e) { this.setState({ rejectClaimNote: e.target.value }); }
+  async confirmRejectClaim() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const claim = this.state.approveConfirmClaim;
+    if (!claim) return;
+    if (!this.state.rejectClaimNote.trim()) {
+      this.setState({ rejectClaimError: t.admin.reasonRequiredError });
+      return;
+    }
+    await this.runBusy('rejectClaim:' + claim.id, async () => {
+      const data = await this.authedFetch('admin-reject-claim-evidence', {
+        claim_id: claim.id, admin_note: this.state.rejectClaimNote.trim()
+      });
+      if (!data || !data.ok) {
+        this.setState({ rejectClaimError: t.admin.genericSaveError });
+        return;
+      }
+      this.setState({ approveConfirmClaim: null, rejectClaimMode: false, rejectClaimNote: '' });
+      await this.loadClaims();
+    });
+  }
+
+  async openEvidenceDocs(claim) {
+    this.setState({ evidenceDocsClaimId: claim.id, evidenceDocs: [], evidenceDocsStatus: 'loading' });
+    const data = await this.authedFetch('admin-list-disputes', { claim_id: claim.id });
+    if (data && data.ok) this.setState({ evidenceDocs: data.evidence || [], evidenceDocsStatus: 'done' });
+    else this.setState({ evidenceDocsStatus: 'error' });
+  }
+
+  // "ดูรายละเอียด" ต่อ claim — โชว์ log ทั้งหมด (ของ claim/review/evidence ที่เกี่ยว)
+  // + ถ้ากำลังมีข้อพิพาทอยู่ โชว์ด้วยว่า ref กับรายการของใคร (เทียบจาก this.state.disputes
+  // ที่โหลดไว้แล้วตั้งแต่ตอน login ไม่ต้องยิง request ใหม่)
+  async openClaimDetails(claim) {
+    this.setState({ claimDetailsClaim: claim, claimLog: [], claimLogStatus: 'loading' });
+    const data = await this.authedFetch('admin-list-claim-log', { claim_id: claim.id });
+    if (data && data.ok) this.setState({ claimLog: data.log || [], claimLogStatus: 'done' });
+    else this.setState({ claimLogStatus: 'error' });
+  }
+  closeClaimDetails() { this.setState({ claimDetailsClaim: null }); }
+
+  openEvidenceRequest(claimId) { this.setState({ evidenceRequestTargetId: claimId, evidenceRequestNote: '' }); }
+  closeEvidenceRequest() { this.setState({ evidenceRequestTargetId: null }); }
+  setEvidenceRequestNote(e) { this.setState({ evidenceRequestNote: e.target.value }); }
+  async submitEvidenceRequest() {
+    const claimId = this.state.evidenceRequestTargetId;
+    if (!claimId) return;
+    await this.runBusy('requestEvidence:' + claimId, async () => {
+      await this.authedFetch('admin-request-evidence', { claim_id: claimId, admin_note: this.state.evidenceRequestNote });
+      this.setState({ evidenceRequestTargetId: null });
+      await this.loadDisputes();
+    });
+  }
+  closeEvidenceDocs() { this.setState({ evidenceDocsClaimId: null, evidenceRejectTargetId: null }); }
+  async openEvidenceFile(fileKey, type) {
+    await this.runBusy('previewFile:' + fileKey, async () => {
+      const data = await this.authedFetch('admin-get-evidence-url', { file_key: fileKey });
+      if (data && data.ok) this.setState({ previewFileUrl: data.url, previewFileType: type });
+      // ไฟล์ถูกลบไปแล้ว (เช่นตรวจ/ตัดสินเคสเสร็จแล้วระบบลบไฟล์จริงทิ้งอัตโนมัติ) —
+      // เดิมกดแล้วไม่มีอะไรเกิดขึ้นเลย ทำให้ดูเหมือนปุ่มพัง ต้องแจ้งเตือนให้ชัดเจน
+      else this.setState({ evidenceFileNotFoundOpen: true });
+    });
+  }
+  closeEvidenceFileNotFound() { this.setState({ evidenceFileNotFoundOpen: false }); }
+  closePreviewFile() { this.setState({ previewFileUrl: null, previewFileType: null }); }
+  async judgeEvidence(evidenceId, result, reviewNote) {
+    await this.runBusy('judgeEvidence:' + evidenceId, async () => {
+      await this.authedFetch('admin-review-evidence', { evidence_id: evidenceId, result, review_note: reviewNote || null });
+      this.setState({ evidenceDocsClaimId: null, evidenceRejectTargetId: null });
+      await this.loadClaims();
+    });
+  }
+  openEvidenceReject(evidenceId) {
+    this.setState({ evidenceRejectTargetId: evidenceId, evidenceRejectNote: '', evidenceRejectError: '' });
+  }
+  cancelEvidenceReject() { this.setState({ evidenceRejectTargetId: null, evidenceRejectNote: '', evidenceRejectError: '' }); }
+  setEvidenceRejectNote(e) { this.setState({ evidenceRejectNote: e.target.value }); }
+  confirmEvidenceReject() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    if (!this.state.evidenceRejectNote.trim()) {
+      this.setState({ evidenceRejectError: t.admin.reasonRequiredError });
+      return;
+    }
+    this.judgeEvidence(this.state.evidenceRejectTargetId, 'REJECTED', this.state.evidenceRejectNote.trim());
+  }
+
+  setDisputesSearchQuery(e) { this.setState({ disputesSearchQuery: e.target.value }); }
+  setDisputesZoneQuery(e) { this.setState({ disputesZoneQuery: e.target.value }); }
+  setDisputesRowQuery(e) { this.setState({ disputesRowQuery: e.target.value }); }
+  setDisputesSeatQuery(e) { this.setState({ disputesSeatQuery: e.target.value }); }
+  setDisputesFilterEvidence(v) { this.setState({ disputesFilterEvidence: v }); }
+  setDisputesFilterStatus(v) { this.setState({ disputesFilterStatus: v }); }
+  toggleDisputesSort() {
+    const next = this.state.disputesSortDir === 'none' ? 'asc' : this.state.disputesSortDir === 'asc' ? 'desc' : 'none';
+    this.setState({ disputesSortDir: next });
+  }
+
+  openResolve(review) {
+    const claimants = this.state.disputes.filter((d) => d.review_id === review.review_id);
+    this.setState({
+      resolveReviewId: review.review_id, resolveOutcome: review.review_outcome || 'PENDING',
+      resolveTargetClaimId: '', resolveNote: review.admin_note || '', resolveClaimants: claimants, resolveError: ''
+    });
+  }
+  closeResolve() { this.setState({ resolveReviewId: null }); }
+  setResolveOutcome(value) { this.setState({ resolveOutcome: value, resolveTargetClaimId: '' }); }
+  setResolveTargetClaimId(value) { this.setState({ resolveTargetClaimId: value }); }
+  setResolveNote(e) { this.setState({ resolveNote: e.target.value }); }
+  async submitResolve() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const needsTarget = this.state.resolveOutcome === 'OWNER_CONFIRMED';
+    if (needsTarget && !this.state.resolveTargetClaimId) {
+      this.setState({ resolveError: t.admin.resolveTargetRequiredError });
+      return;
+    }
+    if (needsTarget && !this.state.resolveNote.trim()) {
+      this.setState({ resolveError: t.admin.reasonRequiredError });
+      return;
+    }
+    const body = {
+      review_id: this.state.resolveReviewId, outcome: this.state.resolveOutcome, admin_note: this.state.resolveNote
+    };
+    if (this.state.resolveOutcome === 'OWNER_CONFIRMED') body.winning_claim_id = this.state.resolveTargetClaimId;
+    await this.runBusy('resolve', async () => {
+      const data = await this.authedFetch('admin-resolve-review', body);
+      if (!data || !data.ok) {
+        const errMap = {
+          BOTH_MUST_SUBMIT_EVIDENCE: t.admin.bothMustSubmitEvidenceError
+        };
+        this.setState({ resolveError: (data && errMap[data.error]) || t.admin.genericSaveError });
+        return;
+      }
+      this.setState({ resolveReviewId: null, resolveError: '' });
+      await this.loadDisputes();
+      await this.loadClaims();
+    });
+  }
+  stopProp(e) { e.stopPropagation(); }
+
+  renderVals() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const locale = en ? 'en-US' : 'th-TH';
+    const roundLabelById = Object.fromEntries(SHOW_ROUNDS.map((r) => [r.id, en ? r.label_en : r.label_th]));
+    const checkRounds = SHOW_ROUNDS.map((r) => ({ id: r.id, label: en ? r.label_en : r.label_th }));
+
+    const filterStatusDD = this.makeDropdown('filterStatus', [
+      { value: '', label: t.admin.filterAllStatus },
+      { value: 'REGISTERED', label: t.profile.status.REGISTERED.label },
+      { value: 'VERIFIED', label: t.profile.status.VERIFIED.label },
+      { value: 'UNDER_REVIEW', label: t.profile.status.UNDER_REVIEW.label },
+      { value: 'REJECTED', label: t.profile.status.REJECTED.label },
+      { value: 'DELETED', label: t.admin.filterDeletedStatus }
+    ], this.state.filterStatus, t.admin.filterAllStatus, (v) => this.setFilterStatus(v));
+    const filterRoundDD = this.makeDropdown('filterRound', [
+      { value: '', label: t.admin.filterAllRounds }, ...checkRounds
+    ], this.state.filterRound, t.admin.filterAllRounds, (v) => this.setFilterRound(v));
+    const filterEvidenceDD = this.makeDropdown('filterEvidence', [
+      { value: '', label: t.admin.filterAllEvidence },
+      { value: 'has', label: t.admin.filterHasEvidence },
+      { value: 'none', label: t.admin.filterNoEvidence }
+    ], this.state.filterEvidence, t.admin.filterAllEvidence, (v) => this.setFilterEvidence(v));
+    const disputesFilterEvidenceDD = this.makeDropdown('disputesFilterEvidence', [
+      { value: '', label: t.admin.filterAllEvidence },
+      { value: 'complete', label: t.admin.disputesFilterEvidenceComplete },
+      { value: 'incomplete', label: t.admin.disputesFilterEvidenceIncomplete }
+    ], this.state.disputesFilterEvidence, t.admin.filterAllEvidence, (v) => this.setDisputesFilterEvidence(v));
+    const disputesFilterStatusDD = this.makeDropdown('disputesFilterStatus', [
+      { value: '', label: t.admin.filterAllStatus },
+      { value: 'PENDING', label: t.profile.reviewOutcome.PENDING },
+      { value: 'AWAITING_EVIDENCE', label: t.profile.reviewOutcome.AWAITING_EVIDENCE },
+      { value: 'OWNER_CONFIRMED', label: t.profile.reviewOutcome.OWNER_CONFIRMED }
+    ], this.state.disputesFilterStatus, t.admin.filterAllStatus, (v) => this.setDisputesFilterStatus(v));
+
+    const statusColors = {
+      REGISTERED: { bg: 'rgba(255,212,0,0.15)', color: '#8a6d00' },
+      VERIFIED: { bg: 'rgba(17,150,140,0.15)', color: '#0d7f75' },
+      UNDER_REVIEW: { bg: 'rgba(255,176,32,0.2)', color: '#a35c00' },
+      REJECTED: { bg: 'rgba(255,90,90,0.18)', color: '#a32020' }
+    };
+
+    // สีป้ายสถานะในคิวข้อพิพาท (review_outcome) — แยกสีให้ต่างจากสถานะบัตร
+    // ด้านบน เพื่อไม่ให้สับสน: รอตรวจสอบ = ส้ม, รอหลักฐานเพิ่ม = ฟ้า, ยืนยันแล้ว = เขียว
+    const reviewOutcomeColors = {
+      PENDING: { bg: 'rgba(255,176,32,0.2)', color: '#a35c00' },
+      AWAITING_EVIDENCE: { bg: 'rgba(111,180,255,0.18)', color: '#3f7fd6' },
+      OWNER_CONFIRMED: { bg: 'rgba(17,150,140,0.15)', color: '#0d7f75' },
+      INCONCLUSIVE: { bg: 'rgba(150,150,150,0.2)', color: '#5a5a5a' },
+      FALSE_CLAIM_REMOVED: { bg: 'rgba(255,90,90,0.18)', color: '#a32020' }
+    };
+
+    let claimRows = this.state.claims
+      .filter((c) => {
+        if (!this.state.filterStatus) return true;
+        if (this.state.filterStatus === 'DELETED') return !!c.deleted_at;
+        return c.status === this.state.filterStatus && !c.deleted_at;
+      })
+      .filter((c) => !this.state.filterRound || c.show_id === this.state.filterRound)
+      .filter((c) => {
+        if (this.state.filterEvidence === 'has') return c.evidence_count > 0;
+        if (this.state.filterEvidence === 'none') return c.evidence_count === 0;
+        return true;
+      })
+      .filter((c) => {
+        const q = this.state.searchQuery.trim().toLowerCase();
+        if (!q) return true;
+        return (c.x_handle || '').toLowerCase().includes(q) ||
+          (c.profile_name || '').toLowerCase().includes(q) ||
+          (c.owner_name_optional || '').toLowerCase().includes(q);
+      })
+      .filter((c) => {
+        const q = this.state.filterZoneQuery.trim().toLowerCase();
+        return !q || (c.zone || '').toLowerCase().includes(q);
+      })
+      .filter((c) => {
+        const q = this.state.filterRowQuery.trim().toLowerCase();
+        return !q || (c.row || '').toLowerCase().includes(q);
+      })
+      .filter((c) => {
+        const q = this.state.filterSeatQuery.trim().toLowerCase();
+        return !q || String(c.seat || '').toLowerCase().includes(q);
+      });
+
+    if (this.state.statusSortDir !== 'none') {
+      const order = { REGISTERED: 0, UNDER_REVIEW: 1, VERIFIED: 2, REJECTED: 3 };
+      claimRows = [...claimRows].sort((a, b) => {
+        const diff = order[a.status] - order[b.status];
+        return this.state.statusSortDir === 'asc' ? diff : -diff;
+      });
+    }
+
+    const deletedColor = { bg: 'rgba(150,150,150,0.2)', color: '#5a5a5a' };
+    const awaitingEvidenceColor = { bg: 'rgba(111,180,255,0.2)', color: '#3f7fd6' };
+    const evidenceRejectedColor = { bg: 'rgba(255,140,0,0.2)', color: '#a35c00' };
+    const claimRowsMapped = claimRows.map((c) => {
+      const isDeleted = !!c.deleted_at;
+      const isDisputed = !isDeleted && c.status === 'UNDER_REVIEW';
+      const isEvidenceRejected = !isDeleted && c.status === 'EVIDENCE_REJECTED';
+      // "รอตรวจสอบหลักฐาน" คือ REGISTERED ที่มีหลักฐานล่าสุดยัง PENDING อยู่ —
+      // แยกจาก "รอยืนยันหลักฐาน" (ยังไม่ส่งอะไรมาเลย หรือหลักฐานก่อนหน้าถูกแทนที่/ไม่ผ่านไปแล้ว)
+      const hasPendingEvidence = !isDeleted && c.status === 'REGISTERED' && c.latest_evidence_result === 'PENDING';
+
+      const hasDeadline = hasPendingEvidence && !!c.latest_evidence_submitted_at;
+      let deadlineLabel = '', deadlineBg = '', deadlineColor = '';
+      if (hasDeadline) {
+        const deadline = new Date(c.latest_evidence_submitted_at).getTime() + REVIEW_DEADLINE_HOURS * 3600 * 1000;
+        const hoursLeft = (deadline - this.state.nowTick) / 3600000;
+        if (hoursLeft <= 0) {
+          deadlineLabel = t.admin.deadlineOverdue;
+          deadlineBg = 'rgba(255,80,80,0.2)'; deadlineColor = '#a32020';
+        } else {
+          const h = Math.floor(hoursLeft);
+          const m = Math.floor((hoursLeft - h) * 60);
+          deadlineLabel = `${h} ${t.admin.hoursUnit} ${m} ${t.admin.minutesUnit}`;
+          if (hoursLeft <= 6) { deadlineBg = 'rgba(255,80,80,0.2)'; deadlineColor = '#a32020'; }
+          else if (hoursLeft <= 24) { deadlineBg = 'rgba(255,176,32,0.2)'; deadlineColor = '#a35c00'; }
+          else { deadlineBg = 'rgba(34,197,94,0.18)'; deadlineColor = '#15803d'; }
+        }
+      }
+      const deletedByLabel = c.deleted_by_name || t.admin.colOwnerName;
+      const deletedReasonLabel = (c.delete_reason || '').trim() || t.admin.deletedInfoNoReason;
+      const deletedInfoLabel = isDeleted
+        ? `${t.admin.deletedInfoAt} ${new Date(c.deleted_at).toLocaleString(locale)} · ${t.admin.deletedInfoBy} ${deletedByLabel} · ${t.admin.deletedInfoReason}: ${deletedReasonLabel}`
+        : '';
+
+      // case_number ติดที่ claim เอง (c.case_number) ทุกใบมีเสมอ ไม่ต้องรอมีข้อพิพาท
+      // ถึงจะมี — ส่วนตอนมีข้อพิพาท แนบ case id ของอีกฝ่ายไว้ใน refLabel ด้วย ให้
+      // แอดมินอ้างอิงข้ามไปหาเคสของอีกฝ่ายได้ตรงๆ (ไม่ใช่แค่ @handle เฉยๆ)
+      let refLabel = '';
+      const caseNumber = c.case_number;
+      if (isDisputed) {
+        const others = this.state.disputes.filter((d) => d.claim_id !== c.id &&
+          this.state.disputes.some((self) => self.claim_id === c.id && self.review_id === d.review_id));
+        refLabel = others.map((o) => `@${o.x_handle} (${formatCaseNumber(o.case_number)})`).join(', ');
+      }
+
+      let sc = statusColors[c.status] || statusColors.REGISTERED;
+      let statusLabel = t.profile.status[c.status]?.label || c.status;
+      if (isDeleted) { sc = deletedColor; statusLabel = t.admin.deletedStatusLabel; }
+      else if (isDisputed) { sc = { bg: 'rgba(255,80,80,0.22)', color: '#a32020' }; statusLabel = t.admin.disputedStatusLabel; }
+      else if (isEvidenceRejected) { sc = evidenceRejectedColor; statusLabel = t.admin.evidenceRejectedStatusLabel; }
+      else if (hasPendingEvidence) { sc = awaitingEvidenceColor; statusLabel = t.admin.awaitingEvidenceReviewLabel; }
+
+      return {
+        id: c.id,
+        xHandle: c.x_handle, profileName: c.profile_name || '—', ownerName: c.owner_name_optional || '—',
+        roundLabel: roundLabelById[c.show_id] || c.show_id, zone: c.zone, row: c.row, seat: c.seat,
+        registeredAtLabel: new Date(c.claimed_at).toLocaleString(locale),
+        hasDeadline, deadlineLabel, deadlineBg, deadlineColor,
+        hasEvidence: c.evidence_count > 0, hasNoEvidence: c.evidence_count === 0,
+        evidenceLabel: c.evidence_count > 0 ? `${t.admin.viewDocsBtn} (${c.evidence_count})` : t.admin.noEvidenceLabel,
+        onViewDocs: () => this.openEvidenceDocs(c),
+        statusBg: sc.bg, statusColor: sc.color, statusLabel,
+        isDeleted, deletedInfoLabel, rowOpacity: isDeleted ? '0.55' : '1',
+        isDisputed, hasRef: !!refLabel, refLabel: refLabel ? `${t.admin.disputeRefLabel}: ${refLabel}` : '',
+        hasCaseNumber: !!caseNumber, hasNoCaseNumber: !caseNumber, caseNumberLabel: formatCaseNumber(caseNumber), caseNumberRaw: caseNumber || 0,
+        onGoToDispute: () => this.goToDisputeCase(caseNumber),
+        isEvidenceRejected, evidenceRejectReason: c.evidence_reject_reason || '',
+        canApprove: hasPendingEvidence,
+        canManage: !isDeleted && c.status === 'VERIFIED',
+        onApprove: () => this.openApproveConfirm(c),
+        onChangeStatus: () => this.openChangeStatus(c),
+        onViewDetails: () => this.openClaimDetails(c),
+        isApproving: this.state.busyAction === 'approve:' + c.id,
+        approveLabel: this.state.busyAction === 'approve:' + c.id ? '...' : t.admin.approveBtn,
+        approveOpacity: this.state.busyAction === 'approve:' + c.id ? '0.6' : '1'
+      };
+    });
+    if (this.state.caseSortDir !== 'none') {
+      claimRowsMapped.sort((a, b) => {
+        const diff = a.caseNumberRaw - b.caseNumberRaw;
+        return this.state.caseSortDir === 'asc' ? diff : -diff;
+      });
+    }
+    const claimsPagination = this.paginate(claimRowsMapped, this.state.claimsPage, this.state.claimsPageSize);
+    const claimsPaginationProps = this.buildPaginationProps('claims', this.state.claimsPageSize,
+      claimsPagination.currentPage, claimsPagination.totalPages, claimsPagination.totalItems,
+      (n) => this.setClaimsPage(n), (s) => this.setClaimsPageSize(s));
+
+    const approveConfirmClaim = this.state.approveConfirmClaim;
+    const approveConfirmSeatLabel = approveConfirmClaim
+      ? `@${approveConfirmClaim.x_handle} · ${roundLabelById[approveConfirmClaim.show_id] || approveConfirmClaim.show_id} / ${approveConfirmClaim.zone} / ${approveConfirmClaim.row} / ${approveConfirmClaim.seat}`
+      : '';
+    const approveConfirmNoEvidence = !!approveConfirmClaim && !(approveConfirmClaim.evidence_count > 0);
+
+    // case_number ตอนนี้ติดที่ claim ของแต่ละคน ไม่ใช่ของ "เคส" รวม — เวลา search
+    // เจอแค่ใครคนใดคนหนึ่งในเคสตรงกับคำค้น ต้องโชว์ทั้งเคส (ทุกคนที่ผูก review_id
+    // เดียวกัน) ไม่ใช่โชว์แค่แถวของคนที่ค้นเจอคนเดียว ไม่งั้นกลุ่มจะขาดอีกฝ่ายไป
+    const disputesSearchQ = this.state.disputesSearchQuery.trim().toLowerCase();
+    let matchingReviewIds = null;
+    if (disputesSearchQ) {
+      matchingReviewIds = new Set(
+        this.state.disputes.filter((d) =>
+          (d.x_handle || '').toLowerCase().includes(disputesSearchQ) ||
+          (d.profile_name || '').toLowerCase().includes(disputesSearchQ) ||
+          String(d.case_number || '').includes(disputesSearchQ) ||
+          formatCaseNumber(d.case_number).toLowerCase().includes(disputesSearchQ)
+        ).map((d) => d.review_id)
+      );
+    }
+    let disputeRows = this.state.disputes.filter((d) => {
+      if (matchingReviewIds && !matchingReviewIds.has(d.review_id)) return false;
+      return true;
+    }).filter((d) => {
+      const q = this.state.disputesZoneQuery.trim().toLowerCase();
+      if (!q) return true;
+      const parts = (d.seat_key || '').split('|');
+      return (parts[1] || '').toLowerCase().includes(q);
+    }).filter((d) => {
+      const q = this.state.disputesRowQuery.trim().toLowerCase();
+      if (!q) return true;
+      const parts = (d.seat_key || '').split('|');
+      return (parts[2] || '').toLowerCase().includes(q);
+    }).filter((d) => {
+      const q = this.state.disputesSeatQuery.trim().toLowerCase();
+      if (!q) return true;
+      const parts = (d.seat_key || '').split('|');
+      return (parts[3] || '').toLowerCase().includes(q);
+    });
+    if (this.state.disputesSortDir !== 'none') {
+      disputeRows = [...disputeRows].sort((a, b) => {
+        const diff = (a.seat_key || '').localeCompare(b.seat_key || '');
+        return this.state.disputesSortDir === 'asc' ? diff : -diff;
+      });
+    }
+    // เคสเดียวกัน (review_id เดียวกัน) รวมเป็นแถวเดียวกัน — ปุ่ม "ตัดสินเคส" กดครั้ง
+    // เดียวต่อเคส ส่วน "ขอหลักฐานเพิ่ม" ยังเจาะจงเป็นรายคนได้ในรายชื่อผู้อ้างสิทธิ์
+    const disputeGroupsOrder = [];
+    const disputeGroupsMap = new Map();
+    disputeRows.forEach((d) => {
+      if (!disputeGroupsMap.has(d.review_id)) {
+        disputeGroupsMap.set(d.review_id, []);
+        disputeGroupsOrder.push(d.review_id);
+      }
+      disputeGroupsMap.get(d.review_id).push(d);
+    });
+    const disputeRowsMapped = disputeGroupsOrder.map((reviewId) => {
+      const group = disputeGroupsMap.get(reviewId);
+      const first = group[0];
+      const seatParts = (first.seat_key || '').split('|');
+      const zoneLabel = seatParts.length === 4 ? seatParts[1] : first.seat_key;
+      const rowLabel = seatParts.length === 4 ? seatParts[2] : '';
+      const seatNumLabel = seatParts.length === 4 ? String(parseInt(seatParts[3], 10)) : '';
+      const claimants = group.map((d) => ({
+        claimId: d.claim_id,
+        xHandle: d.x_handle, profileName: d.profile_name || '—',
+        caseNumberLabel: formatCaseNumber(d.case_number),
+        claimedAtLabel: new Date(d.claimed_at).toLocaleString(locale),
+        evidenceLabel: d.evidence_count > 0 ? `${t.admin.viewDocsBtn} (${d.evidence_count})` : t.admin.noEvidenceLabel,
+        hasEvidence: d.evidence_count > 0, hasNoEvidence: d.evidence_count === 0,
+        hasRequestedEvidence: !d.evidence_count && !!d.evidence_requested_at,
+        onViewDocs: () => this.openEvidenceDocs({ id: d.claim_id }),
+        onRequestEvidence: () => this.openEvidenceRequest(d.claim_id),
+        isBusyRequesting: this.state.busyAction === 'requestEvidence:' + d.claim_id
+      }));
+      // case_number ติดที่ claim แต่ละใบ ไม่มี "เลขเคสรวม" แยกต่างหากแล้ว —
+      // คอลัมน์ Case ID ของแถวเคสเลยโชว์เป็นลิสต์ case id ของทุกคนที่พิพาทกัน
+      // (เรียงตามลำดับเดียวกับรายชื่อผู้อ้างสิทธิ์) ส่วน sort ใช้เลขต่ำสุดในกลุ่ม
+      const caseNumbers = group.map((d) => d.case_number || 0);
+      // "สถานะหลักฐาน" ของทั้งเคส — สำหรับ filter หลักฐานครบ/ยังขาด (แยกจาก
+      // review_outcome ซึ่งใช้ filter สถานะเคสเอง — รอตรวจสอบ/รอหลักฐานเพิ่ม/
+      // ยืนยันเจ้าของแล้ว)
+      const allEvidenceIn = claimants.every((cl) => cl.hasEvidence);
+      return {
+        reviewId,
+        caseNumberLabel: claimants.map((cl) => cl.caseNumberLabel).join(', '),
+        caseNumberRaw: Math.min(...caseNumbers),
+        zoneLabel, rowLabel, seatNumLabel, claimants,
+        openedAtLabel: new Date(first.opened_at).toLocaleString(locale),
+        openedAtRaw: new Date(first.opened_at).getTime(),
+        allEvidenceIn,
+        reviewOutcome: first.review_outcome,
+        outcomeLabel: t.profile.reviewOutcome[first.review_outcome] || first.review_outcome,
+        outcomeBg: (reviewOutcomeColors[first.review_outcome] || reviewOutcomeColors.PENDING).bg,
+        outcomeColor: (reviewOutcomeColors[first.review_outcome] || reviewOutcomeColors.PENDING).color,
+        onResolve: () => this.openResolve(first)
+      };
+    }).filter((row) => {
+      if (this.state.disputesFilterEvidence === 'complete') return row.allEvidenceIn;
+      if (this.state.disputesFilterEvidence === 'incomplete') return !row.allEvidenceIn;
+      return true;
+    }).filter((row) => {
+      if (!this.state.disputesFilterStatus) return true;
+      return row.reviewOutcome === this.state.disputesFilterStatus;
+    });
+    if (this.state.disputesOpenedSortDir !== 'none') {
+      disputeRowsMapped.sort((a, b) => {
+        const diff = a.openedAtRaw - b.openedAtRaw;
+        return this.state.disputesOpenedSortDir === 'asc' ? diff : -diff;
+      });
+    } else if (this.state.disputesCaseSortDir !== 'none') {
+      disputeRowsMapped.sort((a, b) => {
+        const diff = a.caseNumberRaw - b.caseNumberRaw;
+        return this.state.disputesCaseSortDir === 'asc' ? diff : -diff;
+      });
+    }
+    const disputesEmpty = disputeRowsMapped.length === 0;
+    const disputesPagination = this.paginate(disputeRowsMapped, this.state.disputesPage, this.state.disputesPageSize);
+    const disputesPaginationProps = this.buildPaginationProps('disputes', this.state.disputesPageSize,
+      disputesPagination.currentPage, disputesPagination.totalPages, disputesPagination.totalItems,
+      (n) => this.setDisputesPage(n), (s) => this.setDisputesPageSize(s));
+
+    const uniqueReviewOutcomes = {};
+    this.state.disputes.forEach((d) => { uniqueReviewOutcomes[d.review_id] = d.review_outcome; });
+    const unresolvedCount = Object.values(uniqueReviewOutcomes).filter((o) =>
+      o !== 'OWNER_CONFIRMED' && o !== 'FALSE_CLAIM_REMOVED' && o !== 'INCONCLUSIVE').length;
+
+    const reviewOutcomeOptions = ['PENDING', 'AWAITING_EVIDENCE', 'OWNER_CONFIRMED']
+      .map((v) => ({ value: v, label: t.profile.reviewOutcome[v] }));
+
+    const resolveClaimOptions = this.state.resolveClaimants.map((cl) => ({
+      id: cl.claim_id, label: `@${cl.x_handle} (${cl.profile_name || '—'})`
+    }));
+
+    // ปุ่มนี้กดได้แค่จากบัตร "ยืนยันแล้ว" เท่านั้น (ดู canManage) ตัวเลือกจึงมีแค่
+    // "ส่งกลับไปพิจารณาเอกสารใหม่" — ไม่ให้เลือก UNDER_REVIEW ตรงๆ เพราะจะไม่มี
+    // review/review_claims รองรับ (ต้องเปิดข้อพิพาทผ่าน flow ปกติเท่านั้น)
+    const changeStatusDD = this.makeDropdown('changeStatus', [
+      { value: 'REGISTERED', label: t.admin.awaitingEvidenceReviewLabel }
+    ], this.state.changeStatusValue, '', (v) => this.setChangeStatusValue(v));
+    const resolveOutcomeDD = this.makeDropdown('resolveOutcome', reviewOutcomeOptions, this.state.resolveOutcome, '', (v) => this.setResolveOutcome(v));
+    const resolveTargetClaimDD = this.makeDropdown('resolveTargetClaim', resolveClaimOptions, this.state.resolveTargetClaimId, t.admin.winningClaimLabel, (v) => this.setResolveTargetClaimId(v));
+
+    const evidenceDocs = this.state.evidenceDocs.map((ev) => ({
+      id: ev.id,
+      typeLabel: ev.type,
+      submittedAtLabel: new Date(ev.submitted_at).toLocaleString(locale),
+      resultLabel: t.profile.status[ev.review_result] ? t.profile.status[ev.review_result].label : ev.review_result,
+      canJudge: ev.review_result === 'PENDING',
+      isRejecting: this.state.evidenceRejectTargetId === ev.id,
+      rejectNote: this.state.evidenceRejectNote,
+      setRejectNote: (e) => this.setEvidenceRejectNote(e),
+      hasRejectError: this.state.evidenceRejectTargetId === ev.id && !!this.state.evidenceRejectError,
+      rejectError: this.state.evidenceRejectError,
+      cancelReject: () => this.cancelEvidenceReject(),
+      confirmReject: () => this.confirmEvidenceReject(),
+      onOpen: () => this.openEvidenceFile(ev.file_key, ev.type),
+      onApprove: () => this.judgeEvidence(ev.id, 'APPROVED'),
+      onReject: () => this.openEvidenceReject(ev.id),
+      isPreviewBusy: this.state.busyAction === 'previewFile:' + ev.file_key,
+      isApproving: this.state.busyAction === 'judgeEvidence:' + ev.id
+    }));
+
+    // ลำดับความสำคัญของสถานะเดียวกับตอนแสดงผล: แอดมิน > ปิดใช้งาน > ลบข้อมูลเอง > ใช้งานปกติ
+    const userStatusKey = (u) => u.is_admin ? 'admin' : u.is_banned ? 'deactivated' : u.data_deleted_at ? 'selfDeleted' : 'active';
+
+    let usersFiltered = this.state.users
+      .filter((u) => {
+        if (!this.state.usersFilterStatus) return true;
+        return userStatusKey(u) === this.state.usersFilterStatus;
+      })
+      .filter((u) => {
+        const q = this.state.usersSearchQuery.trim().toLowerCase();
+        if (!q) return true;
+        return (u.email || '').toLowerCase().includes(q) ||
+          (u.profile_name || '').toLowerCase().includes(q) ||
+          (u.x_handle || '').toLowerCase().includes(q);
+      });
+
+    if (this.state.usersCreatedSortDir !== 'none') {
+      usersFiltered = [...usersFiltered].sort((a, b) => {
+        const diff = new Date(a.created_at) - new Date(b.created_at);
+        return this.state.usersCreatedSortDir === 'asc' ? diff : -diff;
+      });
+    }
+
+    const usersRowsMapped = usersFiltered
+      .map((u) => ({
+        id: u.id,
+        email: u.email,
+        profileName: u.profile_name || '—',
+        xHandle: u.x_handle ? `@${u.x_handle}` : '—',
+        createdAtLabel: new Date(u.created_at).toLocaleString(locale),
+        isAdmin: u.is_admin,
+        isBanned: u.is_banned,
+        // ลำดับความสำคัญของสถานะ: แอดมิน > ปิดใช้งาน > ลบข้อมูลเอง (ยัง login ได้ปกติ
+        // แค่ล้างบัตร/หลักฐานตัวเองไปแล้ว) > ใช้งานปกติ
+        statusLabel: u.is_admin ? t.admin.userStatusAdmin
+          : u.is_banned ? t.admin.userStatusDeactivated
+          : u.data_deleted_at ? t.admin.userStatusSelfDeletedData
+          : t.admin.userStatusActive,
+        statusBg: u.is_admin ? 'rgba(111,180,255,0.18)'
+          : u.is_banned ? 'rgba(255,90,90,0.18)'
+          : u.data_deleted_at ? 'rgba(255,176,32,0.18)'
+          : 'rgba(34,197,94,0.18)',
+        statusColor: u.is_admin ? '#3f7fd6'
+          : u.is_banned ? '#a32020'
+          : u.data_deleted_at ? '#a35c00'
+          : '#15803d',
+        canManage: !u.is_admin,
+        showDeactivateBtn: !u.is_admin && !u.is_banned,
+        showReactivateBtn: !u.is_admin && u.is_banned,
+        showToast: this.state.resetSentToastUserId === u.id,
+        // สมัครมาจาก x.com ล้วนๆ ไม่มี identity แบบอีเมล/รหัสผ่านเลย จึงไม่มี
+        // รหัสผ่านให้รีเซ็ต ปุ่มนี้จะไม่มีประโยชน์ (และฝั่ง server ก็บล็อกไว้ด้วย)
+        showResetBtn: u.has_email_login,
+        signupChannelLabel: u.signup_provider === 'x' ? t.admin.signupChannelX
+          : u.signup_provider === 'email' ? t.admin.signupChannelEmail
+          : (u.signup_provider || '—'),
+        signupChannelBg: u.signup_provider === 'x' ? 'rgba(17,150,140,0.15)' : 'rgba(111,180,255,0.18)',
+        signupChannelColor: u.signup_provider === 'x' ? '#0d7f75' : '#3f7fd6',
+        onDeactivate: () => this.openDeactivateUser(u),
+        onReactivate: () => this.openReactivateUser(u),
+        onSendReset: () => this.sendPasswordReset(u),
+        onDelete: () => this.openDeleteUser(u),
+        sendResetLabel: this.state.busyAction === 'sendReset:' + u.id ? t.admin.loadingLabel : t.admin.sendResetBtn,
+        sendResetOpacity: this.state.busyAction === 'sendReset:' + u.id ? 0.6 : 1
+      }));
+    const usersPagination = this.paginate(usersRowsMapped, this.state.usersPage, this.state.usersPageSize);
+    const usersPaginationProps = this.buildPaginationProps('users', this.state.usersPageSize,
+      usersPagination.currentPage, usersPagination.totalPages, usersPagination.totalItems,
+      (n) => this.setUsersPage(n), (s) => this.setUsersPageSize(s));
+
+    const usersFilterStatusDD = this.makeDropdown('usersFilterStatus', [
+      { value: '', label: t.admin.filterAllStatus },
+      { value: 'active', label: t.admin.userStatusActive },
+      { value: 'deactivated', label: t.admin.userStatusDeactivated },
+      { value: 'selfDeleted', label: t.admin.userStatusSelfDeletedData },
+      { value: 'admin', label: t.admin.userStatusAdmin }
+    ], this.state.usersFilterStatus, t.admin.filterAllStatus, (v) => this.setUsersFilterStatus(v));
+
+    const logActionLabels = {
+      DELETE_USER: t.admin.logActionDelete,
+      DEACTIVATE_USER: t.admin.logActionDeactivate,
+      REACTIVATE_USER: t.admin.logActionReactivate,
+      PASSWORD_RESET_SENT: t.admin.logActionResetSent,
+      SELF_DELETE_DATA: t.admin.logActionSelfDeleteData
+    };
+    const userLogRowsMapped = this.state.userLog.map((l) => ({
+      id: l.id,
+      dateTimeLabel: new Date(l.created_at).toLocaleString(locale),
+      profileName: l.target_profile_name || '—',
+      email: l.target_email,
+      actionLabel: logActionLabels[l.action] || l.action,
+      hasNote: !!l.note,
+      note: l.note || '',
+      byLabel: l.performed_by_admin_email
+    }));
+
+    return {
+      t,
+      homeLabel: homeLabel(en),
+      menuItems: [],
+      isAuthed: !!this.state.session && !this.state.isForbidden,
+      showLoginForm: !this.state.authLoading && !this.state.session,
+      showForbidden: !this.state.authLoading && !!this.state.session && this.state.isForbidden,
+      loginEmail: this.state.loginEmail,
+      setLoginEmail: (e) => this.setLoginEmail(e),
+      loginPassword: this.state.loginPassword,
+      setLoginPassword: (e) => this.setLoginPassword(e),
+      submitLogin: () => this.submitLogin(),
+      hasLoginError: !!this.state.loginErrorMsg,
+      loginErrorMsg: this.state.loginErrorMsg,
+      logout: () => this.logout(),
+
+      isApproveTab: this.state.activeTab === 'approve',
+      isDisputesTab: this.state.activeTab === 'disputes',
+      isUsersTab: this.state.activeTab === 'users',
+      isAnnouncementsTab: this.state.activeTab === 'announcements',
+      setTabApprove: () => this.setTabApprove(),
+      setTabDisputes: () => this.setTabDisputes(),
+      setTabUsers: () => this.setTabUsers(),
+      setTabAnnouncements: () => this.setTabAnnouncements(),
+      approveTabBg: this.state.activeTab === 'approve' ? 'rgba(13,127,117,0.12)' : 'transparent',
+      approveTabColor: this.state.activeTab === 'approve' ? '#0891b2' : '#33413f',
+      disputesTabBg: this.state.activeTab === 'disputes' ? 'rgba(13,127,117,0.12)' : 'transparent',
+      disputesTabColor: this.state.activeTab === 'disputes' ? '#0891b2' : '#33413f',
+      disputesCountLabel: unresolvedCount > 0 ? `(${unresolvedCount})` : '',
+      usersTabBg: this.state.activeTab === 'users' ? 'rgba(13,127,117,0.12)' : 'transparent',
+      usersTabColor: this.state.activeTab === 'users' ? '#0891b2' : '#33413f',
+      announcementsTabBg: this.state.activeTab === 'announcements' ? 'rgba(13,127,117,0.12)' : 'transparent',
+      announcementsTabColor: this.state.activeTab === 'announcements' ? '#0891b2' : '#33413f',
+
+      announceTitle: this.state.announceTitle, setAnnounceTitle: (e) => this.setAnnounceTitle(e),
+      announceBody: this.state.announceBody, setAnnounceBody: (e) => this.setAnnounceBody(e),
+      announceDetail: this.state.announceDetail, setAnnounceDetail: (e) => this.setAnnounceDetail(e),
+      toggleAnnounceClickable: () => this.toggleAnnounceClickable(),
+      isAnnounceClickable: this.state.announceIsClickable,
+      announceClickableBg: this.state.announceIsClickable ? '#0891b2' : '#fff',
+      announceClickableBorder: this.state.announceIsClickable ? '#0891b2' : '#c7d4d2',
+      announceClickableCheck: this.state.announceIsClickable ? '✓' : '',
+      hasAnnounceError: this.state.announceStatus === 'error',
+      announceErrorMsg: this.state.announceErrorMsg,
+      hasAnnounceSuccess: this.state.announceStatus === 'success',
+      isAnnouncePublishing: this.state.announceStatus === 'loading',
+      announcePublishOpacity: this.state.announceStatus === 'loading' ? '0.7' : '1',
+      isEditingAnnouncement: !!this.state.editingAnnouncementId,
+      cancelEditAnnouncement: () => this.cancelEditAnnouncement(),
+      announcePublishLabel: this.state.announceStatus === 'loading'
+        ? (this.state.editingAnnouncementId ? t.admin.announceSaving : t.admin.announcePublishing)
+        : (this.state.editingAnnouncementId ? t.admin.announceSaveBtn : t.admin.announcePublishBtn),
+      submitAnnouncement: () => this.submitAnnouncement(),
+
+      announcementRows: this.state.announcements.map(a => ({
+        id: a.id,
+        title: a.title,
+        body: a.body,
+        isClickable: !!a.is_clickable,
+        createdAtLabel: new Date(a.created_at).toLocaleString(locale),
+        onEdit: () => this.startEditAnnouncement(a),
+        onDelete: () => this.deleteAnnouncement(a.id)
+      })),
+      announceListEmpty: this.state.announcements.length === 0,
+
+      usersSearchQuery: this.state.usersSearchQuery, setUsersSearchQuery: (e) => this.setUsersSearchQuery(e),
+      usersFilterStatusDD,
+      toggleUsersCreatedSort: () => this.toggleUsersCreatedSort(),
+      usersCreatedSortIcon: this.state.usersCreatedSortDir === 'asc' ? '▲' : this.state.usersCreatedSortDir === 'desc' ? '▼' : '⇅',
+      reloadUsers: () => { this.loadUsers(); this.loadUserLog(); },
+      userRows: usersPagination.rows,
+      userRowsEmpty: usersRowsMapped.length === 0,
+      ...usersPaginationProps,
+      toggleUserLog: () => this.toggleUserLog(),
+      userLogToggleIcon: this.state.isUserLogOpen ? '▲' : '▼',
+      userLogRows: userLogRowsMapped,
+      userLogEmpty: userLogRowsMapped.length === 0,
+
+      isDeactivateUserOpen: !!this.state.deactivateTargetUser,
+      deactivateTargetEmail: this.state.deactivateTargetUser ? this.state.deactivateTargetUser.email : '',
+      closeDeactivateUser: () => this.closeDeactivateUser(),
+      confirmDeactivateUser: () => this.confirmDeactivateUser(),
+      deactivateUserBtnLabel: this.state.busyAction === 'deactivateUser' ? t.admin.loadingLabel : t.admin.confirmBtn,
+      deactivateUserBusyOpacity: this.state.busyAction === 'deactivateUser' ? 0.6 : 1,
+
+      isReactivateUserOpen: !!this.state.reactivateTargetUser,
+      reactivateTargetEmail: this.state.reactivateTargetUser ? this.state.reactivateTargetUser.email : '',
+      closeReactivateUser: () => this.closeReactivateUser(),
+      confirmReactivateUser: () => this.confirmReactivateUser(),
+      reactivateUserBtnLabel: this.state.busyAction === 'reactivateUser' ? t.admin.loadingLabel : t.admin.confirmBtn,
+      reactivateUserBusyOpacity: this.state.busyAction === 'reactivateUser' ? 0.6 : 1,
+
+      isDeleteUserOpen: !!this.state.deleteTargetUser,
+      deleteTargetEmail: this.state.deleteTargetUser ? this.state.deleteTargetUser.email : '',
+      deleteUserReason: this.state.deleteUserReason,
+      setDeleteUserReason: (e) => this.setDeleteUserReason(e),
+      hasDeleteUserError: !!this.state.deleteUserError,
+      deleteUserError: this.state.deleteUserError,
+      closeDeleteUser: () => this.closeDeleteUser(),
+      confirmDeleteUser: () => this.confirmDeleteUser(),
+      deleteUserBtnLabel: this.state.busyAction === 'deleteUser' ? t.admin.loadingLabel : t.admin.deleteUserBtn,
+      deleteUserBusyOpacity: this.state.busyAction === 'deleteUser' ? 0.6 : 1,
+
+      searchQuery: this.state.searchQuery, setSearchQuery: (e) => this.setSearchQuery(e),
+      filterZoneQuery: this.state.filterZoneQuery, setFilterZoneQuery: (e) => this.setFilterZoneQuery(e),
+      filterRowQuery: this.state.filterRowQuery, setFilterRowQuery: (e) => this.setFilterRowQuery(e),
+      filterSeatQuery: this.state.filterSeatQuery, setFilterSeatQuery: (e) => this.setFilterSeatQuery(e),
+      filterStatusDD, filterRoundDD, filterEvidenceDD,
+      toggleStatusSort: () => this.toggleStatusSort(),
+      statusSortIcon: this.state.statusSortDir === 'asc' ? '▲' : this.state.statusSortDir === 'desc' ? '▼' : '⇅',
+      toggleCaseSort: () => this.toggleCaseSort(),
+      caseSortIcon: this.state.caseSortDir === 'asc' ? '▲' : this.state.caseSortDir === 'desc' ? '▼' : '⇅',
+      claimRows: claimsPagination.rows,
+      claimRowsEmpty: claimRowsMapped.length === 0,
+      ...claimsPaginationProps,
+      reloadClaims: () => this.loadClaims(),
+
+      disputeRows: disputesPagination.rows, disputesEmpty,
+      toggleDisputesCaseSort: () => this.toggleDisputesCaseSort(),
+      disputesCaseSortIcon: this.state.disputesCaseSortDir === 'asc' ? '▲' : this.state.disputesCaseSortDir === 'desc' ? '▼' : '⇅',
+      toggleDisputesOpenedSort: () => this.toggleDisputesOpenedSort(),
+      disputesOpenedSortIcon: this.state.disputesOpenedSortDir === 'asc' ? '▲' : this.state.disputesOpenedSortDir === 'desc' ? '▼' : '⇅',
+      ...disputesPaginationProps,
+      disputesSearchQuery: this.state.disputesSearchQuery, setDisputesSearchQuery: (e) => this.setDisputesSearchQuery(e),
+      disputesZoneQuery: this.state.disputesZoneQuery, setDisputesZoneQuery: (e) => this.setDisputesZoneQuery(e),
+      disputesRowQuery: this.state.disputesRowQuery, setDisputesRowQuery: (e) => this.setDisputesRowQuery(e),
+      disputesSeatQuery: this.state.disputesSeatQuery, setDisputesSeatQuery: (e) => this.setDisputesSeatQuery(e),
+      disputesFilterEvidenceDD, disputesFilterStatusDD,
+      toggleDisputesSort: () => this.toggleDisputesSort(),
+      disputesSortIcon: this.state.disputesSortDir === 'asc' ? '▲' : this.state.disputesSortDir === 'desc' ? '▼' : '⇅',
+      reloadDisputes: () => this.loadDisputes(),
+
+      isApproveConfirmOpen: !!approveConfirmClaim,
+      approveConfirmSeatLabel,
+      approveConfirmNoEvidence,
+      closeApproveConfirm: () => this.closeApproveConfirm(),
+      confirmApprove: () => this.confirmApprove(),
+      isRejectClaimMode: this.state.rejectClaimMode,
+      isApproveChoiceMode: !this.state.rejectClaimMode,
+      startRejectClaim: () => this.startRejectClaim(),
+      cancelRejectClaim: () => this.cancelRejectClaim(),
+      rejectClaimNote: this.state.rejectClaimNote,
+      setRejectClaimNote: (e) => this.setRejectClaimNote(e),
+      hasRejectClaimError: !!this.state.rejectClaimError,
+      rejectClaimError: this.state.rejectClaimError,
+      confirmRejectClaim: () => this.confirmRejectClaim(),
+      rejectClaimBtnLabel: (approveConfirmClaim && this.state.busyAction === 'rejectClaim:' + approveConfirmClaim.id) ? t.admin.loadingLabel : t.admin.confirmRejectBtn,
+      rejectClaimBusyOpacity: (approveConfirmClaim && this.state.busyAction === 'rejectClaim:' + approveConfirmClaim.id) ? 0.6 : 1,
+
+      isChangeStatusOpen: !!this.state.changeStatusClaimId,
+      closeChangeStatus: () => this.closeChangeStatus(),
+      changeStatusDD,
+      changeStatusNote: this.state.changeStatusNote,
+      setChangeStatusNote: (e) => this.setChangeStatusNote(e),
+      submitChangeStatus: () => this.submitChangeStatus(),
+      hasChangeStatusError: !!this.state.changeStatusError,
+      changeStatusError: this.state.changeStatusError,
+      changeStatusBtnLabel: this.state.busyAction === 'changeStatus' ? t.admin.loadingLabel : t.admin.saveBtn,
+      changeStatusBusyOpacity: this.state.busyAction === 'changeStatus' ? 0.6 : 1,
+
+      isEvidenceDocsOpen: !!this.state.evidenceDocsClaimId,
+      closeEvidenceDocs: () => this.closeEvidenceDocs(),
+      evidenceDocs,
+
+      isResolveOpen: !!this.state.resolveReviewId,
+      closeResolve: () => this.closeResolve(),
+      resolveOutcomeDD,
+      resolveTargetClaimDD,
+      resolveNote: this.state.resolveNote,
+      setResolveNote: (e) => this.setResolveNote(e),
+      submitResolve: () => this.submitResolve(),
+      hasResolveError: !!this.state.resolveError,
+      resolveError: this.state.resolveError,
+      showWinningClaimSelect: this.state.resolveOutcome === 'OWNER_CONFIRMED',
+      resolveBtnLabel: this.state.busyAction === 'resolve' ? t.admin.loadingLabel : t.admin.saveBtn,
+      resolveBusyOpacity: this.state.busyAction === 'resolve' ? 0.6 : 1,
+
+      isClaimDetailsOpen: !!this.state.claimDetailsClaim,
+      closeClaimDetails: () => this.closeClaimDetails(),
+      claimDetailsSeatLabel: this.state.claimDetailsClaim
+        ? `@${this.state.claimDetailsClaim.x_handle} · ${roundLabelById[this.state.claimDetailsClaim.show_id] || this.state.claimDetailsClaim.show_id} / ${this.state.claimDetailsClaim.zone} / ${this.state.claimDetailsClaim.row} / ${this.state.claimDetailsClaim.seat}`
+        : '',
+      claimLogLoading: this.state.claimLogStatus === 'loading',
+      claimLogEmpty: this.state.claimLogStatus === 'done' && this.state.claimLog.length === 0,
+      claimLogRows: this.state.claimLog.map((lg) => {
+        const actionLabel = t.admin.logAction[lg.action] || lg.action;
+        // seat_key เก็บเป็น "showId|zone|row|seat" (โซนตัวที่ 2, seat มี padding
+        // เลขศูนย์นำหน้า) แปลงกลับเป็น "โซน / แถว / เลขที่นั่ง" อ่านง่าย ให้เห็นชัดว่า
+        // ลงทะเบียน/แก้ไขเป็นที่นั่งไหน ไม่ใช่แค่เห็นว่าสถานะเปลี่ยนเป็นอะไร
+        const formatSeatKeyLabel = (seatKey) => {
+          const parts = String(seatKey || '').split('|');
+          if (parts.length !== 4) return '';
+          return `${parts[1]} / ${parts[2]} / ${parseInt(parts[3], 10)}`;
+        };
+        let detailLabel = '';
+        const before = lg.before || {};
+        const after = lg.after || {};
+        if (lg.action === 'REGISTER_CLAIM' && after.seat_key) {
+          detailLabel = t.admin.claimLogSeatLabel + formatSeatKeyLabel(after.seat_key);
+          if (after.status) detailLabel += ` (${t.profile.status[after.status]?.label || after.status})`;
+        } else if (lg.action === 'EDIT_CLAIM' && after.seat_key) {
+          const beforeSeatLabel = formatSeatKeyLabel(before.seat_key);
+          const afterSeatLabel = formatSeatKeyLabel(after.seat_key);
+          detailLabel = (beforeSeatLabel && beforeSeatLabel !== afterSeatLabel)
+            ? `${beforeSeatLabel} → ${afterSeatLabel}`
+            : t.admin.claimLogSeatLabel + afterSeatLabel;
+          if (after.status) detailLabel += ` (${t.profile.status[after.status]?.label || after.status})`;
+        } else if (lg.action === 'REJECT_CLAIM_EVIDENCE') {
+          // ย้ายเหตุผล "ไม่ผ่านการตรวจสอบเอกสาร" มาไว้ในนี้แทนที่จะโชว์ในตาราง
+          // แถวเดียวเลย (เดิมโชว์อยู่ในคอลัมน์สถานะ ทำให้แถวรกเกินไป)
+          detailLabel = (t.profile.status[after.status]?.label || after.status) + (after.admin_note ? ` — ${after.admin_note}` : '');
+        } else if (after.status) detailLabel = t.profile.status[after.status]?.label || after.status;
+        else if (after.review_outcome) detailLabel = (t.profile.reviewOutcome[after.review_outcome] || after.review_outcome) + (after.admin_note ? ` — ${after.admin_note}` : '');
+        else if (after.review_result) detailLabel = t.profile.status[after.review_result]?.label || after.review_result;
+        else if (after.note) detailLabel = after.note;
+        return {
+          actionLabel,
+          actorEmail: lg.actor_email || '—',
+          atLabel: new Date(lg.created_at).toLocaleString(locale),
+          byLabel: t.admin.logByLabel,
+          hasDetail: !!detailLabel,
+          detailLabel
+        };
+      }),
+
+      isEvidenceFileNotFoundOpen: this.state.evidenceFileNotFoundOpen,
+      closeEvidenceFileNotFound: () => this.closeEvidenceFileNotFound(),
+      isPreviewFileOpen: !!this.state.previewFileUrl,
+      previewFileUrl: this.state.previewFileUrl,
+      isPreviewImage: this.state.previewFileType !== 'VIDEO',
+      isPreviewVideo: this.state.previewFileType === 'VIDEO',
+      closePreviewFile: () => this.closePreviewFile(),
+
+      isEvidenceRequestOpen: !!this.state.evidenceRequestTargetId,
+      closeEvidenceRequest: () => this.closeEvidenceRequest(),
+      evidenceRequestNote: this.state.evidenceRequestNote,
+      setEvidenceRequestNote: (e) => this.setEvidenceRequestNote(e),
+      submitEvidenceRequest: () => this.submitEvidenceRequest(),
+      evidenceRequestOpacity: this.state.busyAction === 'requestEvidence:' + this.state.evidenceRequestTargetId ? '0.6' : '1',
+      evidenceRequestBtnLabel: this.state.busyAction === 'requestEvidence:' + this.state.evidenceRequestTargetId ? '...' : t.admin.requestEvidenceBtn,
+
+      stopProp: (e) => this.stopProp(e)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

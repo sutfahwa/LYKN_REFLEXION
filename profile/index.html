@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>โปรไฟล์ของฉัน — LYKN Reflexion Concert</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="ลงทะเบียนและตรวจสอบความเป็นเจ้าของที่นั่ง — LYKN Reflexion Concert">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-16.png">
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon.ico">
+<link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/apple-touch-icon.png">
+<script>
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
+    document.title = '[TEST] ' + document.title;
+  }
+  // ต้องจับ hash ตรงนี้ (native script, รันจริงตอน parse head ทันที) ก่อนโหลด
+  // supabase-js เพราะ detectSessionInUrl จะ parse/ล้าง hash ทิ้งไปเร็วมาก — ถ้าไปเช็ค
+  // ใน DC runtime (ซึ่งโหลด/รัน JS แบบ stream แยกต่างหาก จังหวะไม่แน่นอน) อาจจับไม่ทัน
+  //
+  // บั๊กที่เจอ: จับ hash ได้แค่ตอน navigate ครั้งแรกเท่านั้น — ถ้า refresh หน้าซ้ำ
+  // (hash ถูก supabase-js ล้างออกจาก URL ไปแล้ว) หรือกดลิงก์ reset เก่า/หมดอายุอีกรอบ
+  // (hash ไม่มี type=recovery) ทั้งที่ session ที่ล็อกอินจากลิงก์แรกยัง valid อยู่
+  // จะเข้าใจผิดว่าไม่ได้อยู่ในโหมด reset รหัสผ่านแล้ว หลุดไปหน้าตั้งโปรไฟล์/แอปหลักทันที
+  // ทั้งที่ยังไม่ได้ตั้งรหัสผ่านใหม่เลย — แก้ด้วยการจำไว้ใน sessionStorage (อยู่ทน
+  // ข้าม refresh/navigate ในแท็บเดียวกัน จนกว่าจะปิดแท็บหรือกด "เสร็จสิ้น" จริง)
+  window.__urlHasRecoveryType = /type=recovery/.test(location.hash);
+  try {
+    if (window.__urlHasRecoveryType) {
+      sessionStorage.setItem('lykn_pw_recovery', '1');
+    } else if (sessionStorage.getItem('lykn_pw_recovery') === '1') {
+      window.__urlHasRecoveryType = true;
+    }
+  } catch (e) { /* private mode ฯลฯ — ยอมรับว่าจะกลับไปพฤติกรรมเดิม */ }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/support.js"></script>
+<script src="/shared/nav.js"></script>
+<script src="/shared/translations.js"></script>
+<script src="/shared/supabaseConfig.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/base.css">
+</helmet>
+
+<div style="min-height:100vh;background:#000000;color:#f2f7f6;padding-bottom:40px">
+
+  <nav style="display:flex;position:fixed;top:0;left:0;right:0;z-index:50;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(5,13,16,0.88);backdrop-filter:blur(8px);border-bottom:1px solid rgba(111,224,214,0.15)">
+    <a href="/index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+      <img src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/lykn-nav-logo.png" alt="LYKN" style="height:36px;cursor:pointer;display:block">
+    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="position:relative">
+        <button type="button" class="hamburger-btn" onClick="{{ toggleMenu }}" aria-label="Menu" style="width:38px;height:38px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.06);color:#eafffb;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">☰</button>
+        <sc-if value="{{ isMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:59" onClick="{{ closeMenu }}"></div>
+          <div class="candy-menu" style="position:absolute;top:calc(100% + 8px);right:0;z-index:60;background:rgba(12,34,38,0.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:12px;width:400px;max-width:calc(100vw - 24px);box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+            <div style="display:flex;justify-content:flex-end;gap:6px;margin-bottom:10px">
+              <sc-for list="{{ langSelector.options }}" as="opt" hint-placeholder-count="2">
+                <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;gap:4px;padding:5px 9px;border-radius:20px;cursor:pointer;font-size:11.5px;font-weight:700;background:{{ opt.bg }};color:{{ opt.color }}">
+                  <span style="font-size:12px">{{ opt.flag }}</span><span>{{ opt.shortLabel }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <a href="/index.html" class="menu-item" style="display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;text-decoration:none;color:#eafffb;background:rgba(255,255,255,0.04);margin-bottom:8px">
+              <span style="font-size:20px;flex:none">🏠</span>
+              <span style="display:flex;flex-direction:column;gap:1px">
+                <span style="font-size:14px;font-weight:600">{{ homeLabel }}</span>
+                <span style="font-size:10.5px;font-weight:400;color:#8ea6a3">{{ homeDesc }}</span>
+              </span>
+            </a>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <sc-for list="{{ menuItems }}" as="item" hint-placeholder-count="8">
+                <a href="{{ item.href }}" class="menu-item" style="display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:10px;background:{{ item.bg }};color:{{ item.color }};text-decoration:none">
+                  <span style="font-size:13px;font-weight:600;line-height:1.3">{{ item.label }}</span>
+                  <span style="font-size:10.5px;font-weight:400;line-height:1.35;color:#8ea6a3">{{ item.desc }}</span>
+                </a>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position:relative;display:{{ navProfileDisplay }}">
+        <button type="button" class="hamburger-btn" onClick="{{ toggleProfileMenu }}" aria-label="Profile" style="width:38px;height:38px;padding:0;border-radius:50%;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.06);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">
+          <span style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;background:{{ navProfileBg }};flex:none">{{ navProfileEmoji }}</span>
+        </button>
+        <sc-if value="{{ isProfileMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:59" onClick="{{ closeProfileMenu }}"></div>
+          <div style="position:absolute;top:calc(100% + 8px);right:0;z-index:60;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;min-width:190px;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+            <div onClick="{{ onNavManageProfile }}" class="menu-item" style="padding:11px 14px;border-radius:8px;font-size:14.5px;font-weight:500;color:#dcece9;cursor:pointer">{{ t.nav.manageProfileLink }}</div>
+            <div onClick="{{ onNavLogout }}" class="menu-item" style="padding:11px 14px;border-radius:8px;font-size:14.5px;font-weight:500;color:#ff8080;cursor:pointer">{{ t.nav.logoutLink }}</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top:66px;max-width:1100px;margin:0 auto">
+    <section style="padding:28px 20px 60px">
+
+      <h1 style="font-size:30px;font-weight:700;margin:0 0 24px">{{ t.profile.title }}</h1>
+
+      <sc-if value="{{ isAuthLoading }}" hint-placeholder-val="{{ false }}">
+        <div style="color:#8ea6a3;font-size:14px">...</div>
+      </sc-if>
+
+      <!-- ตัดเรื่อง login/สมัครด้วยอีเมลออกทั้งหมด (ใช้ X login อย่างเดียว) —
+           flow "กดลิงก์รีเซ็ตรหัสผ่านจากอีเมล" ที่เคยอยู่ตรงนี้เลยตัดออกไปด้วย
+           เพราะไม่มีทางเกิดขึ้นได้อีกแล้ว (ไม่มีปุ่ม "ลืมรหัสผ่าน" ให้กดส่งลิงก์
+           ตั้งแต่ต้น) -->
+
+      <!-- ยังไม่ login -->
+      <sc-if value="{{ showLoginGate }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 260px);text-align:center;overflow:hidden">
+          <div style="position:relative;max-width:460px;width:100%">
+            <!-- เอฟเฟกต์ reflex (แสงสะท้อน/แสงฟุ้ง) โทนเดียวกับหน้าแรก ใช้ keyframes
+                 floatFlareA/B/C ที่มีอยู่แล้วใน base.css — ให้ความรู้สึกต้อนรับแบบ
+                 "REFLEXION" ก่อนเข้าเนื้อหา login จริง -->
+            <div style="position:absolute;top:-70px;left:50%;transform:translateX(-50%);width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(111,224,214,0.35),transparent 70%);filter:blur(6px);animation:floatFlareA 7s ease-in-out infinite;z-index:0;pointer-events:none"></div>
+            <div style="position:absolute;top:-30px;right:-6%;width:15%;max-width:130px;height:230px;background:linear-gradient(115deg,transparent 30%,rgba(111,224,214,0.35) 48%,rgba(255,255,255,0.5) 50%,rgba(111,224,214,0.25) 52%,transparent 70%);transform:rotate(18deg);clip-path:polygon(30% 0,70% 0,100% 100%,0 100%);z-index:0;pointer-events:none;animation:floatFlareB 8.5s ease-in-out infinite"></div>
+            <div style="position:absolute;bottom:-30px;left:-6%;width:11%;max-width:100px;height:180px;background:linear-gradient(115deg,transparent 30%,rgba(111,224,214,0.3) 48%,rgba(255,255,255,0.4) 50%,rgba(111,224,214,0.2) 52%,transparent 70%);transform:rotate(-14deg);clip-path:polygon(20% 0,80% 0,100% 100%,10% 100%);z-index:0;pointer-events:none;animation:floatFlareC 6.5s ease-in-out infinite"></div>
+
+            <div style="position:relative;z-index:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:32px">
+              <div style="font-size:11.5px;letter-spacing:3px;color:#6fe0d6;font-weight:600;margin-bottom:12px;text-transform:uppercase">Ready for LYKN reflexion concert</div>
+              <div style="font-size:23px;font-weight:800;color:#eafffb;margin-bottom:14px;line-height:1.35">{{ t.profile.loginHeroHeadline }}</div>
+              <div style="font-size:14px;color:#a9c4c2;line-height:1.7;margin-bottom:20px">{{ t.profile.loginBody }}</div>
+              <button type="button" onClick="{{ loginWithX }}" style="width:100%;box-sizing:border-box;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;font-size:13.5px;padding:12px;border:none;border-radius:24px;cursor:pointer">{{ t.profile.loginBtn }}</button>
+            <sc-if value="{{ hasLoginError }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12.5px;color:#ffb3b3;margin-top:12px">{{ t.profile.loginError }}</div>
+            </sc-if>
+
+          </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ครั้งแรก: ตั้งค่าโปรไฟล์ -->
+      <sc-if value="{{ showSetup }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 260px)">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;max-width:480px;width:100%;box-sizing:border-box">
+          <div style="font-size:19px;font-weight:700;color:#6fe0d6;margin-bottom:6px;text-align:center">{{ t.profile.setupHeading }}</div>
+          <div style="font-size:13.5px;color:#a9c4c2;margin-bottom:20px;text-align:center">{{ setupBodyText }}</div>
+
+          <div style="width:72px;height:72px;border-radius:50%;margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:34px;background:{{ setupPreviewBg }};transition:background 0.15s">{{ setupPreviewEmoji }}</div>
+
+          <sc-if value="{{ isXAuth }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-bottom:16px">
+              <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.xHandleReadonlyLabel }}</div>
+              <input type="text" disabled="{{ true }}" value="@{{ myXHandle }}" style="width:100%;box-sizing:border-box;padding:11px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);color:#8ea6a3;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+            </div>
+          </sc-if>
+
+          <div style="margin-bottom:16px">
+            <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.setupNameLabel }}</div>
+            <input type="text" value="{{ setupName }}" onChange="{{ setSetupName }}" placeholder="{{ t.profile.setupNamePlaceholder }}" style="width:100%;box-sizing:border-box;padding:11px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+            <sc-if value="{{ hasSetupNameError }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:11.5px;color:#ffb3b3;margin-top:5px">{{ setupNameErrorMsg }}</div>
+            </sc-if>
+          </div>
+
+          <div style="margin-bottom:16px">
+            <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:8px">{{ t.profile.setupEmojiLabel }}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ emojiOptions }}" as="opt" hint-placeholder-count="20">
+                <div onClick="{{ opt.onClick }}" style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer;background:{{ opt.bg }};border:2px solid {{ opt.border }}">{{ opt.emoji }}</div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-bottom:18px">
+            <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:8px">{{ t.profile.setupBgLabel }}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ bgOptions }}" as="opt" hint-placeholder-count="30">
+                <div onClick="{{ opt.onClick }}" style="width:34px;height:34px;border-radius:50%;cursor:pointer;background:{{ opt.color }};border:3px solid {{ opt.border }}"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:8px;cursor:pointer" onClick="{{ openSetupTermsModal }}">
+            <div style="width:18px;height:18px;border-radius:5px;border:2px solid #6fe0d6;flex:none;display:flex;align-items:center;justify-content:center;background:{{ setupCheckboxBg }};margin-top:1px">{{ setupCheckboxMark }}</div>
+            <div style="font-size:13px;color:#dcece9;line-height:1.5">{{ t.profile.setupTermsLabel }}</div>
+          </div>
+          <sc-if value="{{ hasSetupTermsError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:11.5px;color:#ffb3b3;margin-bottom:8px">{{ setupTermsErrorMsg }}</div>
+          </sc-if>
+
+          <div style="margin-bottom:10px"></div>
+
+          <button type="button" onClick="{{ submitSetup }}" style="background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;font-size:14px;padding:12px 26px;border:none;border-radius:30px;cursor:pointer">{{ t.profile.setupSubmitBtn }}</button>
+
+          <sc-if value="{{ hasSetupError }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:flex-start;gap:10px;background:{{ formAlert.bg }};border:1px solid {{ formAlert.border }};border-radius:10px;padding:11px 13px;margin-top:12px">
+              <div style="width:18px;height:18px;border-radius:50%;background:{{ formAlert.iconBg }};color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:none">{{ formAlert.icon }}</div>
+              <div style="flex:1;font-size:12.5px;color:{{ formAlert.textColor }};line-height:1.5;font-weight:600">{{ setupErrorMsg }}</div>
+            </div>
+          </sc-if>
+        </div>
+        </div>
+      </sc-if>
+
+      <!-- แอปหลัก: sidebar + เนื้อหา -->
+      <sc-if value="{{ showApp }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+
+          <div class="profile-sidebar" style="flex:0 0 240px;min-width:220px;display:flex;flex-direction:column;gap:14px">
+            <div style="padding:2px 2px 4px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <div style="font-size:16px;font-weight:700;color:#eafffb">{{ t.profile.helloGreeting }} {{ profileName }}</div>
+                <button type="button" onClick="{{ goToEditProfileTab }}" style="flex:none;padding:5px 10px;border-radius:20px;border:1px solid rgba(111,224,214,0.3);background:rgba(111,224,214,0.08);color:#6fe0d6;font-size:11.5px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif">{{ t.profile.tabEditProfile }}</button>
+              </div>
+              <div style="font-size:12.5px;color:#a9c4c2;margin-top:4px">{{ t.profile.seatsRegisteredPrefix }} {{ myTicketCount }} {{ t.profile.seatsRegisteredSuffix }}</div>
+            </div>
+            <div class="profile-sidebar-tabs" style="display:flex;flex-direction:column;gap:4px">
+              <sc-for list="{{ sidebarTabs }}" as="tb" hint-placeholder-count="3">
+                <button type="button" onClick="{{ tb.onClick }}" style="text-align:left;padding:11px 14px;border-radius:9px;border:1px solid {{ tb.borderColor }};font-size:13.5px;font-weight:600;cursor:pointer;background:{{ tb.bg }};color:{{ tb.color }};font-family:'Noto Sans Thai',sans-serif">{{ tb.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex:1;min-width:280px">
+
+            <!-- แท็บ: ลงทะเบียนบัตร -->
+            <sc-if value="{{ isRegisterTab }}" hint-placeholder-val="{{ false }}">
+              <h2 style="font-size:19px;font-weight:700;color:#6fe0d6;margin:0 0 6px">{{ t.profile.registerHeading }}</h2>
+              <p style="font-size:13.5px;color:#a9c4c2;line-height:1.6;margin:0 0 18px;max-width:560px">{{ registerBodyText }}</p>
+
+              <!-- iframe ผังที่นั่งซ่อนไว้ (ไม่โชว์ในหน้านี้แล้วตามที่ตกลง — ให้ไปกดเลือกที่ผังแยกหน้าต่างหาก)
+                   ยังคง mount ไว้เพราะเป็นแหล่งข้อมูลโซน/แถวที่แท้จริงหนึ่งเดียว (regZoneOptions/regRowOptions
+                   อ่านจาก iframe.contentWindow.LyknSeatMap ผ่าน tryLoadZones() ใน componentDidMount) -->
+              <iframe src="../map.html" title="Seat zone map" style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none"></iframe>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:14px">
+                <div>
+                  <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.roundLabel }}</div>
+                  <div style="position:relative">
+                    <button type="button" onClick="{{ regShowIdDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ regShowIdDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ regShowIdDD.displayLabel }}</span>
+                      <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+                    </button>
+                    <sc-if value="{{ regShowIdDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:fixed;inset:0;z-index:500" onClick="{{ regShowIdDD.close }}"></div>
+                      <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:240px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                        <sc-for list="{{ regShowIdDD.options }}" as="opt" hint-placeholder-count="3">
+                          <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <sc-if value="{{ hasRegShowIdError }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#ffb3b3;margin-top:4px">{{ regShowIdErrorMsg }}</div>
+                  </sc-if>
+                </div>
+                <div>
+                  <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.zoneLabel }}</div>
+                  <div style="position:relative">
+                    <button type="button" onClick="{{ regZoneDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ regZoneDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ regZoneDD.displayLabel }}</span>
+                      <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+                    </button>
+                    <sc-if value="{{ regZoneDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:fixed;inset:0;z-index:500" onClick="{{ regZoneDD.close }}"></div>
+                      <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:240px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                        <sc-for list="{{ regZoneDD.options }}" as="opt" hint-placeholder-count="10">
+                          <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <sc-if value="{{ hasRegZoneError }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#ffb3b3;margin-top:4px">{{ regZoneErrorMsg }}</div>
+                  </sc-if>
+                </div>
+                <div>
+                  <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.rowLabel }}</div>
+                  <div style="position:relative">
+                    <button type="button" onClick="{{ regRowDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ regRowDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ regRowDD.displayLabel }}</span>
+                      <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+                    </button>
+                    <sc-if value="{{ regRowDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:fixed;inset:0;z-index:500" onClick="{{ regRowDD.close }}"></div>
+                      <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:240px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                        <sc-for list="{{ regRowDD.options }}" as="opt" hint-placeholder-count="10">
+                          <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <sc-if value="{{ hasRegRowError }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#ffb3b3;margin-top:4px">{{ regRowErrorMsg }}</div>
+                  </sc-if>
+                </div>
+                <div>
+                  <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.seatLabel }}</div>
+                  <input type="text" value="{{ regForm.seat }}" onChange="{{ setRegSeat }}" placeholder="{{ t.seatCheck.seatPlaceholder }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:13.5px;font-family:'Noto Sans Thai',sans-serif">
+                  <sc-if value="{{ hasRegSeatError }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#ffb3b3;margin-top:4px">{{ regSeatErrorMsg }}</div>
+                  </sc-if>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px">
+                <div>
+                  <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.ownerNameLabel }}</div>
+                  <input type="text" value="{{ regForm.ownerName }}" onChange="{{ setRegOwnerName }}" placeholder="{{ t.profile.ownerNamePlaceholder }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:13.5px;font-family:'Noto Sans Thai',sans-serif">
+                </div>
+                <div>
+                  <sc-if value="{{ isXAuth }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.xHandleReadonlyLabel }}</div>
+                    <input type="text" disabled="{{ true }}" value="{{ myXHandle }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);color:#8ea6a3;font-size:13.5px;font-family:'Noto Sans Thai',sans-serif">
+                  </sc-if>
+                  <sc-if value="{{ isEmailAuthWithHandle }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.xHandleAlreadySetLabel }}</div>
+                    <input type="text" disabled="{{ true }}" value="@{{ myXHandle }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);color:#8ea6a3;font-size:13.5px;font-family:'Noto Sans Thai',sans-serif">
+                  </sc-if>
+                  <sc-if value="{{ isEmailAuthNoHandle }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.xHandleRequiredLabel }}</div>
+                    <div style="font-size:12.5px;color:#ffb066;background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.3);border-radius:8px;padding:10px 12px;margin-bottom:8px">{{ t.profile.registerNeedsXHandle }}</div>
+                    <button type="button" onClick="{{ goToEditProfileTab }}" style="width:100%;background:rgba(111,224,214,0.15);color:#6fe0d6;font-weight:700;font-size:13px;padding:10px;border:none;border-radius:8px;cursor:pointer">{{ t.profile.goToEditProfileBtn }}</button>
+                  </sc-if>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:4px;cursor:pointer" onClick="{{ toggleRegCheck1 }}">
+                <div style="width:18px;height:18px;border-radius:5px;border:2px solid #6fe0d6;flex:none;display:flex;align-items:center;justify-content:center;background:{{ regCheck1Bg }};margin-top:1px">{{ regCheck1Mark }}</div>
+                <div style="font-size:13px;color:#dcece9;line-height:1.5">{{ t.profile.check1Label }}</div>
+              </div>
+              <sc-if value="{{ hasRegCheck1Error }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11.5px;color:#ffb3b3;margin-bottom:6px;margin-left:27px">{{ regCheck1ErrorMsg }}</div>
+              </sc-if>
+              <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:4px;cursor:pointer" onClick="{{ openRegisterTermsModal }}">
+                <div style="width:18px;height:18px;border-radius:5px;border:2px solid #6fe0d6;flex:none;display:flex;align-items:center;justify-content:center;background:{{ regCheck2Bg }};margin-top:1px">{{ regCheck2Mark }}</div>
+                <div style="font-size:13px;color:#dcece9;line-height:1.5">{{ t.profile.check2Label }}</div>
+              </div>
+              <sc-if value="{{ hasRegCheck2Error }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11.5px;color:#ffb3b3;margin-bottom:16px;margin-left:27px">{{ regCheck2ErrorMsg }}</div>
+              </sc-if>
+
+              <div style="font-size:12px;color:#8ea6a3;line-height:1.6;margin-bottom:16px;padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:8px">{{ t.profile.registerEvidenceHint }}</div>
+
+              <button type="button" onClick="{{ submitRegister }}" disabled="{{ isRegLoading }}" style="background:{{ regButtonBg }};color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border:none;border-radius:30px;cursor:pointer;opacity:{{ regButtonOpacity }}">{{ regButtonLabel }}</button>
+
+              <sc-if value="{{ hasRegError }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:flex-start;gap:10px;background:{{ formAlert.bg }};border:1px solid {{ formAlert.border }};border-radius:10px;padding:11px 13px;margin-top:12px">
+                  <div style="width:18px;height:18px;border-radius:50%;background:{{ formAlert.iconBg }};color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:none">{{ formAlert.icon }}</div>
+                  <div style="flex:1;font-size:12.5px;color:{{ formAlert.textColor }};line-height:1.5;font-weight:600">{{ regErrorMsg }}</div>
+                </div>
+              </sc-if>
+            </sc-if>
+
+            <!-- แท็บ: บัตรของฉัน -->
+            <sc-if value="{{ isMyTicketsTab }}" hint-placeholder-val="{{ false }}">
+              <h2 style="font-size:19px;font-weight:700;color:#6fe0d6;margin:0 0 16px">{{ t.profile.tabManageTickets }}</h2>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+                <div style="display:inline-flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:4px">
+                  <div onClick="{{ setTicketsSubTab }}" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:{{ ticketsSubTabBg }};color:{{ ticketsSubTabColor }}">{{ t.profile.subTabMyTickets }}</div>
+                  <div onClick="{{ setDisputesSubTab }}" style="position:relative;display:flex;align-items:center;gap:5px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:{{ disputesSubTabBg }};color:{{ disputesSubTabColor }}">
+                    <span>{{ t.profile.subTabDisputes }}</span>
+                    <span onClick="{{ toggleDisputesTabTooltip }}" style="width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,0.18);color:inherit;font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none">i</span>
+                    <sc-if value="{{ isDisputesTabTooltipOpen }}" hint-placeholder-val="{{ false }}">
+                      <div onClick="{{ stopProp }}" style="position:absolute;top:calc(100% + 8px);right:0;z-index:20;width:min(260px, calc(100vw - 56px));background:#16302f;border:1px solid rgba(111,224,214,0.3);border-radius:10px;padding:12px 14px;font-size:12.5px;color:#dcece9;line-height:1.6;font-weight:400;box-shadow:0 10px 24px rgba(0,0,0,0.4);text-align:left;cursor:default">{{ t.profile.disputesTooltipText }}</div>
+                    </sc-if>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <sc-if value="{{ showHeaderContactBtn }}" hint-placeholder-val="{{ false }}">
+                    <button type="button" onClick="{{ openContactModal }}" style="background:rgba(111,224,214,0.15);color:#6fe0d6;font-weight:700;font-size:12.5px;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;white-space:nowrap">{{ t.profile.caseContactBtn }}</button>
+                  </sc-if>
+                  <button type="button" onClick="{{ refreshMyTicketsAndCases }}" disabled="{{ isRefreshingMyTickets }}" style="padding:8px 14px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#6fe0d6;font-size:12.5px;font-weight:600;cursor:pointer;opacity:{{ refreshMyTicketsOpacity }}">↻ {{ t.profile.refreshBtn }}</button>
+                </div>
+              </div>
+
+              <!-- แท็บย่อย: จัดการบัตรของฉัน -->
+              <sc-if value="{{ isTicketsSubTab }}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{ hasMyTicketsError }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center;padding:40px 20px;color:#ffb3b3">
+                    <div style="font-size:14px;margin-bottom:14px">{{ t.profile.loadErrorMsg }}</div>
+                    <button type="button" onClick="{{ retryMyTickets }}" style="background:rgba(255,107,107,0.12);color:#ffb3b3;font-weight:700;font-size:13.5px;padding:10px 20px;border:none;border-radius:24px;cursor:pointer">{{ t.profile.retryBtn }}</button>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ myTicketsEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center;padding:40px 20px;color:#8ea6a3">
+                    <div style="font-size:14px;margin-bottom:14px">{{ t.profile.myTicketsEmpty }}</div>
+                    <button type="button" onClick="{{ goToRegisterTab }}" style="background:rgba(111,224,214,0.15);color:#6fe0d6;font-weight:700;font-size:13.5px;padding:10px 20px;border:none;border-radius:24px;cursor:pointer">{{ t.profile.myTicketsEmptyCta }}</button>
+                  </div>
+                </sc-if>
+
+                <sc-for list="{{ myTicketCards }}" as="c" hint-placeholder-count="3">
+                  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 18px;margin-bottom:12px">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:8px">
+                      <div style="font-size:15px;font-weight:700;color:#eafffb">{{ c.roundLabel }} · {{ c.zone }} / {{ c.row }} / {{ c.seat }}</div>
+                      <div style="display:flex;align-items:center;gap:6px;position:relative">
+                        <div style="font-size:10.5px;font-weight:700;letter-spacing:0.4px;padding:4px 10px;border-radius:20px;background:{{ c.statusBg }};color:{{ c.statusColor }}">{{ c.statusLabel }}</div>
+                        <sc-if value="{{ c.showStatusInfo }}" hint-placeholder-val="{{ false }}">
+                          <div onClick="{{ c.onToggleStatusTooltip }}" style="width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.12);color:#c7d4d2;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none">i</div>
+                          <sc-if value="{{ c.isStatusTooltipOpen }}" hint-placeholder-val="{{ false }}">
+                            <div style="position:absolute;top:calc(100% + 8px);left:0;z-index:20;width:min(240px, calc(100vw - 56px));background:#16302f;border:1px solid rgba(111,224,214,0.3);border-radius:10px;padding:11px 13px;font-size:12px;color:#dcece9;line-height:1.6;font-weight:400;box-shadow:0 10px 24px rgba(0,0,0,0.4);text-align:left">{{ c.statusTooltipText }}</div>
+                          </sc-if>
+                        </sc-if>
+                      </div>
+                    </div>
+                    <div style="font-size:12px;color:#8ea6a3;margin-bottom:10px">{{ t.profile.registeredAtLabel }} {{ c.registeredAtLabel }} · {{ t.profile.checkedCountLabel }} {{ c.checkCount }} {{ t.profile.checkedCountUnit }}</div>
+
+                    <sc-if value="{{ c.isDisputed }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:12.5px;color:#ffb066;background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.35);border-radius:8px;padding:9px 11px;margin-bottom:10px">{{ t.profile.disputedBanner }}</div>
+                    </sc-if>
+
+                    <sc-if value="{{ c.isRejected }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:12.5px;color:#ff6b6b;background:rgba(255,90,90,0.1);border:1px solid rgba(255,90,90,0.35);border-radius:8px;padding:9px 11px;margin-bottom:10px"><b>{{ c.rejectReasonLabel }}:</b> {{ c.rejectReason }}</div>
+                    </sc-if>
+
+                    <sc-if value="{{ c.isEvidenceRejected }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:12.5px;color:#ff9d3f;background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.35);border-radius:8px;padding:9px 11px;margin-bottom:10px"><b>{{ c.rejectReasonLabel }}:</b> {{ c.evidenceRejectReason }}</div>
+                    </sc-if>
+
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                      <sc-if value="{{ c.showEdit }}" hint-placeholder-val="{{ true }}">
+                        <button type="button" onClick="{{ c.onEdit }}" style="background:rgba(111,224,214,0.12);color:#6fe0d6;font-weight:600;font-size:12.5px;padding:8px 16px;border:none;border-radius:20px;cursor:pointer">{{ t.profile.editBtn }}</button>
+                      </sc-if>
+                      <sc-if value="{{ c.showSubmitEvidence }}" hint-placeholder-val="{{ true }}">
+                        <button type="button" onClick="{{ c.onSubmitEvidence }}" style="background:rgba(255,212,0,0.12);color:#ffd400;font-weight:600;font-size:12.5px;padding:8px 16px;border:none;border-radius:20px;cursor:pointer">{{ t.profile.submitEvidenceBtn }}</button>
+                      </sc-if>
+                      <sc-if value="{{ c.showDelete }}" hint-placeholder-val="{{ true }}">
+                        <button type="button" onClick="{{ c.onDelete }}" style="background:rgba(255,107,107,0.12);color:#ffb3b3;font-weight:600;font-size:12.5px;padding:8px 16px;border:none;border-radius:20px;cursor:pointer">{{ t.profile.deleteBtn }}</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </sc-if>
+
+              <!-- แท็บย่อย: จัดการข้อพิพาท (เดิมคือแท็บ "เคสของฉัน") -->
+              <sc-if value="{{ isDisputesSubTab }}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{ hasMyCasesError }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center;padding:40px 20px;color:#ffb3b3">
+                    <div style="font-size:14px;margin-bottom:14px">{{ t.profile.loadErrorMsg }}</div>
+                    <button type="button" onClick="{{ retryMyCases }}" style="background:rgba(255,107,107,0.12);color:#ffb3b3;font-weight:700;font-size:13.5px;padding:10px 20px;border:none;border-radius:24px;cursor:pointer">{{ t.profile.retryBtn }}</button>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ myCasesEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center;padding:40px 20px;color:#8ea6a3;font-size:14px">{{ t.profile.myCasesEmpty }}</div>
+                </sc-if>
+
+                <sc-for list="{{ myCaseCards }}" as="cs" hint-placeholder-count="2">
+                  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 18px;margin-bottom:12px">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+                      <div style="font-size:14px;font-weight:700;color:#eafffb">{{ t.profile.caseSeatLabel }}: {{ cs.seatKeyLabel }}</div>
+                      <div style="font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:20px;background:{{ cs.outcomeBg }};color:{{ cs.outcomeColor }}">{{ cs.outcomeLabel }}</div>
+                    </div>
+                    <div style="font-size:12px;color:#8ea6a3;margin-bottom:12px">{{ t.profile.caseOpenedLabel }} {{ cs.openedAtLabel }}</div>
+
+                    <div style="display:flex;gap:6px;margin-bottom:12px">
+                      <sc-for list="{{ cs.timeline }}" as="step" hint-placeholder-count="4">
+                        <div style="flex:1;text-align:center">
+                          <div style="height:4px;border-radius:2px;background:{{ step.color }};margin-bottom:5px"></div>
+                          <div style="font-size:10px;color:{{ step.textColor }}">{{ step.label }}</div>
+                        </div>
+                      </sc-for>
+                    </div>
+
+                    <sc-if value="{{ cs.hasNote }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:12.5px;color:#c7d4d2;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 11px;margin-bottom:10px"><b>{{ cs.rejectReasonLabel }}:</b> {{ cs.adminNote }}</div>
+                    </sc-if>
+
+                    <div style="font-size:12px;color:#8ea6a3;line-height:1.6">{{ t.profile.caseNoAccuseNote }}</div>
+
+                    <sc-if value="{{ cs.showJudgmentNote }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:10px;background:rgba(255,176,32,0.08);border:1px solid rgba(255,176,32,0.25);border-radius:10px;padding:12px 14px;font-size:12px;color:#e8d8c0;line-height:1.6">{{ t.profile.caseJudgmentNote }}</div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </sc-if>
+            </sc-if>
+
+            <!-- แท็บ: วิธีใช้และข้อจำกัด -->
+            <sc-if value="{{ isHowtoTab }}" hint-placeholder-val="{{ false }}">
+              <h2 style="font-size:19px;font-weight:700;color:#6fe0d6;margin:0 0 16px">{{ t.profile.tabHowto }}</h2>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:20px">
+                <div>
+                  <div style="font-size:14.5px;font-weight:700;color:#eafffb;margin-bottom:8px">{{ t.profile.howtoWhatIsHeading }}</div>
+                  <sc-for list="{{ howtoWhatIsList }}" as="li" hint-placeholder-count="3">
+                    <div style="font-size:13px;color:#a9c4c2;line-height:1.7;margin-bottom:4px">· {{ li }}</div>
+                  </sc-for>
+                </div>
+                <div>
+                  <div style="font-size:14.5px;font-weight:700;color:#eafffb;margin-bottom:8px">{{ t.profile.howtoWhatIsntHeading }}</div>
+                  <sc-for list="{{ howtoWhatIsntList }}" as="li" hint-placeholder-count="4">
+                    <div style="font-size:13px;color:#a9c4c2;line-height:1.7;margin-bottom:4px">· {{ li }}</div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="font-size:14.5px;font-weight:700;color:#eafffb;margin-bottom:8px">{{ t.profile.howtoHowToHeading }}</div>
+              <sc-for list="{{ howtoHowToList }}" as="li" hint-placeholder-count="4">
+                <div style="font-size:13px;color:#a9c4c2;line-height:1.8;margin-bottom:4px">{{ li.n }}. {{ li.text }}</div>
+              </sc-for>
+
+              <div style="font-size:14.5px;font-weight:700;color:#eafffb;margin:20px 0 10px">{{ t.profile.howtoStatusHeading }}</div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+                <sc-for list="{{ statusTable }}" as="st" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 12px">
+                    <div style="font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:20px;background:{{ st.bg }};color:{{ st.color }};white-space:nowrap">{{ st.label }}</div>
+                    <div style="font-size:12.5px;color:#a9c4c2">{{ st.desc }}</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="font-size:14.5px;font-weight:700;color:#eafffb;margin-bottom:8px">{{ t.profile.howtoCautionHeading }}</div>
+              <sc-for list="{{ howtoCautionList }}" as="li" hint-placeholder-count="4">
+                <div style="font-size:13px;color:#a9c4c2;line-height:1.7;margin-bottom:4px">· {{ li }}</div>
+              </sc-for>
+
+              <div style="font-size:12px;color:#8ea6a3;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08)">{{ t.profile.dataRetentionNote }}</div>
+            </sc-if>
+
+            <!-- แท็บ: แก้ไขโปรไฟล์ -->
+            <sc-if value="{{ isEditProfileTab }}" hint-placeholder-val="{{ false }}">
+              <h2 style="font-size:19px;font-weight:700;color:#6fe0d6;margin:0 0 16px">{{ t.profile.editProfileHeading }}</h2>
+
+              <div style="width:72px;height:72px;border-radius:50%;margin:0 0 18px;display:flex;align-items:center;justify-content:center;font-size:34px;background:{{ editPreviewBg }};transition:background 0.15s">{{ editPreviewEmoji }}</div>
+
+              <div style="margin-bottom:16px;max-width:380px">
+                <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.setupNameLabel }}</div>
+                <input type="text" value="{{ editName }}" onChange="{{ setEditName }}" style="width:100%;box-sizing:border-box;padding:11px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+              </div>
+
+              <sc-if value="{{ isXAuth }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-bottom:20px;max-width:380px">
+                  <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.xHandleReadonlyLabel }}</div>
+                  <input type="text" disabled="{{ true }}" value="@{{ myXHandle }}" style="width:100%;box-sizing:border-box;padding:11px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);color:#8ea6a3;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+                </div>
+              </sc-if>
+              <sc-if value="{{ isEmailAuthWithHandle }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-bottom:20px;max-width:380px">
+                  <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.xHandleAlreadySetLabel }}</div>
+                  <input type="text" disabled="{{ true }}" value="@{{ myXHandle }}" style="width:100%;box-sizing:border-box;padding:11px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);color:#8ea6a3;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+                </div>
+              </sc-if>
+              <sc-if value="{{ isEmailAuthNoHandle }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-bottom:20px;max-width:380px">
+                  <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.profile.xHandleSetupLabel }}</div>
+                  <div style="position:relative">
+                    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#8ea6a3;font-size:14px;pointer-events:none">@</span>
+                    <input type="text" value="{{ editXHandle }}" onChange="{{ setEditXHandle }}" placeholder="{{ t.profile.xHandleRequiredPlaceholder }}" style="width:100%;box-sizing:border-box;padding:11px 12px 11px 24px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:14px;font-family:'Noto Sans Thai',sans-serif">
+                  </div>
+                  <div style="font-size:11px;color:#8ea6a3;margin-top:5px">{{ t.profile.xHandleNoAtHint }}</div>
+                  <div style="font-size:11px;color:#ffb066;margin-top:5px;line-height:1.5">⚠️ {{ t.profile.xHandleSetupHint }}</div>
+                  <sc-if value="{{ hasXHandleFieldError }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#ffb3b3;margin-top:4px">{{ xHandleFieldError }}</div>
+                  </sc-if>
+                  <button type="button" onClick="{{ openXHandleConfirmModal }}" style="margin-top:10px;background:rgba(111,224,214,0.15);color:#6fe0d6;font-weight:700;font-size:13px;padding:9px 18px;border:1px solid rgba(111,224,214,0.35);border-radius:20px;cursor:pointer">✓ {{ t.profile.xHandleSetBtn }}</button>
+                  <div style="font-size:11px;color:#8ea6a3;margin-top:6px;line-height:1.5">{{ t.profile.xHandleSetBtnNote }}</div>
+                </div>
+              </sc-if>
+
+              <div style="margin-bottom:16px">
+                <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:8px">{{ t.profile.setupEmojiLabel }}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <sc-for list="{{ editEmojiOptions }}" as="opt" hint-placeholder-count="20">
+                    <div onClick="{{ opt.onClick }}" style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer;background:{{ opt.bg }};border:2px solid {{ opt.border }}">{{ opt.emoji }}</div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="margin-bottom:20px">
+                <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:8px">{{ t.profile.setupBgLabel }}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  <sc-for list="{{ editBgOptions }}" as="opt" hint-placeholder-count="30">
+                    <div onClick="{{ opt.onClick }}" style="width:34px;height:34px;border-radius:50%;cursor:pointer;background:{{ opt.color }};border:3px solid {{ opt.border }}"></div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <button type="button" onClick="{{ saveEditProfile }}" style="background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;font-size:14px;padding:12px 26px;border:none;border-radius:30px;cursor:pointer">{{ t.profile.saveBtn }}</button>
+
+              <div style="margin-top:36px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1)">
+                <button type="button" onClick="{{ openLogoutModal }}" style="background:rgba(255,255,255,0.06);color:#dcece9;font-weight:700;font-size:13.5px;padding:10px 22px;border:1px solid rgba(255,255,255,0.15);border-radius:24px;cursor:pointer">{{ t.profile.logoutBtn }}</button>
+              </div>
+
+              <div style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,80,80,0.2)">
+                <div style="font-size:15px;font-weight:700;color:#ff6b6b;margin-bottom:6px">{{ t.profile.deleteMyDataHeading }}</div>
+                <div style="font-size:13px;color:#a9c4c2;line-height:1.6;margin-bottom:14px;max-width:440px">{{ t.profile.deleteMyDataBody }}</div>
+                <button type="button" onClick="{{ openDeleteAllModal }}" style="background:rgba(255,80,80,0.1);color:#ff6b6b;font-weight:700;font-size:13.5px;padding:10px 22px;border:1px solid rgba(255,80,80,0.35);border-radius:24px;cursor:pointer">{{ t.profile.deleteMyDataBtn }}</button>
+              </div>
+            </sc-if>
+
+          </div>
+        </div>
+      </sc-if>
+
+    </section>
+  </main>
+
+  <footer style="border-top:1px solid rgba(255,255,255,0.08);margin-top:60px;padding:24px 20px;text-align:center">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:10px">
+      <span onClick="{{ openFooterTerms }}" style="font-size:12.5px;color:#8ea6a3;cursor:pointer;text-decoration:underline">{{ t.footer.termsLink }}</span>
+      <span onClick="{{ openFooterTerms }}" style="font-size:12.5px;color:#8ea6a3;cursor:pointer;text-decoration:underline">{{ t.footer.privacyLink }}</span>
+      <a href="https://x.com/susakiiverse" target="_blank" rel="noopener" style="font-size:12.5px;color:#8ea6a3;text-decoration:underline">{{ t.footer.contactLink }}</a>
+    </div>
+    <div style="font-size:11.5px;color:#5c7472">{{ t.footer.disclaimer }}</div>
+  </footer>
+
+  <sc-if value="{{ isFooterTermsOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);z-index:200" onClick="{{ closeFooterTerms }}"></div>
+    <div style="position:fixed;inset:0;z-index:201;display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:none">
+      <div style="pointer-events:auto;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;max-width:520px;width:100%;max-height:80vh;display:flex;flex-direction:column">
+        <div style="font-size:18px;font-weight:700;color:#6fe0d6;padding:22px 24px 4px">{{ t.profile.termsTitle }}</div>
+        <div style="overflow-y:auto;padding:16px 24px;flex:1">
+          <div style="font-size:13px;color:#a9c4c2;margin-bottom:16px;font-style:italic">{{ t.profile.termsIntro }}</div>
+          <sc-for list="{{ t.profile.termsSections }}" as="sec" hint-placeholder-count="7">
+            <div style="margin-bottom:16px">
+              <div style="font-size:13.5px;font-weight:700;color:#eafffb;margin-bottom:4px">{{ sec.h }}</div>
+              <div style="font-size:13px;color:#a9c4c2;line-height:1.7;white-space:pre-line">{{ sec.b }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:16px 24px 22px;border-top:1px solid rgba(255,255,255,0.08)">
+          <div onClick="{{ closeFooterTerms }}" style="text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.termsCloseBtn }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ข้อกำหนดและเงื่อนไข (scroll-to-accept) -->
+  <sc-if value="{{ isTermsModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeTermsModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;max-width:520px;width:100%;max-height:80vh;display:flex;flex-direction:column" onClick="{{ stopProp }}">
+        <div style="font-size:18px;font-weight:700;color:#6fe0d6;padding:22px 24px 4px">{{ t.profile.termsTitle }}</div>
+        <div data-terms-scroll onScroll="{{ onTermsScroll }}" style="overflow-y:auto;padding:16px 24px;flex:1">
+          <div style="font-size:13px;color:#a9c4c2;margin-bottom:16px;font-style:italic">{{ t.profile.termsIntro }}</div>
+          <sc-for list="{{ t.profile.termsSections }}" as="sec" hint-placeholder-count="7">
+            <div style="margin-bottom:16px">
+              <div style="font-size:13.5px;font-weight:700;color:#eafffb;margin-bottom:4px">{{ sec.h }}</div>
+              <div style="font-size:13px;color:#a9c4c2;line-height:1.7;white-space:pre-line">{{ sec.b }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:16px 24px 22px;border-top:1px solid rgba(255,255,255,0.08)">
+          <sc-if value="{{ showTermsScrollHint }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;color:#8ea6a3;margin-bottom:10px;text-align:center">{{ t.profile.termsScrollHint }}</div>
+          </sc-if>
+          <div style="display:flex;gap:8px">
+            <div onClick="{{ closeTermsModal }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.termsCloseBtn }}</div>
+            <div onClick="{{ acceptTerms }}" style="flex:1;text-align:center;background:{{ termsAcceptBg }};color:{{ termsAcceptColor }};font-weight:700;padding:11px;border-radius:9px;cursor:{{ termsAcceptCursor }};font-size:13.5px">{{ t.profile.termsAcceptBtn }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ส่งหลักฐาน -->
+  <sc-if value="{{ isEvidenceModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeEvidenceModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:26px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#6fe0d6;margin-bottom:14px">{{ t.profile.evidenceModalTitle }}</div>
+
+        <div style="font-size:12.5px;color:#ffb066;background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.35);border-radius:8px;padding:10px 12px;margin-bottom:16px;line-height:1.6">⚠️ {{ t.profile.evidenceWarning }}</div>
+
+        <div style="margin-bottom:14px">
+          <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:6px">{{ t.profile.evidenceFileLabel }}</div>
+          <input type="file" id="evidenceFileInput" accept="image/*" onChange="{{ setEvidenceFile }}" style="display:none">
+          <label for="evidenceFileInput" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1.5px dashed rgba(111,224,214,0.35);background:rgba(111,224,214,0.05);color:#6fe0d6;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            <span>📎</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ evidenceFilePickerLabel }}</span>
+          </label>
+          <div style="font-size:11px;color:#8ea6a3;margin-top:6px">{{ t.profile.evidenceFileSizeHint }}</div>
+          <sc-if value="{{ hasEvidenceFileName }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:right;margin-top:6px">
+              <a href="#" onClick="{{ clearEvidenceFile }}" style="font-size:11.5px;color:#8ea6a3;text-decoration:underline">{{ t.profile.evidenceFileRemoveBtn }}</a>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:6px">{{ t.profile.evidenceHistoryHeading }}</div>
+          <sc-if value="{{ evidenceHistoryLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;color:#5a6b69">{{ t.profile.evidenceHistoryLoadingLabel }}</div>
+          </sc-if>
+          <sc-if value="{{ evidenceHistoryEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;color:#5a6b69">{{ t.profile.evidenceHistoryEmpty }}</div>
+          </sc-if>
+          <sc-for list="{{ evidenceHistoryRows }}" as="ev" hint-placeholder-count="1">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:#c7d4d2;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <div style="flex:1;min-width:0">
+                <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ev.typeLabel }} · {{ ev.submittedAtLabel }}</div>
+              </div>
+              <div style="flex:none;font-weight:700;color:{{ ev.resultColor }}">{{ ev.resultLabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:11.5px;color:#8ea6a3;line-height:1.6;margin-bottom:16px">{{ t.profile.evidenceReviewTimeNote }}</div>
+
+        <sc-if value="{{ hasEvidenceError }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:flex-start;gap:10px;background:{{ formAlert.bg }};border:1px solid {{ formAlert.border }};border-radius:10px;padding:11px 13px;margin-bottom:12px">
+            <div style="width:18px;height:18px;border-radius:50%;background:{{ formAlert.iconBg }};color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:none">{{ formAlert.icon }}</div>
+            <div style="flex:1;font-size:12.5px;color:{{ formAlert.textColor }};line-height:1.5;font-weight:600">{{ evidenceErrorMsg }}</div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeEvidenceModal }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteCancelBtn }}</div>
+          <div onClick="{{ submitEvidenceUpload }}" style="flex:1;text-align:center;background:rgba(111,224,214,0.85);color:#0d1117;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ evidenceUploadLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ยืนยันลบที่นั่ง -->
+  <sc-if value="{{ isDeleteModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeDeleteModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(255,80,80,0.3);border-radius:16px;padding:26px;max-width:420px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#ff6b6b;margin-bottom:14px">{{ t.profile.deleteConfirmTitle }}</div>
+        <div style="font-size:13px;color:#dcece9;line-height:1.7;margin-bottom:8px">1. {{ t.profile.deleteWarn1 }}</div>
+        <div style="font-size:13px;color:#dcece9;line-height:1.7;margin-bottom:8px">2. {{ t.profile.deleteWarn2 }}</div>
+        <div style="font-size:13px;color:#dcece9;line-height:1.7;margin-bottom:8px">3. {{ t.profile.deleteWarn3 }}</div>
+        <div style="font-size:13px;color:#dcece9;line-height:1.7;margin-bottom:18px">4. {{ t.profile.deleteWarn4 }}</div>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeDeleteModal }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteCancelBtn }}</div>
+          <div onClick="{{ confirmDeleteClaim }}" style="flex:1;text-align:center;background:rgba(255,80,80,0.85);color:#fff;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteConfirmBtn }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: เตือนก่อนแก้ไขที่นั่งที่ยืนยันแล้ว -->
+  <sc-if value="{{ isEditWarningOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeEditWarning }}">
+      <div style="background:#0c2226;border:1px solid rgba(255,176,32,0.35);border-radius:16px;padding:26px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#ffb066;margin-bottom:12px">{{ editWarningTitleText }}</div>
+        <div style="font-size:13.5px;color:#dcece9;line-height:1.7;margin-bottom:18px">{{ editWarningBodyText }}</div>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeEditWarning }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteCancelBtn }}</div>
+          <div onClick="{{ confirmEditWarning }}" style="flex:1;text-align:center;background:rgba(255,176,32,0.85);color:#1a1200;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.editWarningContinueBtn }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ที่นั่งนี้มีคนลงทะเบียนไว้แล้ว ยืนยันก่อนอ้างสิทธิ์ซ้ำ — เคสแก้ไขที่นั่ง
+       modal นี้เปิดซ้อนบน modal "แก้ไขที่นั่ง" ที่เปิดอยู่ก่อนแล้ว (ต่างจากตอน
+       ลงทะเบียนที่ฟอร์มอยู่บนหน้าปกติไม่ใช่ modal) ต้อง z-index สูงกว่า modal อื่นๆ
+       ทั้งหมด (ที่ใช้ 200 เท่ากันหมด) ไม่งั้นโดน modal เดิมที่เปิดค้างอยู่บังไว้ -->
+  <sc-if value="{{ isDupConfirmOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:220;padding:20px" onClick="{{ closeDupConfirm }}">
+      <div style="background:#0c2226;border:1px solid rgba(255,176,32,0.35);border-radius:16px;padding:26px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#ffb066;margin-bottom:12px">{{ t.profile.dupConfirmTitle }}</div>
+        <div style="font-size:13.5px;color:#dcece9;line-height:1.7;margin-bottom:18px">{{ t.profile.dupConfirmBody }}</div>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeDupConfirm }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteCancelBtn }}</div>
+          <div onClick="{{ confirmDupClaim }}" style="flex:1;text-align:center;background:rgba(255,176,32,0.85);color:#1a1200;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ dupConfirmOpacity }};pointer-events:{{ dupConfirmPointerEvents }}">{{ t.profile.dupConfirmContinueBtn }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: แจ้งเตือน error ทั่วไปตอนลงทะเบียน/แก้ไขที่นั่ง (คูลดาวน์, ลงทะเบียนซ้ำ,
+       ที่นั่งไม่มีในผัง, ที่นั่งถูกบล็อก, rate limit, error ทั่วไป) — ปุ่มเดียว ตกลง -->
+  <sc-if value="{{ isRegAlertOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeRegAlert }}">
+      <div style="background:#0c2226;border:1px solid rgba(255,128,128,0.3);border-radius:16px;padding:26px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:13.5px;color:#dcece9;line-height:1.7;margin-bottom:18px">{{ regAlertMsg }}</div>
+        <div onClick="{{ closeRegAlert }}" style="text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.alertOkBtn }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ผลลัพธ์ลงทะเบียนสำเร็จ (ปกติ หรือมีข้อพิพาท) — ปุ่มพาไปหน้าจัดการบัตร -->
+  <sc-if value="{{ isRegResultPopupOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeRegResultPopup }}">
+      <div style="background:#0c2226;border:1px solid {{ regResultBorder }};border-radius:16px;padding:26px;max-width:420px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:{{ regResultColor }};margin-bottom:10px">{{ regResultTitle }}</div>
+        <div style="font-size:13.5px;color:#dcece9;line-height:1.7;margin-bottom:20px">{{ regResultBody }}</div>
+        <div onClick="{{ regResultBtnAction }}" style="text-align:center;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ regResultBtnLabel }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ฟอร์มแก้ไขที่นั่ง -->
+  <sc-if value="{{ isEditFormOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeEditForm }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:26px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#6fe0d6;margin-bottom:16px">{{ t.profile.editFormHeading }}</div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px">
+          <div>
+            <div style="font-size:11px;color:#a9c4c2;margin-bottom:4px">{{ t.seatCheck.roundLabel }}</div>
+            <div style="position:relative">
+              <button type="button" onClick="{{ editShowIdDD.toggle }}" style="width:100%;box-sizing:border-box;padding:9px 10px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ editShowIdDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ editShowIdDD.displayLabel }}</span>
+                <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+              </button>
+              <sc-if value="{{ editShowIdDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ editShowIdDD.close }}"></div>
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:200px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                  <sc-for list="{{ editShowIdDD.options }}" as="opt" hint-placeholder-count="3">
+                    <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:#a9c4c2;margin-bottom:4px">{{ t.seatCheck.zoneLabel }}</div>
+            <div style="position:relative">
+              <button type="button" onClick="{{ editZoneDD.toggle }}" style="width:100%;box-sizing:border-box;padding:9px 10px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ editZoneDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ editZoneDD.displayLabel }}</span>
+                <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+              </button>
+              <sc-if value="{{ editZoneDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ editZoneDD.close }}"></div>
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:200px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                  <sc-for list="{{ editZoneDD.options }}" as="opt" hint-placeholder-count="10">
+                    <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:#a9c4c2;margin-bottom:4px">{{ t.seatCheck.rowLabel }}</div>
+            <div style="position:relative">
+              <button type="button" onClick="{{ editRowDD.toggle }}" style="width:100%;box-sizing:border-box;padding:9px 10px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ editRowDD.textColor }};font-size:13px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ editRowDD.displayLabel }}</span>
+                <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+              </button>
+              <sc-if value="{{ editRowDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ editRowDD.close }}"></div>
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:200px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                  <sc-for list="{{ editRowDD.options }}" as="opt" hint-placeholder-count="10">
+                    <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:#a9c4c2;margin-bottom:4px">{{ t.seatCheck.seatLabel }}</div>
+            <input type="text" value="{{ editForm.seat }}" onChange="{{ setEditFormSeat }}" style="width:100%;box-sizing:border-box;padding:9px 10px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <div style="font-size:11px;color:#a9c4c2;margin-bottom:4px">{{ t.profile.ownerNameLabel }}</div>
+          <input type="text" value="{{ editForm.ownerName }}" onChange="{{ setEditFormOwnerName }}" style="width:100%;box-sizing:border-box;padding:9px 10px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:13px;font-family:'Noto Sans Thai',sans-serif">
+        </div>
+
+        <sc-if value="{{ hasEditError }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:flex-start;gap:10px;background:{{ formAlert.bg }};border:1px solid {{ formAlert.border }};border-radius:10px;padding:11px 13px;margin-bottom:12px">
+            <div style="width:18px;height:18px;border-radius:50%;background:{{ formAlert.iconBg }};color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:none">{{ formAlert.icon }}</div>
+            <div style="flex:1;font-size:12.5px;color:{{ formAlert.textColor }};line-height:1.5;font-weight:600">{{ editErrorMsg }}</div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeEditForm }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteCancelBtn }}</div>
+          <div onClick="{{ submitEdit }}" style="flex:1;text-align:center;background:rgba(111,224,214,0.85);color:#0d1117;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px;opacity:{{ editSubmitOpacity }};pointer-events:{{ editSubmitPointerEvents }}">{{ editSubmitLabel }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ติดต่อทีมงาน -->
+  <sc-if value="{{ isContactModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeContactModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:26px;max-width:360px;width:100%;text-align:center" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#6fe0d6;margin-bottom:10px">{{ t.profile.caseContactBtn }}</div>
+        <div style="font-size:14px;color:#dcece9;margin-bottom:18px">@susakiiverse</div>
+        <a href="https://x.com/susakiiverse" target="_blank" rel="noopener" style="display:block;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;font-size:13.5px;padding:11px;border-radius:9px;text-decoration:none;margin-bottom:10px">เปิด x.com/@susakiiverse</a>
+        <div onClick="{{ closeContactModal }}" style="background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.termsCloseBtn }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ยืนยันลบข้อมูลทั้งหมด -->
+  <sc-if value="{{ isDeleteAllModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeDeleteAllModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(255,80,80,0.3);border-radius:16px;padding:26px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#ff6b6b;margin-bottom:10px">{{ t.profile.deleteMyDataHeading }}</div>
+        <div style="font-size:13.5px;color:#dcece9;line-height:1.7;margin-bottom:18px">{{ t.profile.deleteMyDataBody }}</div>
+        <sc-if value="{{ hasDeleteAllError }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:flex-start;gap:10px;background:{{ formAlert.bg }};border:1px solid {{ formAlert.border }};border-radius:10px;padding:11px 13px;margin-bottom:14px">
+            <div style="width:18px;height:18px;border-radius:50%;background:{{ formAlert.iconBg }};color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:none">{{ formAlert.icon }}</div>
+            <div style="flex:1;font-size:12.5px;color:{{ formAlert.textColor }};line-height:1.5;font-weight:600">{{ deleteAllErrorMsg }}</div>
+          </div>
+        </sc-if>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeDeleteAllModal }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteCancelBtn }}</div>
+          <div onClick="{{ confirmDeleteAll }}" style="flex:1;text-align:center;background:rgba(255,80,80,0.85);color:#fff;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteConfirmBtn }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ยืนยันตั้งค่า account x.com (ครั้งเดียว แก้ไขไม่ได้อีก) -->
+  <sc-if value="{{ isXHandleConfirmModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeXHandleConfirmModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(255,176,32,0.35);border-radius:16px;padding:26px;max-width:400px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#ffb066;margin-bottom:10px">{{ t.profile.xHandleConfirmTitle }}</div>
+        <div style="font-size:20px;font-weight:700;color:#6fe0d6;margin-bottom:12px">@{{ editXHandle }}</div>
+        <div style="font-size:13.5px;color:#dcece9;line-height:1.7;margin-bottom:18px">{{ t.profile.xHandleConfirmBody }}</div>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeXHandleConfirmModal }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteCancelBtn }}</div>
+          <div onClick="{{ confirmSetXHandle }}" style="flex:1;text-align:center;background:rgba(255,176,32,0.85);color:#0d1117;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.xHandleConfirmBtn }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Modal: ยืนยันออกจากระบบ -->
+  <sc-if value="{{ isLogoutModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px" onClick="{{ closeLogoutModal }}">
+      <div style="background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:26px;max-width:360px;width:100%" onClick="{{ stopProp }}">
+        <div style="font-size:17px;font-weight:700;color:#6fe0d6;margin-bottom:10px">{{ t.profile.logoutConfirmTitle }}</div>
+        <div style="font-size:13.5px;color:#dcece9;line-height:1.7;margin-bottom:18px">{{ logoutConfirmBodyText }}</div>
+        <div style="display:flex;gap:8px">
+          <div onClick="{{ closeLogoutModal }}" style="flex:1;text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.deleteCancelBtn }}</div>
+          <div onClick="{{ confirmLogout }}" style="flex:1;text-align:center;background:rgba(111,224,214,0.85);color:#0d1117;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.logoutBtn }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const AVATAR_EMOJIS = ['🦊','🐶','🐷','🐹','🐰','🐵','🐺','🥜','🍦','🎸','🥓','🐱','🍅','😎','🥳','🦋','🌸','🍀','🔥','🎧'];
+// พาเลตสีพื้นหลังอวาตาร์ — โทน "Soft Rainbow" ตามที่ผู้ใช้เลือกไว้ (4 แถว ไล่จากโทน
+// ส้ม/เหลือง -> เขียว/ฟ้า -> ม่วง/ชมพู -> แดง/ส้มเข้ม)
+const BG_COLORS = [
+  '#D98E5F', '#F6CE72', '#A3B33A', '#8FD1DE', '#DCC6EA', '#BC6D95', '#C88FD6', '#E9BEDA',
+  '#F2A868', '#CC8A3C', '#D2D97C', '#BFE0EC', '#8687CE', '#B6B4DE', '#EDA6C4', '#B571C7',
+  '#A8433F', '#E08A3C', '#DDE49C', '#6FBF96', '#9C8AD1', '#B9EBD7', '#9BE3BC', '#6FC2C9',
+  '#E4615C', '#F5C79B', '#D9A02B', '#EC7267', '#D9793D', '#EAB63D'
+];
+const EVIDENCE_MAX_FILE_BYTES = 2 * 1024 * 1024; // 2MB — เฉพาะรูปภาพเท่านั้น (ตัดวิดีโอออกแล้ว)
+
+const SHOW_ROUNDS = [
+  { id: '2569-10-23', label_th: 'ศุกร์ 23 ต.ค. 2569', label_en: 'Fri Oct 23, 2026' },
+  { id: '2569-10-24', label_th: 'เสาร์ 24 ต.ค. 2569', label_en: 'Sat Oct 24, 2026' },
+  { id: '2569-10-25', label_th: 'อาทิตย์ 25 ต.ค. 2569', label_en: 'Sun Oct 25, 2026' }
+];
+
+class Component extends DCLogic {
+  state = {
+    lang: getStoredLang(),
+    openDropdown: null,
+
+    authLoading: true,
+    session: null,
+    profileName: '',
+    profileEmoji: '',
+    profileBg: '',
+
+
+    activeTab: 'register',
+    ticketSubTab: 'tickets',
+
+    isTermsModalOpen: false,
+    termsScrolledEnd: false,
+    termsTarget: null,
+
+    setupName: '',
+    setupEmoji: AVATAR_EMOJIS[0],
+    setupBg: BG_COLORS[0],
+    setupTermsAccepted: false,
+    setupErrorMsg: '',
+    setupFieldErrors: {},
+
+    editName: '',
+    editEmoji: '',
+    editBg: '',
+    editXHandle: '',
+    xHandleFieldError: '',
+    isXHandleConfirmModalOpen: false,
+    xHandleSetStatus: 'idle',
+
+    regForm: { showId: '', zone: '', row: '', seat: '', ownerName: '', xHandle: '' },
+    regZoneOptions: [],
+    zoneRowsMap: {},
+    regAutofillHint: false,
+    regCheck1: false,
+    regCheck2: false,
+    regStatus: 'idle',
+    regErrorMsg: '',
+    regAlertMsg: '',
+    regResult: null,
+    regFieldErrors: {},
+
+    myTicketsStatus: 'idle',
+    myTickets: [],
+    rejectReasonByClaimId: {},
+    pendingEvidenceClaimIds: {},
+    statusTooltipClaimId: null,
+    isDisputesTabTooltipOpen: false,
+    deleteConfirmClaimId: null,
+    dupConfirmTarget: null,
+
+    editWarningClaim: null,
+    editWarningReason: null,
+    editClaimTarget: null,
+    editForm: { showId: '', zone: '', row: '', seat: '', ownerName: '' },
+    editStatus: 'idle',
+    editErrorMsg: '',
+    editFieldErrors: {},
+
+    myCasesStatus: 'idle',
+    myCases: [],
+    myCasesEvidenceFlags: {},
+    myCasesOwnEvidenceFlags: {},
+    myCasesOwnStatus: {},
+
+    isContactModalOpen: false,
+    isDeleteAllModalOpen: false,
+    deleteAllErrorMsg: '',
+    isLogoutModalOpen: false,
+
+    notifStatus: 'idle',
+    notifications: [],
+    isNotifOpen: false,
+    announcementDetail: null,
+
+    evidenceModalClaimId: null,
+    evidenceType: 'SCREENSHOT',
+    evidenceFile: null,
+    evidenceStatus: 'idle',
+    evidenceErrorMsg: '',
+    evidenceHistory: [],
+    evidenceHistoryStatus: 'idle',
+    isFooterTermsOpen: false
+  };
+
+  componentDidMount() {
+    const sb = getSupabaseClient();
+    sb.auth.getSession().then(({ data }) => this.applySession(data.session));
+    this._authSub = sb.auth.onAuthStateChange((event, session) => {
+      this.applySession(session);
+    });
+
+    this._onMapMessage = (e) => {
+      if (!e.data || e.data.source !== 'lykn-seat-map') return;
+      if (e.data.type !== 'zone-selected' && e.data.type !== 'seat-selected') return;
+      const next = { ...this.state.regForm, zone: e.data.zone };
+      if (e.data.type === 'seat-selected') { next.row = e.data.row; next.seat = e.data.seat; }
+      else { next.row = ''; next.seat = ''; }
+      this.setState({ regForm: next, regAutofillHint: true });
+      clearTimeout(this._autofillTimer);
+      this._autofillTimer = setTimeout(() => this.setState({ regAutofillHint: false }), 3000);
+    };
+    window.addEventListener('message', this._onMapMessage);
+
+    // โหลดรายชื่อโซนทั้งหมด + แถวของทุกโซน (ครั้งเดียว) จาก iframe ของผัง แล้วเก็บ
+    // เป็น zoneRowsMap ไว้ในหน่วยความจำ เพื่อให้ใช้ได้ต่อแม้ iframe จะไม่ได้ mount
+    // อยู่แล้ว (เช่นตอนแก้ไขบัตรจากแท็บ "บัตรของฉัน" ซึ่งไม่มีผังอยู่ในหน้า)
+    const tryLoadZones = () => {
+      const iframe = document.querySelector('iframe[title="Seat zone map"]');
+      if (!iframe) return false;
+      try {
+        if (iframe.contentWindow && iframe.contentWindow.LyknSeatMap) {
+          const api = iframe.contentWindow.LyknSeatMap;
+          const zones = api.listZones();
+          const rowsMap = {};
+          zones.forEach((z) => { rowsMap[z] = api.listRows(z); });
+          this.setState({ regZoneOptions: zones, zoneRowsMap: rowsMap });
+          return true;
+        }
+      } catch (err) { /* ยังไม่พร้อม */ }
+      return false;
+    };
+    this._zonePoll = setInterval(() => { if (tryLoadZones()) clearInterval(this._zonePoll); }, 400);
+  }
+
+  componentWillUnmount() {
+    this._authSub?.data?.subscription?.unsubscribe();
+    window.removeEventListener('message', this._onMapMessage);
+    clearTimeout(this._autofillTimer);
+    clearInterval(this._zonePoll);
+  }
+
+  getMapRows(zoneCode) {
+    return this.state.zoneRowsMap[zoneCode] || [];
+  }
+
+  applySession(session) {
+    const meta = (session && session.user && session.user.user_metadata) || {};
+    const profileName = meta.profile_name || '';
+    this.setState({
+      authLoading: false,
+      session,
+      profileName,
+      profileEmoji: meta.profile_emoji || AVATAR_EMOJIS[0],
+      profileBg: meta.profile_bg || BG_COLORS[0],
+      editName: profileName,
+      editEmoji: meta.profile_emoji || AVATAR_EMOJIS[0],
+      editBg: meta.profile_bg || BG_COLORS[0]
+    });
+    if (session && profileName) {
+      this.loadMyTickets();
+      this.loadMyCases();
+    }
+  }
+
+  setLang(lang) {
+    if (lang === this.state.lang) return;
+    setStoredLang(lang);
+    this.setState({ lang, openDropdown: null });
+    document.documentElement.lang = lang;
+  }
+  toggleDropdown(key) { this.setState({ openDropdown: this.state.openDropdown === key ? null : key }); }
+  closeDropdown() { this.setState({ openDropdown: null }); }
+  stopProp(e) { e.stopPropagation(); }
+
+  // สร้าง dropdown ที่ธีมเข้ากับเว็บเอง แทน <select> ธรรมดา — เพราะ popup ของ
+  // <select> เป็น UI ของเบราว์เซอร์/OS เอง คุม CSS ให้เข้าธีมมืดของเว็บไม่ได้เต็มที่
+  // (ปุ่มปิดดูเข้าธีม แต่พอกดเปิดรายการกลายเป็นกล่องขาวของเบราว์เซอร์)
+  makeDropdown(key, items, currentValue, placeholder, onSelect) {
+    const normItems = (items || []).map(it => (it && typeof it === 'object')
+      ? { value: it.id ?? it.value, label: it.label }
+      : { value: it, label: it });
+    const match = normItems.find(it => it.value === currentValue);
+    return {
+      isOpen: this.state.openDropdown === key,
+      toggle: () => this.toggleDropdown(key),
+      close: () => this.closeDropdown(),
+      displayLabel: match ? match.label : placeholder,
+      textColor: match ? '#eafffb' : '#7a9895',
+      options: normItems.map(it => ({
+        label: it.label,
+        color: it.value === currentValue ? '#6fe0d6' : '#eafffb',
+        bg: it.value === currentValue ? 'rgba(111,224,214,0.15)' : 'transparent',
+        onClick: () => { onSelect(it.value); this.closeDropdown(); }
+      }))
+    };
+  }
+
+  loginWithX() {
+    getSupabaseClient().auth.signInWithOAuth({
+      provider: 'x',
+      options: { redirectTo: window.location.origin + '/profile/index.html' }
+    });
+  }
+
+  openLogoutModal() { this.setState({ isLogoutModalOpen: true }); }
+  closeLogoutModal() { this.setState({ isLogoutModalOpen: false }); }
+  confirmLogout() {
+    this.setState({ isLogoutModalOpen: false });
+    getSupabaseClient().auth.signOut();
+  }
+
+  setActiveTab(tab) { this.setState({ activeTab: tab }); }
+  setTicketSubTab(tab) { this.setState({ ticketSubTab: tab }); }
+
+  setSetupName(e) {
+    const next = { ...this.state.setupFieldErrors };
+    delete next.name;
+    this.setState({ setupName: e.target.value, setupFieldErrors: next });
+  }
+  pickSetupEmoji(emoji) { this.setState({ setupEmoji: emoji }); }
+  pickSetupBg(color) { this.setState({ setupBg: color }); }
+  openSetupTermsModal() {
+    const next = { ...this.state.setupFieldErrors };
+    delete next.terms;
+    this.setState({ isTermsModalOpen: true, termsScrolledEnd: false, termsTarget: 'setup', setupFieldErrors: next });
+    this.checkTermsAlreadyFits();
+  }
+  checkTermsAlreadyFits() {
+    setTimeout(() => {
+      const el = document.querySelector('[data-terms-scroll]');
+      if (el && el.scrollHeight <= el.clientHeight + 12) this.setState({ termsScrolledEnd: true });
+    }, 50);
+  }
+
+  async submitSetup() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const fieldErrors = {};
+    if (!this.state.setupName.trim()) fieldErrors.name = t.profile.fieldRequired;
+    if (!this.state.setupTermsAccepted) fieldErrors.terms = t.profile.checkboxRequired;
+    if (Object.keys(fieldErrors).length > 0) {
+      this.setState({ setupFieldErrors: fieldErrors, setupErrorMsg: '' });
+      return;
+    }
+    this.setState({ setupErrorMsg: '', setupFieldErrors: {} });
+    const sb = getSupabaseClient();
+    const { error } = await sb.auth.updateUser({
+      data: {
+        profile_name: this.state.setupName.trim(),
+        profile_emoji: this.state.setupEmoji,
+        profile_bg: this.state.setupBg
+      }
+    });
+    if (error) { this.setState({ setupErrorMsg: t.seatCheck.genericError }); return; }
+    const { data } = await sb.auth.getSession();
+    this.applySession(data.session);
+  }
+
+  setEditName(e) { this.setState({ editName: e.target.value }); }
+  pickEditEmoji(emoji) { this.setState({ editEmoji: emoji }); }
+  pickEditBg(color) { this.setState({ editBg: color }); }
+  // ตัด @ ที่ผู้ใช้อาจพิมพ์นำหน้าเองทิ้ง เพราะช่องนี้มีเครื่องหมาย @ ตายตัวโชว์
+  // อยู่หน้าช่องแล้ว (ป้องกันไม่ให้เห็นเป็น @@handle)
+  setEditXHandle(e) { this.setState({ editXHandle: e.target.value.replace(/^@+/, ''), xHandleFieldError: '' }); }
+  openXHandleConfirmModal() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    if (!this.state.editXHandle.trim()) {
+      this.setState({ xHandleFieldError: t.profile.fieldRequired });
+      return;
+    }
+    this.setState({ isXHandleConfirmModalOpen: true });
+  }
+  closeXHandleConfirmModal() { this.setState({ isXHandleConfirmModalOpen: false }); }
+  async confirmSetXHandle() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const handle = this.state.editXHandle.trim().replace(/^@/, '');
+    this.setState({ xHandleSetStatus: 'loading' });
+    try {
+      const sb = getSupabaseClient();
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session.access_token;
+      const res = await fetch(supabaseFunctionUrl('set-x-handle'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ handle })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        const msg = data.error === 'HANDLE_ALREADY_TAKEN' ? t.profile.xHandleTakenError
+          : data.error === 'HANDLE_ALREADY_SET' ? t.profile.xHandleAlreadySetError
+          : data.error === 'INVALID_HANDLE_FORMAT' ? t.profile.xHandleInvalidFormatError
+          : t.seatCheck.genericError;
+        this.setState({ xHandleSetStatus: 'idle', isXHandleConfirmModalOpen: false, xHandleFieldError: msg });
+        return;
+      }
+      // ค่า user_name เพิ่งถูกอัปเดตฝั่ง server (service role) ไม่ใช่จาก client เอง
+      // ต้อง refreshSession() บังคับดึง JWT/user_metadata ใหม่ ไม่งั้น getSession()
+      // จะคืนค่าที่แคชไว้เดิม ยังไม่เห็น handle ที่เพิ่งตั้ง
+      const { data: freshSession } = await sb.auth.refreshSession();
+      this.applySession(freshSession.session);
+      this.setState({ xHandleSetStatus: 'idle', isXHandleConfirmModalOpen: false, editXHandle: '' });
+    } catch (err) {
+      this.setState({ xHandleSetStatus: 'idle', isXHandleConfirmModalOpen: false, xHandleFieldError: t.seatCheck.genericError });
+    }
+  }
+  async saveEditProfile() {
+    const sb = getSupabaseClient();
+    await sb.auth.updateUser({
+      data: { profile_name: this.state.editName.trim(), profile_emoji: this.state.editEmoji, profile_bg: this.state.editBg }
+    });
+    const { data } = await sb.auth.getSession();
+    this.applySession(data.session);
+  }
+
+  onTermsScroll(e) {
+    const el = e.target;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 12) this.setState({ termsScrolledEnd: true });
+  }
+  closeTermsModal() { this.setState({ isTermsModalOpen: false }); }
+  acceptTerms() {
+    if (!this.state.termsScrolledEnd) return;
+    if (this.state.termsTarget === 'setup') this.setState({ setupTermsAccepted: true, isTermsModalOpen: false });
+    else if (this.state.termsTarget === 'register') this.setState({ regCheck2: true, isTermsModalOpen: false });
+  }
+
+  clearRegFieldError(name) {
+    if (!this.state.regFieldErrors[name]) return {};
+    const next = { ...this.state.regFieldErrors };
+    delete next[name];
+    return { regFieldErrors: next };
+  }
+  setRegShowId(value) { this.setState({ regForm: { ...this.state.regForm, showId: value }, regResult: null, ...this.clearRegFieldError('showId') }); }
+  setRegZone(value) {
+    this.setState({ regForm: { ...this.state.regForm, zone: value, row: '', seat: '' }, regResult: null, ...this.clearRegFieldError('zone') });
+  }
+  setRegRow(value) { this.setState({ regForm: { ...this.state.regForm, row: value }, regResult: null, ...this.clearRegFieldError('row') }); }
+  setRegSeat(e) { this.setState({ regForm: { ...this.state.regForm, seat: e.target.value }, regResult: null, ...this.clearRegFieldError('seat') }); }
+  setRegOwnerName(e) { this.setState({ regForm: { ...this.state.regForm, ownerName: e.target.value } }); }
+  setRegXHandle(e) { this.setState({ regForm: { ...this.state.regForm, xHandle: e.target.value }, ...this.clearRegFieldError('xHandle') }); }
+  toggleRegCheck1() { this.setState({ regCheck1: !this.state.regCheck1, ...this.clearRegFieldError('check1') }); }
+  openRegisterTermsModal() {
+    if (this.state.regCheck2) { this.setState({ regCheck2: false }); return; }
+    this.setState({ isTermsModalOpen: true, termsScrolledEnd: false, termsTarget: 'register', ...this.clearRegFieldError('check2') });
+    this.checkTermsAlreadyFits();
+  }
+  goToRegisterTab() { this.setState({ activeTab: 'register' }); }
+  goToEditProfileTab() { this.setState({ activeTab: 'editProfile' }); }
+
+  async submitRegister(confirmDuplicate) {
+    // กันกดซ้ำ (double-tap มือถือ/เน็ตช้าแล้วกดรัว) ยิง request ซ้อนกันหลายรอบ —
+    // ถ้ากำลังส่งอยู่แล้วไม่ต้องทำอะไรต่อ ไม่งั้นจะเกิดผลลัพธ์ผสมกันมั่ว (บางรอบ
+    // confirm_duplicate ผ่าน บางรอบไม่ผ่าน ทำให้ user เห็น modal ค้าง/วนซ้ำ)
+    if (this.state.regStatus === 'loading') return;
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const f = this.state.regForm;
+    const isEmailAuth = this.state.session?.user?.app_metadata?.provider !== 'x';
+    const meta = this.state.session?.user?.user_metadata || {};
+    const myHandle = meta.user_name || meta.preferred_username || '';
+    const fieldErrors = {};
+    if (!f.showId) fieldErrors.showId = t.profile.fieldRequired;
+    if (!f.zone) fieldErrors.zone = t.profile.fieldRequired;
+    if (!f.row) fieldErrors.row = t.profile.fieldRequired;
+    if (!f.seat.trim()) fieldErrors.seat = t.profile.fieldRequired;
+    if (!this.state.regCheck1) fieldErrors.check1 = t.profile.checkboxRequired;
+    if (!this.state.regCheck2) fieldErrors.check2 = t.profile.checkboxRequired;
+    if (Object.keys(fieldErrors).length > 0) {
+      this.setState({ regStatus: 'error', regFieldErrors: fieldErrors, regResult: null });
+      return;
+    }
+    if (isEmailAuth && !myHandle) {
+      this.setState({ regStatus: 'error', regErrorMsg: t.profile.registerNeedsXHandle, regResult: null });
+      return;
+    }
+    this.setState({ regStatus: 'loading', regErrorMsg: '', regAlertMsg: '', regFieldErrors: {}, regResult: null });
+    try {
+      const sb = getSupabaseClient();
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session.access_token;
+      const res = await fetch(supabaseFunctionUrl('seat-register'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          show_id: f.showId, zone: f.zone, row: f.row, seat: f.seat,
+          owner_name_optional: f.ownerName || null,
+          terms_accepted: true, ownership_confirmed: true,
+          confirm_duplicate: !!confirmDuplicate
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        if (data.error === 'SEAT_ALREADY_CLAIMED' && data.requires_confirmation) {
+          this.setState({ regStatus: 'idle', dupConfirmTarget: 'register' });
+          return;
+        }
+        // ข้อผิดพลาดพวกนี้ขึ้นเป็น popup (มีปุ่มตกลง) แทนแถบ inline เดิม —
+        // ยกเว้น X_HANDLE_MISSING ที่ยังคงเป็นแถบ inline เหมือนเดิม (เช็คไว้
+        // ก่อนหน้านี้แล้วตั้งแต่ต้นฟังก์ชัน ไม่ผ่านมาถึงจุดนี้)
+        const alertMsg = data.error === 'SEAT_COOLDOWN' ? t.profile.cooldownError
+          : data.error === 'SELF_DUPLICATE' ? t.profile.selfDuplicateError
+          : data.error === 'SEAT_NOT_ON_MAP' ? t.profile.seatNotOnMapError
+          : data.error === 'SEAT_REGISTRATION_BLOCKED' ? t.profile.seatRegistrationBlockedError
+          : data.error === 'RATE_LIMITED' ? t.profile.seatActionRateLimited
+          : t.seatCheck.genericError;
+        this.setState({ regStatus: 'error', regAlertMsg: alertMsg });
+        return;
+      }
+      this.setState({
+        regStatus: 'done', regResult: data,
+        regForm: { showId: '', zone: '', row: '', seat: '', ownerName: '', xHandle: '' },
+        regCheck1: false, regCheck2: false, dupConfirmTarget: null
+      });
+      this.loadMyTickets();
+    } catch (err) {
+      this.setState({ regStatus: 'error', regAlertMsg: t.seatCheck.genericError });
+    }
+  }
+  closeRegAlert() { this.setState({ regAlertMsg: '' }); }
+  closeRegResultPopup() { this.setState({ regResult: null }); }
+  goToManageTicketsFromReg() { this.setState({ regResult: null, activeTab: 'myTickets', ticketSubTab: 'tickets' }); }
+  // กรณี UNDER_REVIEW (เพิ่งลงทะเบียนซ้ำกับที่นั่งของคนอื่น) พาไปที่แท็บ
+  // "จัดการข้อพิพาท" แทนแท็บ "จัดการบัตรของฉัน" เพราะเคสที่เพิ่งเปิดไปอยู่ที่นั่น
+  goToDisputesFromReg() { this.setState({ regResult: null, activeTab: 'myTickets', ticketSubTab: 'disputes' }); }
+
+  async loadMyTickets() {
+    this.setState({ myTicketsStatus: 'loading' });
+    const sb = getSupabaseClient();
+    const { data, error } = await sb.from('claims').select('*').is('deleted_at', null).order('claimed_at', { ascending: false });
+    if (error) { this.setState({ myTicketsStatus: 'error' }); return; }
+    const claims = data || [];
+    const rejectedIds = claims.filter(c => c.status === 'REJECTED').map(c => c.id);
+    let rejectReasonByClaimId = {};
+    if (rejectedIds.length) {
+      const { data: rc } = await sb.from('review_claims')
+        .select('claim_id, reviews(admin_note)')
+        .in('claim_id', rejectedIds);
+      (rc || []).forEach(row => {
+        if (row.reviews) rejectReasonByClaimId[row.claim_id] = row.reviews.admin_note;
+      });
+    }
+    // เช็คว่าบัตรใบไหน (สถานะ REGISTERED) มีหลักฐานที่ส่งแล้วกำลังรอตรวจอยู่บ้าง
+    // เพื่อแยกป้าย "รอตรวจสอบเอกสาร" ออกจาก "รอยืนยันหลักฐาน" ในหน้านี้
+    const registeredIds = claims.filter(c => c.status === 'REGISTERED').map(c => c.id);
+    let pendingEvidenceClaimIds = {};
+    if (registeredIds.length) {
+      const { data: flags } = await sb.rpc('my_claims_evidence_status', { p_claim_ids: registeredIds });
+      (flags || []).forEach(f => { pendingEvidenceClaimIds[f.claim_id] = f.has_pending_evidence; });
+    }
+    this.setState({ myTicketsStatus: 'done', myTickets: claims, rejectReasonByClaimId, pendingEvidenceClaimIds });
+  }
+
+  openDeleteModal(claimId) { this.setState({ deleteConfirmClaimId: claimId }); }
+  closeDeleteModal() { this.setState({ deleteConfirmClaimId: null }); }
+  async confirmDeleteClaim() {
+    const claimId = this.state.deleteConfirmClaimId;
+    if (!claimId) return;
+    const sb = getSupabaseClient();
+    const { data: sessionData } = await sb.auth.getSession();
+    const token = sessionData.session.access_token;
+    await fetch(supabaseFunctionUrl('seat-delete'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ claim_id: claimId })
+    });
+    this.setState({ deleteConfirmClaimId: null });
+    this.loadMyTickets();
+  }
+
+  onEditClick(claim) {
+    const hasPendingEvidence = claim.status === 'REGISTERED' && !!this.state.pendingEvidenceClaimIds[claim.id];
+    if (claim.status === 'VERIFIED') { this.setState({ editWarningClaim: claim, editWarningReason: 'verified' }); }
+    else if (hasPendingEvidence) { this.setState({ editWarningClaim: claim, editWarningReason: 'pendingEvidence' }); }
+    else { this.openEditForm(claim); }
+  }
+  closeEditWarning() { this.setState({ editWarningClaim: null, editWarningReason: null }); }
+  confirmEditWarning() {
+    const claim = this.state.editWarningClaim;
+    this.setState({ editWarningClaim: null, editWarningReason: null });
+    this.openEditForm(claim);
+  }
+  openEditForm(claim) {
+    this.setState({
+      editClaimTarget: claim,
+      editForm: {
+        showId: claim.show_id, zone: claim.zone, row: claim.row,
+        seat: String(parseInt(claim.seat, 10)), ownerName: claim.owner_name_optional || ''
+      },
+      editStatus: 'idle', editErrorMsg: '', editFieldErrors: {}
+    });
+  }
+  closeEditForm() { this.setState({ editClaimTarget: null }); }
+  clearEditFieldError(name) {
+    if (!this.state.editFieldErrors[name]) return {};
+    const next = { ...this.state.editFieldErrors };
+    delete next[name];
+    return { editFieldErrors: next };
+  }
+  setEditFormShowId(value) { this.setState({ editForm: { ...this.state.editForm, showId: value }, ...this.clearEditFieldError('showId') }); }
+  setEditFormZone(value) { this.setState({ editForm: { ...this.state.editForm, zone: value, row: '', seat: '' }, ...this.clearEditFieldError('zone') }); }
+  setEditFormRow(value) { this.setState({ editForm: { ...this.state.editForm, row: value }, ...this.clearEditFieldError('row') }); }
+  setEditFormSeat(e) { this.setState({ editForm: { ...this.state.editForm, seat: e.target.value }, ...this.clearEditFieldError('seat') }); }
+  setEditFormOwnerName(e) { this.setState({ editForm: { ...this.state.editForm, ownerName: e.target.value } }); }
+
+  async submitEdit(confirmDuplicate) {
+    // กันกดซ้ำเหตุผลเดียวกับ submitRegister
+    if (this.state.editStatus === 'loading') return;
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const f = this.state.editForm;
+    const fieldErrors = {};
+    if (!f.showId) fieldErrors.showId = t.profile.fieldRequired;
+    if (!f.zone) fieldErrors.zone = t.profile.fieldRequired;
+    if (!f.row) fieldErrors.row = t.profile.fieldRequired;
+    if (!f.seat.trim()) fieldErrors.seat = t.profile.fieldRequired;
+    if (Object.keys(fieldErrors).length > 0) {
+      this.setState({ editStatus: 'error', editFieldErrors: fieldErrors });
+      return;
+    }
+    this.setState({ editStatus: 'loading', editErrorMsg: '', editFieldErrors: {} });
+    try {
+      const sb = getSupabaseClient();
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session.access_token;
+      const res = await fetch(supabaseFunctionUrl('seat-edit'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          claim_id: this.state.editClaimTarget.id,
+          show_id: f.showId, zone: f.zone, row: f.row, seat: f.seat,
+          owner_name_optional: f.ownerName || null,
+          confirm_duplicate: !!confirmDuplicate
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        if (data.error === 'SEAT_ALREADY_CLAIMED' && data.requires_confirmation) {
+          this.setState({ editStatus: 'idle', dupConfirmTarget: 'edit' });
+          return;
+        }
+        const msg = data.error === 'SEAT_COOLDOWN' ? t.profile.cooldownError
+          : data.error === 'SELF_DUPLICATE' ? t.profile.selfDuplicateError
+          : data.error === 'SEAT_NOT_ON_MAP' ? t.profile.seatNotOnMapError
+          : data.error === 'SEAT_REGISTRATION_BLOCKED' ? t.profile.seatRegistrationBlockedError
+          : data.error === 'RATE_LIMITED' ? t.profile.seatActionRateLimited
+          : t.seatCheck.genericError;
+        this.setState({ editStatus: 'error', editErrorMsg: msg });
+        return;
+      }
+      this.setState({ editClaimTarget: null, dupConfirmTarget: null });
+      this.loadMyTickets();
+    } catch (err) {
+      this.setState({ editStatus: 'error', editErrorMsg: t.seatCheck.genericError });
+    }
+  }
+
+  closeDupConfirm() { this.setState({ dupConfirmTarget: null }); }
+  toggleStatusTooltip(claimId) {
+    this.setState({ statusTooltipClaimId: this.state.statusTooltipClaimId === claimId ? null : claimId });
+  }
+  // ปุ่ม (i) ข้างแท็บ "จัดการข้อพิพาท" — ต้อง stopPropagation ก่อน เพราะ div
+  // แท็บทั้งก้อนมี onClick สลับแท็บอยู่แล้ว ไม่งั้นกดไอคอนจะสลับแท็บไปด้วย
+  toggleDisputesTabTooltip(e) {
+    e.stopPropagation();
+    this.setState({ isDisputesTabTooltipOpen: !this.state.isDisputesTabTooltipOpen });
+  }
+  confirmDupClaim() {
+    const target = this.state.dupConfirmTarget;
+    this.setState({ dupConfirmTarget: null });
+    if (target === 'register') this.submitRegister(true);
+    else if (target === 'edit') this.submitEdit(true);
+  }
+
+  async loadMyCases() {
+    this.setState({ myCasesStatus: 'loading' });
+    const sb = getSupabaseClient();
+    const { data, error } = await sb.from('reviews').select('id, show_id, seat_key, review_outcome, opened_at, resolved_at, admin_note').order('opened_at', { ascending: false });
+    if (error) { this.setState({ myCasesStatus: 'error' }); return; }
+    const cases = data || [];
+    let evidenceFlags = {};
+    let myEvidenceFlags = {};
+    let ownStatusByReview = {};
+    if (cases.length) {
+      const { data: flags } = await sb.rpc('my_cases_evidence_flags', { p_review_ids: cases.map((c) => c.id) });
+      (flags || []).forEach((f) => {
+        evidenceFlags[f.review_id] = f.has_evidence;
+        myEvidenceFlags[f.review_id] = f.my_evidence_submitted;
+      });
+
+      // สถานะบัตรของ "ตัวเอง" ในแต่ละเคส (VERIFIED = ชนะ, REJECTED = แพ้) —
+      // RLS ของ review_claims/claims กรองให้เห็นแค่แถวที่เป็นเจ้าของ claim
+      // เองอยู่แล้ว เลย join ตรงๆ ได้โดยไม่เห็นบัตรของอีกฝ่าย
+      const { data: myLinks } = await sb.from('review_claims').select('review_id, claims(status)').in('review_id', cases.map((c) => c.id));
+      (myLinks || []).forEach((l) => { ownStatusByReview[l.review_id] = l.claims ? l.claims.status : null; });
+    }
+    this.setState({ myCasesStatus: 'done', myCases: cases, myCasesEvidenceFlags: evidenceFlags, myCasesOwnEvidenceFlags: myEvidenceFlags, myCasesOwnStatus: ownStatusByReview });
+  }
+
+  // ปุ่มรีเฟรชแท็บ "จัดการบัตร" (ทั้งบัตรของฉัน + ข้อพิพาท) — โหลดข้อมูลใหม่โดย
+  // ไม่ต้อง reload หน้าทั้งหน้า โหลดทั้งคู่พร้อมกันเพราะสลับแท็บย่อยไปมาได้อยู่แล้ว
+  // ผู้ใช้ไม่ต้องมาคอยจำว่าอยู่แท็บไหนต้องกดปุ่มไหน
+  refreshMyTicketsAndCases() {
+    this.loadMyTickets();
+    this.loadMyCases();
+  }
+
+  loadNotifications() { return loadNotifications(this, getSupabaseClient()); }
+
+  openEvidenceModal(claimId) {
+    this.setState({
+      evidenceModalClaimId: claimId, evidenceType: 'SCREENSHOT', evidenceFile: null, evidenceStatus: 'idle', evidenceErrorMsg: '',
+      evidenceHistory: [], evidenceHistoryStatus: 'loading'
+    });
+    this.loadEvidenceHistory(claimId);
+  }
+  async loadEvidenceHistory(claimId) {
+    try {
+      const sb = getSupabaseClient();
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session.access_token;
+      const res = await fetch(supabaseFunctionUrl('list-claim-evidence'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ claim_id: claimId })
+      });
+      const data = await res.json();
+      if (this.state.evidenceModalClaimId !== claimId) return;
+      if (!res.ok || !data.ok) { this.setState({ evidenceHistoryStatus: 'error' }); return; }
+      this.setState({ evidenceHistoryStatus: 'done', evidenceHistory: data.evidence || [] });
+    } catch (err) {
+      if (this.state.evidenceModalClaimId === claimId) this.setState({ evidenceHistoryStatus: 'error' });
+    }
+  }
+  closeEvidenceModal() { this.setState({ evidenceModalClaimId: null }); }
+  setEvidenceType(value) { this.setState({ evidenceType: value }); }
+  setEvidenceFile(e) {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+    if (file && file.size > EVIDENCE_MAX_FILE_BYTES) {
+      this.setState({ evidenceFile: null, evidenceErrorMsg: t.profile.evidenceFileTooLarge });
+      e.target.value = '';
+      return;
+    }
+    this.setState({ evidenceFile: file, evidenceErrorMsg: '' });
+  }
+  clearEvidenceFile() { this.setState({ evidenceFile: null }); }
+  async submitEvidenceUpload() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const file = this.state.evidenceFile;
+    const claimId = this.state.evidenceModalClaimId;
+    if (!file) {
+      this.setState({ evidenceErrorMsg: t.profile.evidenceNoFile });
+      return;
+    }
+    this.setState({ evidenceStatus: 'loading', evidenceErrorMsg: '' });
+    try {
+      const sb = getSupabaseClient();
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const fileKey = `${claimId}/${Date.now()}-${safeName}`;
+
+      const uploadRes = await sb.storage.from('evidence').upload(fileKey, file);
+      if (uploadRes.error) throw uploadRes.error;
+
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session.access_token;
+      const res = await fetch(supabaseFunctionUrl('submit-evidence'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ claim_id: claimId, type: this.state.evidenceType, file_key: fileKey })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        // ติด rate limit ส่งหลักฐาน (10 ครั้ง/วัน) — โชว์ข้อความที่ user เข้าใจ
+        // แทนข้อความ error ทั่วไป ส่วน error อื่นๆ (edge case ที่ไม่ควรเจอจาก
+        // การใช้งานปกติ เช่นเคสถูกลบ/ตัดสินไปแล้วระหว่างที่กำลังส่งพอดี) ยังคง
+        // ใช้ข้อความทั่วไปเหมือนเดิม
+        const msg = data.error === 'RATE_LIMITED' ? t.profile.evidenceRateLimited : t.seatCheck.genericError;
+        this.setState({ evidenceStatus: 'error', evidenceErrorMsg: msg });
+        return;
+      }
+
+      this.setState({ evidenceModalClaimId: null });
+      this.loadMyTickets();
+    } catch (err) {
+      this.setState({ evidenceStatus: 'error', evidenceErrorMsg: t.seatCheck.genericError });
+    }
+  }
+
+  openContactModal() { this.setState({ isContactModalOpen: true }); }
+  closeContactModal() { this.setState({ isContactModalOpen: false }); }
+  openDeleteAllModal() { this.setState({ isDeleteAllModalOpen: true, deleteAllErrorMsg: '' }); }
+  closeDeleteAllModal() { this.setState({ isDeleteAllModalOpen: false }); }
+  async confirmDeleteAll() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const sb = getSupabaseClient();
+    const { data: sessionData } = await sb.auth.getSession();
+    const token = sessionData.session.access_token;
+    const res = await fetch(supabaseFunctionUrl('delete-all-data'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      const msg = data.error === 'HAS_ACTIVE_DISPUTE' ? t.profile.deleteAllHasDisputeError : t.seatCheck.genericError;
+      this.setState({ deleteAllErrorMsg: msg });
+      return;
+    }
+    // บัญชีถูกลบถาวรไปแล้วตอนนี้ (ไม่ใช่แค่ล้างข้อมูลเหมือนเดิม) — ไม่มี
+    // auth.users row ให้ updateUser() อีกต่อไป เรียกไปก็ error เฉยๆ signOut()
+    // แค่เคลียร์ session ฝั่ง client เท่านั้น ยังต้องเรียกเพื่อความสะอาด
+    this.setState({ isDeleteAllModalOpen: false });
+    await sb.auth.signOut();
+  }
+
+  renderVals() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const locale = en ? 'en-US' : 'th-TH';
+
+    const menuItems = buildMenuItems('profile', en, !!this.state.session);
+    const checkRounds = SHOW_ROUNDS.map(r => ({ id: r.id, label: en ? r.label_en : r.label_th }));
+    const roundLabelById = Object.fromEntries(SHOW_ROUNDS.map(r => [r.id, en ? r.label_en : r.label_th]));
+
+    const session = this.state.session;
+    const isAuthLoading = this.state.authLoading;
+    const showLoginGate = !isAuthLoading && !session;
+    const showSetup = !isAuthLoading && !!session && !this.state.profileName;
+    const showApp = !isAuthLoading && !!session && !!this.state.profileName;
+
+    const emojiOptions = AVATAR_EMOJIS.map(em => ({
+      emoji: em,
+      bg: this.state.setupEmoji === em ? 'rgba(111,224,214,0.15)' : 'rgba(255,255,255,0.04)',
+      border: this.state.setupEmoji === em ? '#6fe0d6' : 'rgba(255,255,255,0.12)',
+      onClick: () => this.pickSetupEmoji(em)
+    }));
+    const bgOptions = BG_COLORS.map(c => ({
+      color: c, border: this.state.setupBg === c ? '#eafffb' : 'transparent', onClick: () => this.pickSetupBg(c)
+    }));
+    const editEmojiOptions = AVATAR_EMOJIS.map(em => ({
+      emoji: em,
+      bg: this.state.editEmoji === em ? 'rgba(111,224,214,0.15)' : 'rgba(255,255,255,0.04)',
+      border: this.state.editEmoji === em ? '#6fe0d6' : 'rgba(255,255,255,0.12)',
+      onClick: () => this.pickEditEmoji(em)
+    }));
+    const editBgOptions = BG_COLORS.map(c => ({
+      color: c, border: this.state.editBg === c ? '#eafffb' : 'transparent', onClick: () => this.pickEditBg(c)
+    }));
+
+    const tabDefs = [
+      { key: 'register', label: t.profile.tabRegister },
+      { key: 'myTickets', label: t.profile.tabManageTickets },
+      { key: 'howto', label: t.profile.tabHowto }
+    ];
+    const sidebarTabs = tabDefs.map(tb => ({
+      label: tb.label,
+      bg: this.state.activeTab === tb.key ? 'rgba(111,224,214,0.15)' : 'transparent',
+      color: this.state.activeTab === tb.key ? '#6fe0d6' : '#dcece9',
+      borderColor: this.state.activeTab === tb.key ? 'rgba(111,224,214,0.35)' : 'rgba(255,255,255,0.12)',
+      onClick: () => this.setActiveTab(tb.key)
+    }));
+
+    const myXHandle = (session && session.user && session.user.user_metadata &&
+      (session.user.user_metadata.user_name || session.user.user_metadata.preferred_username)) || '';
+
+    const isXAuth = !!session && session.user?.app_metadata?.provider === 'x';
+    const isEmailAuth = !!session && !isXAuth;
+
+    const myHandleForComplete = (session?.user?.user_metadata?.user_name || session?.user?.user_metadata?.preferred_username || '');
+    const regFormComplete = !!(this.state.regForm.showId && this.state.regForm.zone && this.state.regForm.row &&
+      this.state.regForm.seat.trim() && this.state.regCheck1 && this.state.regCheck2 &&
+      (!isEmailAuth || myHandleForComplete));
+    const regRowOptions = this.state.zoneRowsMap[this.state.regForm.zone] || [];
+    const editRowOptions = this.state.zoneRowsMap[this.state.editForm.zone] || [];
+
+    const regShowIdDD = this.makeDropdown('regShowId', checkRounds, this.state.regForm.showId, t.seatCheck.roundPlaceholder, (v) => this.setRegShowId(v));
+    const regZoneDD = this.makeDropdown('regZone', this.state.regZoneOptions, this.state.regForm.zone, t.seatCheck.zonePlaceholder, (v) => this.setRegZone(v));
+    const regRowDD = this.makeDropdown('regRow', regRowOptions, this.state.regForm.row, t.seatCheck.rowPlaceholder, (v) => this.setRegRow(v));
+    const editShowIdDD = this.makeDropdown('editShowId', checkRounds, this.state.editForm.showId, t.seatCheck.roundPlaceholder, (v) => this.setEditFormShowId(v));
+    const editZoneDD = this.makeDropdown('editZone', this.state.regZoneOptions, this.state.editForm.zone, t.seatCheck.zonePlaceholder, (v) => this.setEditFormZone(v));
+    const editRowDD = this.makeDropdown('editRow', editRowOptions, this.state.editForm.row, t.seatCheck.rowPlaceholder, (v) => this.setEditFormRow(v));
+
+    let regResultBg = '', regResultBorder = '', regResultColor = '', regResultTitle = '', regResultBody = '';
+    let regResultBtnLabel = '', regResultBtnAction = () => {};
+    if (this.state.regResult) {
+      if (this.state.regResult.status === 'UNDER_REVIEW') {
+        regResultBg = 'rgba(255,176,32,0.1)'; regResultBorder = 'rgba(255,176,32,0.4)'; regResultColor = '#ffb066';
+        regResultTitle = t.profile.registerConflictTitle; regResultBody = t.profile.registerConflictBody;
+        regResultBtnLabel = t.profile.goToDisputesBtn; regResultBtnAction = () => this.goToDisputesFromReg();
+      } else {
+        regResultBg = 'rgba(111,224,214,0.1)'; regResultBorder = 'rgba(111,224,214,0.35)'; regResultColor = '#6fe0d6';
+        regResultTitle = t.profile.registerSuccessTitle; regResultBody = t.profile.registerSuccessBody;
+        regResultBtnLabel = t.profile.goToManageTicketsBtn; regResultBtnAction = () => this.goToManageTicketsFromReg();
+      }
+    }
+
+    const statusColors = {
+      REGISTERED: { bg: 'rgba(255,212,0,0.12)', color: '#ffd400' },
+      AWAITING_DOC_REVIEW: { bg: 'rgba(111,180,255,0.15)', color: '#6fb4ff' },
+      VERIFIED: { bg: 'rgba(111,224,214,0.15)', color: '#6fe0d6' },
+      UNDER_REVIEW: { bg: 'rgba(255,176,32,0.15)', color: '#ffb066' },
+      REJECTED: { bg: 'rgba(255,90,90,0.15)', color: '#ff6b6b' },
+      EVIDENCE_REJECTED: { bg: 'rgba(255,140,0,0.15)', color: '#ff9d3f' }
+    };
+    const myTicketCards = this.state.myTickets.map(c => {
+      const isRejected = c.status === 'REJECTED';
+      const isEvidenceRejected = c.status === 'EVIDENCE_REJECTED';
+      const hasPendingEvidence = c.status === 'REGISTERED' && !!this.state.pendingEvidenceClaimIds[c.id];
+      const displayKey = hasPendingEvidence ? 'AWAITING_DOC_REVIEW' : c.status;
+      const sc = statusColors[displayKey] || statusColors.REGISTERED;
+      return {
+        roundLabel: roundLabelById[c.show_id] || c.show_id,
+        zone: c.zone, row: c.row, seat: c.seat,
+        statusBg: sc.bg, statusColor: sc.color,
+        statusLabel: (t.profile.status[displayKey] || {}).label || c.status,
+        registeredAtLabel: new Date(c.claimed_at).toLocaleDateString(locale),
+        checkCount: c.check_count || 0,
+        isDisputed: c.status === 'UNDER_REVIEW',
+        isRejected,
+        rejectReasonLabel: t.profile.rejectedReasonLabel,
+        rejectReason: isRejected ? (this.state.rejectReasonByClaimId[c.id] || t.profile.rejectedReasonFallback) : '',
+        isEvidenceRejected,
+        evidenceRejectReason: isEvidenceRejected ? (c.evidence_reject_reason || t.profile.rejectedReasonFallback) : '',
+        showDelete: c.status !== 'UNDER_REVIEW',
+        showEdit: c.status !== 'UNDER_REVIEW' && !isRejected,
+        showSubmitEvidence: c.status !== 'VERIFIED' && !isRejected,
+        onDelete: () => { if (c.status !== 'UNDER_REVIEW') this.openDeleteModal(c.id); },
+        onEdit: () => { if (c.status !== 'UNDER_REVIEW' && !isRejected) this.onEditClick(c); },
+        onSubmitEvidence: () => this.openEvidenceModal(c.id),
+        // (i) tooltip เฉพาะตอนป้ายเป็น "รอยืนยันหลักฐาน" ธรรมดา (REGISTERED ไม่มี
+        // หลักฐาน PENDING) — ถ้าเคยถูกส่งกลับมาจาก "ยืนยันแล้ว" โดยแอดมิน จะโชว์
+        // เหตุผลที่แอดมินให้ไว้แทนข้อความทั่วไป
+        showStatusInfo: displayKey === 'REGISTERED',
+        isStatusTooltipOpen: this.state.statusTooltipClaimId === c.id,
+        statusTooltipText: c.reopen_reason ? c.reopen_reason : t.profile.registeredTooltipGeneric,
+        onToggleStatusTooltip: () => this.toggleStatusTooltip(c.id)
+      };
+    });
+
+    const outcomeSteps = ['PENDING', 'AWAITING_EVIDENCE'];
+    const myCaseCards = this.state.myCases.map(cs => {
+      const resolved = !!cs.resolved_at;
+      const hasEvidence = !!this.state.myCasesEvidenceFlags[cs.id];
+      // ส่งหลักฐานของ "ตัวเอง" แล้วหรือยัง (แยกจาก hasEvidence ที่เป็นของ
+      // ฝ่ายใดฝ่ายหนึ่งก็ได้) — ใช้ตัดสินขั้น "ทีมงานตรวจสอบ" ในมุมตัวเอง
+      // โดยไม่ต้องรอให้อีกฝ่ายส่งหลักฐานก่อน
+      const myEvidenceSubmitted = !!this.state.myCasesOwnEvidenceFlags[cs.id];
+      const seatParts = (cs.seat_key || '').split('|');
+      // เคสที่ตัดสินแล้วว่า "ยืนยันเจ้าของแล้ว" (OWNER_CONFIRMED) แยกป้าย/สี
+      // ตามผลของบัตรตัวเอง: ชนะ (VERIFIED) = ป้ายเขียว ไม่มีเหตุผล,
+      // แพ้ (REJECTED) = ป้ายแดง พร้อมเหตุผลที่แอดมินกรอก — ผลลัพธ์อื่นๆ
+      // (รอตรวจสอบ/รอหลักฐาน/หาข้อสรุปไม่ได้/ลบเคสเท็จ) ใช้ป้ายเดิมตามปกติ
+      const myClaimStatus = this.state.myCasesOwnStatus[cs.id] || null;
+      const isOwnerConfirmedWin = cs.review_outcome === 'OWNER_CONFIRMED' && myClaimStatus === 'VERIFIED';
+      const isOwnerConfirmedLoss = cs.review_outcome === 'OWNER_CONFIRMED' && myClaimStatus === 'REJECTED';
+      let outcomeLabel = t.profile.reviewOutcome[cs.review_outcome] || cs.review_outcome;
+      let outcomeBg = 'rgba(255,176,32,0.12)', outcomeColor = '#ffb066';
+      if (isOwnerConfirmedWin) {
+        outcomeLabel = t.profile.caseOutcomeWinTag;
+        outcomeBg = 'rgba(111,224,214,0.15)'; outcomeColor = '#6fe0d6';
+      } else if (isOwnerConfirmedLoss) {
+        outcomeLabel = t.profile.caseOutcomeLossTag;
+        outcomeBg = 'rgba(255,90,90,0.15)'; outcomeColor = '#ff6b6b';
+      }
+      return {
+        seatKeyLabel: seatParts.length === 4 ? `${seatParts[1]} / ${seatParts[2]} / ${parseInt(seatParts[3], 10)}` : cs.seat_key,
+        outcomeLabel, outcomeBg, outcomeColor,
+        openedAtLabel: new Date(cs.opened_at).toLocaleDateString(locale),
+        // แจ้งฐานการตัดสิน + ช่องทางติดต่อ เฉพาะเคสที่ยืนยันเจ้าของแล้ว
+        // (ทั้งฝ่ายชนะและแพ้) ต่อท้าย "ไม่เปิดเผยตัวตนอีกฝ่าย" เสมอ
+        showJudgmentNote: isOwnerConfirmedWin || isOwnerConfirmedLoss,
+        hasNote: resolved && !!cs.admin_note && !isOwnerConfirmedWin,
+        rejectReasonLabel: t.profile.rejectedReasonLabel,
+        adminNote: cs.admin_note || '',
+        timeline: [
+          { label: t.profile.timelineFiled, color: '#6fe0d6', textColor: '#6fe0d6' },
+          { label: t.profile.timelineEvidence, color: hasEvidence ? '#6fe0d6' : 'rgba(255,255,255,0.15)', textColor: hasEvidence ? '#6fe0d6' : '#8ea6a3' },
+          { label: t.profile.timelineReview, color: (myEvidenceSubmitted || resolved) ? '#6fe0d6' : 'rgba(255,255,255,0.15)', textColor: (myEvidenceSubmitted || resolved) ? '#6fe0d6' : '#8ea6a3' },
+          { label: t.profile.timelineOutcome, color: resolved ? '#6fe0d6' : 'rgba(255,255,255,0.15)', textColor: resolved ? '#6fe0d6' : '#8ea6a3' }
+        ]
+      };
+    });
+
+    const unreadNotifCount = this.state.notifications.filter((n) => !isNotifRead(n)).length;
+    const notifCards = buildNotifCards(this, getSupabaseClient(), t, locale);
+
+    const statusTable = ['NONE', 'REGISTERED', 'AWAITING_DOC_REVIEW', 'VERIFIED', 'UNDER_REVIEW', 'EVIDENCE_REJECTED', 'REJECTED'].map(k => {
+      const sc = statusColors[k] || { bg: 'rgba(255,255,255,0.06)', color: '#c7d4d2' };
+      return { label: t.profile.status[k].label, desc: t.profile.status[k].desc, bg: sc.bg, color: sc.color };
+    });
+
+    return {
+      menuItems,
+      isMenuOpen: this.state.openDropdown === 'mainMenu',
+      toggleMenu: () => this.toggleDropdown('mainMenu'),
+      closeMenu: () => this.closeDropdown(),
+      homeLabel: homeLabel(en),
+      homeDesc: homeDesc(en),
+      langSelector: buildLangSelector(en, (lang) => this.setLang(lang)),
+      isLangMenuOpen: this.state.openDropdown === 'langMenu',
+      toggleLangMenu: () => this.toggleDropdown('langMenu'),
+      closeLangMenu: () => this.closeDropdown(),
+      navProfileDisplay: this.state.session ? 'flex' : 'none',
+      navProfileEmoji: (navProfileInfo(this.state.session, en) || {}).emoji || '',
+      navProfileBg: (navProfileInfo(this.state.session, en) || {}).bg || '#0891b2',
+      navProfileName: (navProfileInfo(this.state.session, en) || {}).name || '',
+      isProfileMenuOpen: this.state.openDropdown === 'profileMenu',
+      toggleProfileMenu: () => this.toggleDropdown('profileMenu'),
+      closeProfileMenu: () => this.closeDropdown(),
+      onNavManageProfile: () => { this.setState({ openDropdown: null, activeTab: 'myTickets', ticketSubTab: 'tickets' }); },
+      onNavLogout: () => { this.setState({ openDropdown: null }); this.openLogoutModal(); },
+      stopProp: (e) => this.stopProp(e),
+      t,
+
+      isAuthLoading,
+      showLoginGate,
+      loginWithX: () => this.loginWithX(),
+      hasLoginError: false,
+
+      formAlert: alertVariant('error'),
+
+      showSetup,
+      setupName: this.state.setupName,
+      setSetupName: (e) => this.setSetupName(e),
+      setupPreviewEmoji: this.state.setupEmoji,
+      setupPreviewBg: this.state.setupBg,
+      emojiOptions, bgOptions,
+      openSetupTermsModal: () => this.openSetupTermsModal(),
+      setupCheckboxBg: this.state.setupTermsAccepted ? '#6fe0d6' : 'transparent',
+      setupCheckboxMark: this.state.setupTermsAccepted ? '✓' : '',
+      submitSetup: () => this.submitSetup(),
+      hasSetupError: !!this.state.setupErrorMsg,
+      setupErrorMsg: this.state.setupErrorMsg,
+      hasSetupNameError: !!this.state.setupFieldErrors.name,
+      setupNameErrorMsg: this.state.setupFieldErrors.name || '',
+      hasSetupTermsError: !!this.state.setupFieldErrors.terms,
+      setupTermsErrorMsg: this.state.setupFieldErrors.terms || '',
+
+      showApp,
+      profileEmoji: this.state.profileEmoji,
+      profileBg: this.state.profileBg,
+      profileName: this.state.profileName,
+      myTicketCount: myTicketCards.length,
+      sidebarTabs,
+      isLogoutModalOpen: this.state.isLogoutModalOpen,
+      openLogoutModal: () => this.openLogoutModal(),
+      closeLogoutModal: () => this.closeLogoutModal(),
+      confirmLogout: () => this.confirmLogout(),
+
+      isRegisterTab: this.state.activeTab === 'register',
+      isMyTicketsTab: this.state.activeTab === 'myTickets',
+      isTicketsSubTab: this.state.ticketSubTab !== 'disputes',
+      isDisputesSubTab: this.state.ticketSubTab === 'disputes',
+      setTicketsSubTab: () => this.setTicketSubTab('tickets'),
+      setDisputesSubTab: () => this.setTicketSubTab('disputes'),
+      ticketsSubTabBg: this.state.ticketSubTab !== 'disputes' ? 'rgba(111,224,214,0.15)' : 'transparent',
+      ticketsSubTabColor: this.state.ticketSubTab !== 'disputes' ? '#6fe0d6' : '#dcece9',
+      disputesSubTabBg: this.state.ticketSubTab === 'disputes' ? 'rgba(111,224,214,0.15)' : 'transparent',
+      disputesSubTabColor: this.state.ticketSubTab === 'disputes' ? '#6fe0d6' : '#dcece9',
+      isDisputesTabTooltipOpen: this.state.isDisputesTabTooltipOpen,
+      toggleDisputesTabTooltip: (e) => this.toggleDisputesTabTooltip(e),
+      isHowtoTab: this.state.activeTab === 'howto',
+      isEditProfileTab: this.state.activeTab === 'editProfile',
+
+      regForm: this.state.regForm,
+      regShowIdDD, regZoneDD, regRowDD,
+      regAutofillHint: this.state.regAutofillHint,
+      setRegSeat: (e) => this.setRegSeat(e),
+      setRegOwnerName: (e) => this.setRegOwnerName(e),
+      setRegXHandle: (e) => this.setRegXHandle(e),
+      myXHandle,
+      hasMyXHandle: !!myXHandle,
+      isXAuth,
+      isEmailAuth,
+      isEmailAuthWithHandle: isEmailAuth && !!myXHandle,
+      isEmailAuthNoHandle: isEmailAuth && !myXHandle,
+      goToEditProfileTab: () => this.goToEditProfileTab(),
+      editXHandle: this.state.editXHandle,
+      setEditXHandle: (e) => this.setEditXHandle(e),
+      hasXHandleFieldError: !!this.state.xHandleFieldError,
+      xHandleFieldError: this.state.xHandleFieldError,
+      openXHandleConfirmModal: () => this.openXHandleConfirmModal(),
+      isXHandleConfirmModalOpen: this.state.isXHandleConfirmModalOpen,
+      closeXHandleConfirmModal: () => this.closeXHandleConfirmModal(),
+      confirmSetXHandle: () => this.confirmSetXHandle(),
+      registerBodyText: isEmailAuth ? t.profile.registerBodyEmail : t.profile.registerBody,
+      setupBodyText: isEmailAuth ? t.profile.setupBodyEmail : t.profile.setupBody,
+      logoutConfirmBodyText: isEmailAuth ? t.profile.logoutConfirmBodyEmail : t.profile.logoutConfirmBody,
+      toggleRegCheck1: () => this.toggleRegCheck1(),
+      regCheck1Bg: this.state.regCheck1 ? '#6fe0d6' : 'transparent',
+      regCheck1Mark: this.state.regCheck1 ? '✓' : '',
+      openRegisterTermsModal: () => this.openRegisterTermsModal(),
+      regCheck2Bg: this.state.regCheck2 ? '#6fe0d6' : 'transparent',
+      regCheck2Mark: this.state.regCheck2 ? '✓' : '',
+      submitRegister: () => this.submitRegister(),
+      isRegLoading: this.state.regStatus === 'loading',
+      regButtonLabel: this.state.regStatus === 'loading' ? t.seatCheck.checkBtnLoading : t.profile.registerSubmitBtn,
+      regButtonBg: regFormComplete ? 'linear-gradient(120deg,#0891b2,#4fbdb8)' : 'rgba(255,255,255,0.1)',
+      regButtonOpacity: this.state.regStatus === 'loading' ? '0.6' : '1',
+      hasRegError: !!this.state.regErrorMsg,
+      regErrorMsg: this.state.regErrorMsg,
+      isRegAlertOpen: !!this.state.regAlertMsg,
+      regAlertMsg: this.state.regAlertMsg,
+      closeRegAlert: () => this.closeRegAlert(),
+      hasRegShowIdError: !!this.state.regFieldErrors.showId,
+      regShowIdErrorMsg: this.state.regFieldErrors.showId || '',
+      hasRegZoneError: !!this.state.regFieldErrors.zone,
+      regZoneErrorMsg: this.state.regFieldErrors.zone || '',
+      hasRegRowError: !!this.state.regFieldErrors.row,
+      regRowErrorMsg: this.state.regFieldErrors.row || '',
+      hasRegSeatError: !!this.state.regFieldErrors.seat,
+      regSeatErrorMsg: this.state.regFieldErrors.seat || '',
+      hasRegXHandleError: !!this.state.regFieldErrors.xHandle,
+      regXHandleErrorMsg: this.state.regFieldErrors.xHandle || '',
+      hasRegCheck1Error: !!this.state.regFieldErrors.check1,
+      regCheck1ErrorMsg: this.state.regFieldErrors.check1 || '',
+      hasRegCheck2Error: !!this.state.regFieldErrors.check2,
+      regCheck2ErrorMsg: this.state.regFieldErrors.check2 || '',
+      hasRegResult: !!this.state.regResult,
+      isRegResultPopupOpen: !!this.state.regResult,
+      closeRegResultPopup: () => this.closeRegResultPopup(),
+      goToManageTicketsFromReg: () => this.goToManageTicketsFromReg(),
+      regResultBg, regResultBorder, regResultColor, regResultTitle, regResultBody,
+      regResultBtnLabel, regResultBtnAction,
+
+      hasMyTicketsError: this.state.myTicketsStatus === 'error',
+      retryMyTickets: () => this.loadMyTickets(),
+      refreshMyTicketsAndCases: () => this.refreshMyTicketsAndCases(),
+      isRefreshingMyTickets: this.state.myTicketsStatus === 'loading' || this.state.myCasesStatus === 'loading',
+      refreshMyTicketsOpacity: (this.state.myTicketsStatus === 'loading' || this.state.myCasesStatus === 'loading') ? '0.5' : '1',
+      myTicketsEmpty: this.state.myTicketsStatus === 'done' && myTicketCards.length === 0,
+      myTicketCards,
+      goToRegisterTab: () => this.goToRegisterTab(),
+
+      hasMyCasesError: this.state.myCasesStatus === 'error',
+      retryMyCases: () => this.loadMyCases(),
+      myCasesEmpty: this.state.myCasesStatus === 'done' && myCaseCards.length === 0,
+      hasMyCases: myCaseCards.length > 0,
+      myCaseCards,
+      openContactModal: () => this.openContactModal(),
+      // ปุ่ม "ติดต่อทีมงาน" ย้ายขึ้นไปอยู่แถวหัวข้อ (ข้างปุ่มรีเฟรช) โชว์แค่ตอน
+      // อยู่แท็บย่อยข้อพิพาทและมีเคสอยู่จริง
+      showHeaderContactBtn: this.state.ticketSubTab === 'disputes' && myCaseCards.length > 0,
+
+      isNotifOpen: this.state.isNotifOpen,
+      toggleNotifDropdown: () => toggleNotifDropdown(this, getSupabaseClient()),
+      closeNotifDropdown: () => closeNotifDropdown(this),
+      markAllNotifsRead: () => markAllNotifsRead(this, getSupabaseClient()),
+      hasUnreadNotifs: unreadNotifCount > 0,
+      unreadNotifCount,
+      notifListEmpty: notifCards.length === 0,
+      notifCards,
+      hasAnnouncementDetail: !!this.state.announcementDetail,
+      announcementDetailTitle: (this.state.announcementDetail && this.state.announcementDetail.title) || '',
+      announcementDetailBody: (this.state.announcementDetail && this.state.announcementDetail.detail) || '',
+      closeAnnouncementDetail: () => closeAnnouncementDetail(this),
+      isFooterTermsOpen: this.state.isFooterTermsOpen,
+      openFooterTerms: () => this.setState({ isFooterTermsOpen: true }),
+      closeFooterTerms: () => this.setState({ isFooterTermsOpen: false }),
+
+      howtoWhatIsList: t.profile.howtoWhatIs,
+      howtoWhatIsntList: t.profile.howtoWhatIsnt,
+      howtoHowToList: t.profile.howtoHowTo.map((text, i) => ({ n: i + 1, text })),
+      howtoCautionList: t.profile.howtoCaution,
+      statusTable,
+
+      editName: this.state.editName,
+      setEditName: (e) => this.setEditName(e),
+      editPreviewEmoji: this.state.editEmoji,
+      editPreviewBg: this.state.editBg,
+      editEmojiOptions, editBgOptions,
+      saveEditProfile: () => this.saveEditProfile(),
+      openDeleteAllModal: () => this.openDeleteAllModal(),
+
+      isTermsModalOpen: this.state.isTermsModalOpen,
+      closeTermsModal: () => this.closeTermsModal(),
+      onTermsScroll: (e) => this.onTermsScroll(e),
+      showTermsScrollHint: !this.state.termsScrolledEnd,
+      acceptTerms: () => this.acceptTerms(),
+      termsAcceptBg: this.state.termsScrolledEnd ? 'rgba(111,224,214,0.15)' : 'rgba(255,255,255,0.06)',
+      termsAcceptColor: this.state.termsScrolledEnd ? '#6fe0d6' : '#5a6b69',
+      termsAcceptCursor: this.state.termsScrolledEnd ? 'pointer' : 'not-allowed',
+
+      isEvidenceModalOpen: !!this.state.evidenceModalClaimId,
+      closeEvidenceModal: () => this.closeEvidenceModal(),
+      setEvidenceFile: (e) => this.setEvidenceFile(e),
+      hasEvidenceFileName: !!this.state.evidenceFile,
+      evidenceFileName: this.state.evidenceFile ? this.state.evidenceFile.name : '',
+      evidenceFilePickerLabel: this.state.evidenceFile ? this.state.evidenceFile.name : t.profile.evidenceFilePickerPlaceholder,
+      clearEvidenceFile: (e) => { e.preventDefault(); this.clearEvidenceFile(); },
+      hasEvidenceError: !!this.state.evidenceErrorMsg,
+      evidenceErrorMsg: this.state.evidenceErrorMsg,
+      submitEvidenceUpload: () => this.submitEvidenceUpload(),
+      evidenceUploadLabel: this.state.evidenceStatus === 'loading' ? t.profile.evidenceUploadBtnLoading : t.profile.evidenceUploadBtn,
+
+      evidenceHistoryLoading: this.state.evidenceHistoryStatus === 'loading',
+      evidenceHistoryEmpty: this.state.evidenceHistoryStatus === 'done' && this.state.evidenceHistory.length === 0,
+      evidenceHistoryRows: this.state.evidenceHistory.map(ev => {
+        const resultLabel = t.profile.evidenceResultLabel[ev.review_result] || ev.review_result;
+        const resultColor = ev.review_result === 'APPROVED' ? '#6fe0d6' : ev.review_result === 'REJECTED' ? '#ff6b6b' : '#ffd400';
+        return {
+          id: ev.id,
+          typeLabel: ev.type === 'VIDEO' ? t.profile.evidenceTypeVideo : t.profile.evidenceTypeScreenshot,
+          submittedAtLabel: new Date(ev.submitted_at).toLocaleString(locale),
+          resultLabel, resultColor,
+          isCurrent: !!ev.is_current
+        };
+      }),
+
+      isDeleteModalOpen: !!this.state.deleteConfirmClaimId,
+      closeDeleteModal: () => this.closeDeleteModal(),
+      confirmDeleteClaim: () => this.confirmDeleteClaim(),
+
+      isEditWarningOpen: !!this.state.editWarningClaim,
+      closeEditWarning: () => this.closeEditWarning(),
+      confirmEditWarning: () => this.confirmEditWarning(),
+      editWarningTitleText: this.state.editWarningReason === 'pendingEvidence' ? t.profile.editWarningPendingEvidenceTitle : t.profile.editWarningTitle,
+      editWarningBodyText: this.state.editWarningReason === 'pendingEvidence' ? t.profile.editWarningPendingEvidenceBody : t.profile.editWarningBody,
+
+      isDupConfirmOpen: !!this.state.dupConfirmTarget,
+      closeDupConfirm: () => this.closeDupConfirm(),
+      confirmDupClaim: () => this.confirmDupClaim(),
+      dupConfirmOpacity: (this.state.regStatus === 'loading' || this.state.editStatus === 'loading') ? '0.6' : '1',
+      dupConfirmPointerEvents: (this.state.regStatus === 'loading' || this.state.editStatus === 'loading') ? 'none' : 'auto',
+
+      isEditFormOpen: !!this.state.editClaimTarget,
+      editForm: this.state.editForm,
+      editShowIdDD, editZoneDD, editRowDD,
+      setEditFormSeat: (e) => this.setEditFormSeat(e),
+      setEditFormOwnerName: (e) => this.setEditFormOwnerName(e),
+      closeEditForm: () => this.closeEditForm(),
+      submitEdit: () => this.submitEdit(),
+      isEditLoading: this.state.editStatus === 'loading',
+      editSubmitLabel: this.state.editStatus === 'loading' ? t.profile.editSubmitBtnLoading : t.profile.editSubmitBtn,
+      editSubmitOpacity: this.state.editStatus === 'loading' ? '0.6' : '1',
+      editSubmitPointerEvents: this.state.editStatus === 'loading' ? 'none' : 'auto',
+      hasEditError: !!this.state.editErrorMsg,
+      editErrorMsg: this.state.editErrorMsg,
+
+      isContactModalOpen: this.state.isContactModalOpen,
+      closeContactModal: () => this.closeContactModal(),
+
+      isDeleteAllModalOpen: this.state.isDeleteAllModalOpen,
+      hasDeleteAllError: !!this.state.deleteAllErrorMsg,
+      deleteAllErrorMsg: this.state.deleteAllErrorMsg,
+      closeDeleteAllModal: () => this.closeDeleteAllModal(),
+      confirmDeleteAll: () => this.confirmDeleteAll()
+    };
+  }
+}
+
+</script>
+</body>
+</html>

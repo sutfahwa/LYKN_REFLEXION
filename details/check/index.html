@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ตรวจสอบที่นั่งของผู้ขาย — LYKN Reflexion Concert</title>
+<meta name="description" content="LYKN Reflexion Concert — 23-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี รายละเอียดบัตร ผังที่นั่ง และกำหนดการ">
+<link rel="icon" type="image/png" sizes="32x32" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon-512.png">
+<link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/favicon.ico">
+<link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/apple-touch-icon.png">
+<meta property="og:title" content="LYKN Reflexion Concert">
+<meta property="og:description" content="23-25 ตุลาคม 2569 ณ อิมแพ็ค อารีน่า เมืองทองธานี">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/logo.png">
+<meta property="og:type" content="website">
+<script>
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
+    var robotsMeta = document.createElement('meta');
+    robotsMeta.name = 'robots';
+    robotsMeta.content = 'noindex, nofollow';
+    document.head.appendChild(robotsMeta);
+    document.title = '[TEST] ' + document.title;
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/support.js"></script>
+<script src="/shared/nav.js"></script>
+<script src="/shared/translations.js"></script>
+<script src="/shared/supabaseConfig.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared/base.css">
+</helmet>
+
+<div style="min-height:100vh;background:#000000;color:#f2f7f6;padding-bottom:40px">
+
+  <nav style="display:flex;position:fixed;top:0;left:0;right:0;z-index:50;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(5,13,16,0.88);backdrop-filter:blur(8px);border-bottom:1px solid rgba(111,224,214,0.15)">
+    <a href="/index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+      <img src="https://cdn.jsdelivr.net/gh/sutfahwa/LYKN_REFLEXION@main/assets/lykn-nav-logo.png" alt="LYKN" style="height:36px;cursor:pointer;display:block">
+    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="position:relative">
+        <button type="button" class="hamburger-btn" onClick="{{ toggleMenu }}" aria-label="Menu" style="width:38px;height:38px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.06);color:#eafffb;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">☰</button>
+        <sc-if value="{{ isMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:59" onClick="{{ closeMenu }}"></div>
+          <div class="candy-menu" style="position:absolute;top:calc(100% + 8px);right:0;z-index:60;background:rgba(12,34,38,0.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(111,224,214,0.3);border-radius:16px;padding:12px;width:400px;max-width:calc(100vw - 24px);box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+            <div style="display:flex;justify-content:flex-end;gap:6px;margin-bottom:10px">
+              <sc-for list="{{ langSelector.options }}" as="opt" hint-placeholder-count="2">
+                <div onClick="{{ opt.onClick }}" style="display:flex;align-items:center;gap:4px;padding:5px 9px;border-radius:20px;cursor:pointer;font-size:11.5px;font-weight:700;background:{{ opt.bg }};color:{{ opt.color }}">
+                  <span style="font-size:12px">{{ opt.flag }}</span><span>{{ opt.shortLabel }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <a href="/index.html" class="menu-item" style="display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;text-decoration:none;color:#eafffb;background:rgba(255,255,255,0.04);margin-bottom:8px">
+              <span style="font-size:20px;flex:none">🏠</span>
+              <span style="display:flex;flex-direction:column;gap:1px">
+                <span style="font-size:14px;font-weight:600">{{ homeLabel }}</span>
+                <span style="font-size:10.5px;font-weight:400;color:#8ea6a3">{{ homeDesc }}</span>
+              </span>
+            </a>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <sc-for list="{{ menuItems }}" as="item" hint-placeholder-count="8">
+                <a href="{{ item.href }}" class="menu-item" style="display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:10px;background:{{ item.bg }};color:{{ item.color }};text-decoration:none">
+                  <span style="font-size:13px;font-weight:600;line-height:1.3">{{ item.label }}</span>
+                  <span style="font-size:10.5px;font-weight:400;line-height:1.35;color:#8ea6a3">{{ item.desc }}</span>
+                </a>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ showNavLogin }}" hint-placeholder-val="{{ false }}">
+        <a href="/profile/index.html" style="display:flex;align-items:center;height:38px;padding:0 16px;border-radius:8px;border:none;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-size:13px;font-weight:700;text-decoration:none;font-family:inherit;white-space:nowrap">{{ navLoginLabel }}</a>
+      </sc-if>
+      <div style="position:relative;display:{{ navProfileDisplay }}">
+        <button type="button" class="hamburger-btn" onClick="{{ toggleProfileMenu }}" aria-label="Profile" style="width:38px;height:38px;padding:0;border-radius:50%;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.06);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit">
+          <span style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;background:{{ navProfileBg }};flex:none">{{ navProfileEmoji }}</span>
+        </button>
+        <sc-if value="{{ isProfileMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:fixed;inset:0;z-index:59" onClick="{{ closeProfileMenu }}"></div>
+          <div style="position:absolute;top:calc(100% + 8px);right:0;z-index:60;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;min-width:190px;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+            <a href="/profile/index.html" class="menu-item" style="display:block;padding:11px 14px;border-radius:8px;font-size:14.5px;font-weight:500;color:#dcece9;text-decoration:none">{{ t.nav.manageProfileLink }}</a>
+            <div onClick="{{ onNavLogout }}" class="menu-item" style="padding:11px 14px;border-radius:8px;font-size:14.5px;font-weight:500;color:#ff8080;cursor:pointer">{{ t.nav.logoutLink }}</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top:66px;max-width:1100px;margin:0 auto">
+
+    <section style="padding:28px 20px 60px">
+      <h1 style="font-size:30px;font-weight:700;margin:0 0 6px">{{ t.details.title }}</h1>
+      <p style="color:#6fe0d6;font-size:19px;font-weight:600;letter-spacing:0.5px;margin:0 0 24px">{{ t.details.subtitle }}</p>
+
+      <div class="details-tabs" style="display:inline-flex;gap:4px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:4px;margin-bottom:28px;max-width:100%">
+        <sc-for list="{{ detailsTabs }}" as="tb" hint-placeholder-count="2">
+          <a href="{{ tb.href }}" style="padding:9px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;background:{{ tb.bg }};color:{{ tb.color }};text-decoration:none;display:inline-block">{{ tb.label }}</a>
+        </sc-for>
+      </div>
+
+      <h2 style="font-size:20px;font-weight:600;margin:0 0 8px;color:#6fe0d6">{{ t.seatCheck.heading }}</h2>
+      <p style="color:#a9c4c2;font-size:13.5px;line-height:1.7;margin:0 0 16px;max-width:640px">{{ t.seatCheck.intro }}</p>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;margin-bottom:16px">
+
+        <sc-if value="{{ checkAutofillHint }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#6fe0d6;background:rgba(111,224,214,0.1);border:1px solid rgba(111,224,214,0.3);border-radius:8px;padding:8px 12px;margin-bottom:14px">✓ {{ t.seatCheck.autofilledFromMap }}</div>
+        </sc-if>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:14px">
+          <div>
+            <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.roundLabel }}</div>
+            <div style="position:relative">
+              <button type="button" onClick="{{ checkShowIdDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ checkShowIdDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ checkShowIdDD.displayLabel }}</span>
+                <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+              </button>
+              <sc-if value="{{ checkShowIdDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ checkShowIdDD.close }}"></div>
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:240px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                  <sc-for list="{{ checkShowIdDD.options }}" as="opt" hint-placeholder-count="3">
+                    <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.zoneLabel }}</div>
+            <div style="position:relative">
+              <button type="button" onClick="{{ checkZoneDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ checkZoneDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ checkZoneDD.displayLabel }}</span>
+                <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+              </button>
+              <sc-if value="{{ checkZoneDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ checkZoneDD.close }}"></div>
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:240px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                  <sc-for list="{{ checkZoneDD.options }}" as="opt" hint-placeholder-count="10">
+                    <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.rowLabel }}</div>
+            <div style="position:relative">
+              <button type="button" onClick="{{ checkRowDD.toggle }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:{{ checkRowDD.textColor }};font-size:13.5px;font-family:'Noto Sans Thai',sans-serif;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ checkRowDD.displayLabel }}</span>
+                <span style="font-size:9px;color:#8ea6a3;flex-shrink:0">▼</span>
+              </button>
+              <sc-if value="{{ checkRowDD.isOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:fixed;inset:0;z-index:500" onClick="{{ checkRowDD.close }}"></div>
+                <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:501;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:12px;padding:6px;max-height:240px;overflow-y:auto;box-shadow:0 14px 30px rgba(0,0,0,0.5)">
+                  <sc-for list="{{ checkRowDD.options }}" as="opt" hint-placeholder-count="10">
+                    <div onClick="{{ opt.onClick }}" style="padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:{{ opt.color }};background:{{ opt.bg }};font-family:'Noto Sans Thai',sans-serif">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.seatLabel }}</div>
+            <input type="text" value="{{ checkForm.seat }}" onChange="{{ setCheckSeat }}" placeholder="{{ t.seatCheck.seatPlaceholder }}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:13.5px;font-family:'Noto Sans Thai',sans-serif">
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <div style="font-size:11.5px;color:#a9c4c2;margin-bottom:5px">{{ t.seatCheck.sellerHandleLabel }}</div>
+          <input type="text" value="{{ checkForm.sellerHandle }}" onChange="{{ setCheckSellerHandle }}" placeholder="{{ t.seatCheck.sellerHandlePlaceholder }}" style="width:100%;max-width:280px;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(111,224,214,0.25);background:rgba(255,255,255,0.04);color:#eafffb;font-size:13.5px;font-family:'Noto Sans Thai',sans-serif">
+        </div>
+
+        <button type="button" onClick="{{ submitCheck }}" style="background:{{ checkButtonBg }};color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border:none;border-radius:30px;cursor:pointer;opacity:{{ checkButtonOpacity }}">{{ checkButtonLabel }}</button>
+
+        <sc-if value="{{ hasCheckError }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:flex-start;gap:10px;background:{{ checkErrorAlert.bg }};border:1px solid {{ checkErrorAlert.border }};border-radius:10px;padding:12px 14px;margin-top:12px">
+            <div style="width:20px;height:20px;border-radius:50%;background:{{ checkErrorAlert.iconBg }};color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex:none">{{ checkErrorAlert.icon }}</div>
+            <div style="flex:1;font-size:12.5px;color:{{ checkErrorAlert.textColor }};line-height:1.5;font-weight:600">{{ checkErrorMsg }}</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ hasCheckResult }}" hint-placeholder-val="{{ false }}">
+        <div style="border-radius:14px;padding:18px 20px;margin-bottom:16px;background:{{ checkResultCard.bg }};border:1px solid {{ checkResultCard.border }}">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <div style="width:24px;height:24px;border-radius:50%;background:{{ checkResultCard.color }};color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:none">{{ checkResultCard.icon }}</div>
+            <div style="font-size:16px;font-weight:700;color:{{ checkResultCard.color }}">{{ checkResultCard.title }}</div>
+          </div>
+          <div style="font-size:13.5px;color:#dcece9;line-height:1.6">{{ checkResultCard.desc }}</div>
+
+          <sc-if value="{{ checkResultCard.hasRemovalNote }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12px;margin-top:10px;color:{{ checkResultCard.removalColor }}">{{ checkResultCard.removalNote }}</div>
+          </sc-if>
+
+          <sc-if value="{{ checkResultCard.isOwnSeat }}" hint-placeholder-val="{{ false }}">
+            <a href="/profile/index.html" style="display:block;text-align:center;text-decoration:none;margin-top:14px;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;padding:11px;border-radius:9px;font-size:13.5px">{{ t.profile.goToManageTicketsBtn }}</a>
+          </sc-if>
+
+          <sc-if value="{{ checkResultCard.showAccuseNote }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:11.5px;color:#8ea6a3;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08)">{{ t.seatCheck.noAccuseNote }}</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <div style="font-size:11.5px;color:#8ea6a3;line-height:1.6;margin-bottom:28px">{{ t.seatCheck.disclaimer }}</div>
+
+      <!-- iframe ผังที่นั่งซ่อนไว้ ไม่แสดงในหน้านี้ตามที่ตกลง แต่ยังต้อง mount
+           ไว้เงียบๆ เพื่อดึงรายชื่อโซน/แถวจริงมาใช้ในฟอร์มด้านบน -->
+      <iframe src="../../map.html" title="Seat zone map" style="display:none"></iframe>
+
+    </section>
+
+  </main>
+
+  <footer style="border-top:1px solid rgba(255,255,255,0.08);margin-top:60px;padding:24px 20px;text-align:center">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:10px">
+      <span onClick="{{ openFooterTerms }}" style="font-size:12.5px;color:#8ea6a3;cursor:pointer;text-decoration:underline">{{ t.footer.termsLink }}</span>
+      <span onClick="{{ openFooterTerms }}" style="font-size:12.5px;color:#8ea6a3;cursor:pointer;text-decoration:underline">{{ t.footer.privacyLink }}</span>
+      <a href="https://x.com/susakiiverse" target="_blank" rel="noopener" style="font-size:12.5px;color:#8ea6a3;text-decoration:underline">{{ t.footer.contactLink }}</a>
+    </div>
+    <div style="font-size:11.5px;color:#5c7472">{{ t.footer.disclaimer }}</div>
+  </footer>
+
+  <sc-if value="{{ isFooterTermsOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(3,8,10,0.85);z-index:200" onClick="{{ closeFooterTerms }}"></div>
+    <div style="position:fixed;inset:0;z-index:201;display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:none">
+      <div style="pointer-events:auto;background:#0c2226;border:1px solid rgba(111,224,214,0.3);border-radius:16px;max-width:520px;width:100%;max-height:80vh;display:flex;flex-direction:column">
+        <div style="font-size:18px;font-weight:700;color:#6fe0d6;padding:22px 24px 4px">{{ t.profile.termsTitle }}</div>
+        <div style="overflow-y:auto;padding:16px 24px;flex:1">
+          <div style="font-size:13px;color:#a9c4c2;margin-bottom:16px;font-style:italic">{{ t.profile.termsIntro }}</div>
+          <sc-for list="{{ t.profile.termsSections }}" as="sec" hint-placeholder-count="7">
+            <div style="margin-bottom:16px">
+              <div style="font-size:13.5px;font-weight:700;color:#eafffb;margin-bottom:4px">{{ sec.h }}</div>
+              <div style="font-size:13px;color:#a9c4c2;line-height:1.7;white-space:pre-line">{{ sec.b }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:16px 24px 22px;border-top:1px solid rgba(255,255,255,0.08)">
+          <div onClick="{{ closeFooterTerms }}" style="text-align:center;background:rgba(255,255,255,0.08);color:#eafffb;font-weight:700;padding:11px;border-radius:9px;cursor:pointer;font-size:13.5px">{{ t.profile.termsCloseBtn }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const SHOW_ROUNDS = [
+  { id: '2569-10-23', label_th: 'ศุกร์ 23 ต.ค. 2569', label_en: 'Fri Oct 23, 2026' },
+  { id: '2569-10-24', label_th: 'เสาร์ 24 ต.ค. 2569', label_en: 'Sat Oct 24, 2026' },
+  { id: '2569-10-25', label_th: 'อาทิตย์ 25 ต.ค. 2569', label_en: 'Sun Oct 25, 2026' }
+];
+
+class Component extends DCLogic {
+  state = {
+    lang: getStoredLang(),
+    notifStatus: 'idle',
+    notifications: [],
+    isNotifOpen: false,
+    announcementDetail: null,
+    openDropdown: null,
+
+    checkForm: { showId: '', zone: '', row: '', seat: '', sellerHandle: '' },
+    checkZoneOptions: [],
+    checkRowOptions: [],
+    checkStatus: 'idle',
+    checkResult: null,
+    checkErrorMsg: '',
+    checkAutofillHint: false,
+    isAuthed: false,
+    session: null,
+    isFooterTermsOpen: false
+  };
+
+  componentDidMount() {
+    getSupabaseClient().auth.getSession().then(({ data }) => {
+      this.setState({ isAuthed: !!data.session, session: data.session });
+    });
+    this._onMapMessage = (e) => {
+      if (!e.data || e.data.source !== 'lykn-seat-map') return;
+      if (e.data.type !== 'zone-selected' && e.data.type !== 'seat-selected') return;
+
+      const rows = this.getMapRows(e.data.zone);
+      const nextForm = { ...this.state.checkForm, zone: e.data.zone };
+      if (e.data.type === 'seat-selected') {
+        nextForm.row = e.data.row;
+        nextForm.seat = e.data.seat;
+      } else {
+        nextForm.row = '';
+        nextForm.seat = '';
+      }
+
+      this.setState({
+        checkForm: nextForm,
+        checkRowOptions: rows,
+        checkAutofillHint: true,
+        checkResult: null,
+        checkStatus: 'idle',
+        checkErrorMsg: ''
+      });
+
+      clearTimeout(this._autofillTimer);
+      this._autofillTimer = setTimeout(() => this.setState({ checkAutofillHint: false }), 3000);
+    };
+    window.addEventListener('message', this._onMapMessage);
+
+    const iframe = document.querySelector('iframe[title="Seat zone map"]');
+    const tryLoadZones = () => {
+      try {
+        if (iframe.contentWindow && iframe.contentWindow.LyknSeatMap) {
+          this.setState({ checkZoneOptions: iframe.contentWindow.LyknSeatMap.listZones() });
+          return true;
+        }
+      } catch (err) { /* iframe ยังไม่พร้อม ลองใหม่ตอน load */ }
+      return false;
+    };
+    if (!tryLoadZones()) {
+      iframe.addEventListener('load', tryLoadZones);
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('message', this._onMapMessage);
+    clearTimeout(this._autofillTimer);
+  }
+
+  getMapRows(zoneCode) {
+    const iframe = document.querySelector('iframe[title="Seat zone map"]');
+    try {
+      return (iframe.contentWindow && iframe.contentWindow.LyknSeatMap)
+        ? iframe.contentWindow.LyknSeatMap.listRows(zoneCode) || []
+        : [];
+    } catch (err) {
+      return [];
+    }
+  }
+
+  setLang(lang) {
+    if (lang === this.state.lang) return;
+    setStoredLang(lang);
+    this.setState({ lang, openDropdown: null });
+    document.documentElement.lang = lang;
+  }
+
+  toggleDropdown(key) { this.setState({ openDropdown: this.state.openDropdown === key ? null : key }); }
+  closeDropdown() { this.setState({ openDropdown: null }); }
+  async logout() { await getSupabaseClient().auth.signOut(); this.setState({ isAuthed: false, session: null, openDropdown: null }); }
+
+  // สร้าง dropdown ที่ธีมเข้ากับเว็บเอง แทน <select> ธรรมดา — เพราะ popup ของ
+  // <select> เป็น UI ของเบราว์เซอร์/OS เอง คุม CSS ให้เข้าธีมมืดของเว็บไม่ได้เต็มที่
+  // (ปุ่มปิดดูเข้าธีม แต่พอกดเปิดรายการกลายเป็นกล่องขาวของเบราว์เซอร์)
+  makeDropdown(key, items, currentValue, placeholder, onSelect) {
+    const normItems = (items || []).map(it => (it && typeof it === 'object')
+      ? { value: it.id ?? it.value, label: it.label }
+      : { value: it, label: it });
+    const match = normItems.find(it => it.value === currentValue);
+    return {
+      isOpen: this.state.openDropdown === key,
+      toggle: () => this.toggleDropdown(key),
+      close: () => this.closeDropdown(),
+      displayLabel: match ? match.label : placeholder,
+      textColor: match ? '#eafffb' : '#7a9895',
+      options: normItems.map(it => ({
+        label: it.label,
+        color: it.value === currentValue ? '#6fe0d6' : '#eafffb',
+        bg: it.value === currentValue ? 'rgba(111,224,214,0.15)' : 'transparent',
+        onClick: () => { onSelect(it.value); this.closeDropdown(); }
+      }))
+    };
+  }
+
+  setCheckShowId(value) {
+    this.setState({
+      checkForm: { ...this.state.checkForm, showId: value },
+      checkResult: null, checkStatus: 'idle', checkErrorMsg: ''
+    });
+  }
+
+  setCheckZone(value) {
+    this.setState({
+      checkForm: { ...this.state.checkForm, zone: value, row: '', seat: '' },
+      checkRowOptions: this.getMapRows(value),
+      checkResult: null, checkStatus: 'idle', checkErrorMsg: ''
+    });
+  }
+
+  setCheckRow(value) {
+    this.setState({
+      checkForm: { ...this.state.checkForm, row: value },
+      checkResult: null, checkStatus: 'idle', checkErrorMsg: ''
+    });
+  }
+
+  setCheckSeat(e) {
+    this.setState({
+      checkForm: { ...this.state.checkForm, seat: e.target.value },
+      checkResult: null, checkStatus: 'idle', checkErrorMsg: ''
+    });
+  }
+
+  setCheckSellerHandle(e) {
+    this.setState({
+      checkForm: { ...this.state.checkForm, sellerHandle: e.target.value },
+      checkResult: null, checkStatus: 'idle', checkErrorMsg: ''
+    });
+  }
+
+  async submitCheck() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const f = this.state.checkForm;
+
+    if (!f.showId || !f.zone || !f.row || !f.seat.trim() || !f.sellerHandle.trim()) {
+      this.setState({ checkStatus: 'error', checkErrorMsg: t.seatCheck.formIncomplete, checkResult: null });
+      return;
+    }
+
+    this.setState({ checkStatus: 'loading', checkResult: null, checkErrorMsg: '' });
+
+    try {
+      // แนบ Authorization ด้วยถ้า login อยู่ (ไม่บังคับ) — ให้ edge function
+      // เช็คได้ว่าคนที่กำลังเช็คเป็นเจ้าของ claim ของที่นั่งนี้เองหรือเปล่า
+      // (ผลลัพธ์ is_own) ถ้าไม่ login ก็ยังใช้เครื่องมือนี้ได้ตามปกติเหมือนเดิม
+      const headers = { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY };
+      if (this.state.session && this.state.session.access_token) {
+        headers.Authorization = `Bearer ${this.state.session.access_token}`;
+      }
+      const res = await fetch(supabaseFunctionUrl('seat-check'), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          show_id: f.showId, zone: f.zone, row: f.row, seat: f.seat, seller_handle: f.sellerHandle
+        })
+      });
+
+      if (res.status === 429) {
+        this.setState({ checkStatus: 'error', checkErrorMsg: t.seatCheck.rateLimited });
+        return;
+      }
+      if (!res.ok) throw new Error('bad status ' + res.status);
+
+      const data = await res.json();
+      this.setState({ checkStatus: 'done', checkResult: data, checkErrorMsg: '' });
+    } catch (err) {
+      this.setState({ checkStatus: 'error', checkErrorMsg: t.seatCheck.genericError });
+    }
+  }
+
+  buildResultCard(result, t, enteredHandle) {
+    if (!result) return null;
+
+    const palette = {
+      NOT_FOUND: { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.15)', color: '#c7d4d2', icon: 'i' },
+      MATCH_UNVERIFIED: { bg: 'rgba(255,212,0,0.08)', border: 'rgba(255,212,0,0.35)', color: '#ffd400', icon: '!' },
+      MATCH_VERIFIED: { bg: 'rgba(111,224,214,0.1)', border: 'rgba(111,224,214,0.35)', color: '#6fe0d6', icon: '✓' },
+      UNDER_REVIEW: { bg: 'rgba(255,176,32,0.1)', border: 'rgba(255,176,32,0.4)', color: '#ffb066', icon: '!' },
+      NO_MATCH: { bg: 'rgba(255,80,80,0.1)', border: 'rgba(255,107,107,0.4)', color: '#ff6b6b', icon: '✕' },
+      OWN_SEAT: { bg: 'rgba(111,224,214,0.1)', border: 'rgba(111,224,214,0.35)', color: '#6fe0d6', icon: 'i' }
+    };
+    // ถ้าคน login อยู่กำลังเช็คที่นั่งของตัวเอง (is_own จาก server) ให้ข้ามผล
+    // ตรง/ไม่ตรงไปเลย แล้วโชว์ข้อความ "คุณลงทะเบียนที่นั่งนี้ไว้อยู่แล้ว" แทน —
+    // ไม่ว่า claim จะยืนยันแล้วหรือยังก็ตาม (ข้อความเดียวกันทั้งสองแบบ)
+    const resultKey = result.is_own ? 'OWN_SEAT' : result.result;
+    const cfg = palette[resultKey] || palette.NOT_FOUND;
+    const copy = t.seatCheck.results[resultKey] || { title: result.result, desc: '' };
+    // ใช้ @ ที่ผู้ใช้กรอกเอง (ไม่ใช่ x_handle จาก response) แทนใน title/desc —
+    // เพราะกรณี MATCH_* คือค่าเดียวกันอยู่แล้ว และกรณี NO_MATCH ฝั่ง server
+    // ไม่ส่ง x_handle กลับมาเลย (ตั้งใจไม่เปิดเผยว่าที่นั่งลงทะเบียนไว้ในชื่อใคร)
+    const handle = (enteredHandle || '').trim().replace(/^@/, '');
+    const title = (copy.title || '').replace(/\{handle\}/g, handle);
+    const desc = (copy.desc || '').replace(/\{handle\}/g, handle);
+
+    let removalNote = '';
+    let removalColor = '#8ea6a3';
+    if (result.tombstone_count > 0) {
+      const template = result.removal_warning ? t.seatCheck.removalWarning : t.seatCheck.removalNeutral;
+      removalNote = template.replace('{n}', result.tombstone_count);
+      removalColor = result.removal_warning ? '#ffb066' : '#8ea6a3';
+    }
+
+    return {
+      bg: cfg.bg, border: cfg.border, color: cfg.color, icon: cfg.icon,
+      title, desc,
+      isOwnSeat: !!result.is_own,
+      showAccuseNote: !result.is_own,
+      removalNote, removalColor,
+      hasRemovalNote: !!removalNote && !result.is_own
+    };
+  }
+
+  renderVals() {
+    const en = this.state.lang === 'en';
+    const t = buildTranslations(en);
+    const sb = getSupabaseClient();
+    const locale = en ? 'en-US' : 'th-TH';
+    const unreadNotifCount = this.state.notifications.filter(n => !isNotifRead(n)).length;
+    const notifCards = buildNotifCards(this, sb, t, locale);
+
+    const detailsTabs = [
+      { key: 'overview', label: en ? 'Overview' : 'ภาพรวม', href: '/details/overview/index.html' },
+      { key: 'howto', label: en ? 'How to Buy' : 'วิธีการกดบัตร', href: '/details/howto/index.html' },
+      { key: 'seat', label: "Where's My Seat", href: '/details/seat/index.html' },
+      { key: 'check', label: en ? 'Seat Check' : 'ตรวจสอบที่นั่ง', href: '/details/check/index.html' }
+    ].map(tb => ({
+      label: tb.label,
+      href: tb.href,
+      bg: tb.key === 'check' ? 'rgba(111,224,214,0.15)' : 'transparent',
+      color: tb.key === 'check' ? '#6fe0d6' : '#dcece9'
+    }));
+
+    const checkRounds = SHOW_ROUNDS.map(r => ({ id: r.id, label: en ? r.label_en : r.label_th }));
+    const checkFormComplete = !!(this.state.checkForm.showId && this.state.checkForm.zone &&
+      this.state.checkForm.row && this.state.checkForm.seat.trim() && this.state.checkForm.sellerHandle.trim());
+    const checkResultCard = this.buildResultCard(this.state.checkResult, t, this.state.checkForm.sellerHandle);
+
+    const checkShowIdDD = this.makeDropdown('checkShowId', checkRounds, this.state.checkForm.showId, t.seatCheck.roundPlaceholder, (v) => this.setCheckShowId(v));
+    const checkZoneDD = this.makeDropdown('checkZone', this.state.checkZoneOptions, this.state.checkForm.zone, t.seatCheck.zonePlaceholder, (v) => this.setCheckZone(v));
+    const checkRowDD = this.makeDropdown('checkRow', this.state.checkRowOptions, this.state.checkForm.row, t.seatCheck.rowPlaceholder, (v) => this.setCheckRow(v));
+
+    return {
+      menuItems: buildMenuItems('details', en, this.state.isAuthed),
+      showNavLogin: !this.state.isAuthed,
+      navLoginLabel: en ? 'Log in' : 'เข้าสู่ระบบ',
+      navProfileDisplay: this.state.isAuthed ? 'flex' : 'none',
+      navProfileEmoji: (navProfileInfo(this.state.session, en) || {}).emoji || '',
+      navProfileBg: (navProfileInfo(this.state.session, en) || {}).bg || '#0891b2',
+      navProfileName: (navProfileInfo(this.state.session, en) || {}).name || '',
+      isProfileMenuOpen: this.state.openDropdown === 'profileMenu',
+      toggleProfileMenu: () => this.toggleDropdown('profileMenu'),
+      closeProfileMenu: () => this.closeDropdown(),
+      onNavLogout: () => this.logout(),
+      isNotifOpen: this.state.isNotifOpen,
+      toggleNotifDropdown: () => toggleNotifDropdown(this, sb),
+      closeNotifDropdown: () => closeNotifDropdown(this),
+      markAllNotifsRead: () => markAllNotifsRead(this, sb),
+      hasUnreadNotifs: unreadNotifCount > 0,
+      unreadNotifCount,
+      notifListEmpty: notifCards.length === 0,
+      notifCards,
+      hasAnnouncementDetail: !!this.state.announcementDetail,
+      announcementDetailTitle: (this.state.announcementDetail && this.state.announcementDetail.title) || '',
+      announcementDetailBody: (this.state.announcementDetail && this.state.announcementDetail.detail) || '',
+      closeAnnouncementDetail: () => closeAnnouncementDetail(this),
+      isFooterTermsOpen: this.state.isFooterTermsOpen,
+      openFooterTerms: () => this.setState({ isFooterTermsOpen: true }),
+      closeFooterTerms: () => this.setState({ isFooterTermsOpen: false }),
+      isMenuOpen: this.state.openDropdown === 'mainMenu',
+      toggleMenu: () => this.toggleDropdown('mainMenu'),
+      closeMenu: () => this.closeDropdown(),
+      homeLabel: homeLabel(en),
+      homeDesc: homeDesc(en),
+      langSelector: buildLangSelector(en, (lang) => this.setLang(lang)),
+      isLangMenuOpen: this.state.openDropdown === 'langMenu',
+      toggleLangMenu: () => this.toggleDropdown('langMenu'),
+      closeLangMenu: () => this.closeDropdown(),
+      t,
+      detailsTabs,
+
+      checkForm: this.state.checkForm,
+      checkShowIdDD, checkZoneDD, checkRowDD,
+      checkAutofillHint: this.state.checkAutofillHint,
+      hasCheckError: !!this.state.checkErrorMsg,
+      checkErrorAlert: alertVariant('error'),
+      checkErrorMsg: this.state.checkErrorMsg,
+      hasCheckResult: !!checkResultCard,
+      checkResultCard,
+      checkButtonLabel: this.state.checkStatus === 'loading' ? t.seatCheck.checkBtnLoading : t.seatCheck.checkBtn,
+      checkButtonBg: checkFormComplete ? 'linear-gradient(120deg,#0891b2,#4fbdb8)' : 'rgba(255,255,255,0.1)',
+      checkButtonOpacity: this.state.checkStatus === 'loading' ? '0.7' : '1',
+      setCheckSeat: (e) => this.setCheckSeat(e),
+      setCheckSellerHandle: (e) => this.setCheckSellerHandle(e),
+      submitCheck: () => this.submitCheck()
+    };
+  }
+}
+
+</script>
+</body>
+</html>
