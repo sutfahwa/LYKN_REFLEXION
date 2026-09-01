@@ -19,12 +19,17 @@ if (MAINTENANCE_MODE && !location.pathname.startsWith('/admin')) {
 // ============================================================
 // แจ้งเตือนกรณีเปิดเว็บผ่าน in-app browser ของแอปอื่น (X/Twitter, Instagram,
 // Facebook, LINE, TikTok) — บั๊กที่พี่แจ้ง "แนบไฟล์ไม่ได้ ไม่ส่งไปเปิดที่ browser
-// อื่น": in-app browser พวกนี้มักบล็อก/จำกัด <input type="file"> ไม่ให้เปิด
-// file picker เต็มรูปแบบเหมือน Safari/Chrome จริง — และ**ไม่มีทางที่หน้าเว็บจะสั่ง
-// ให้เด้งออกไปเปิดในเบราว์เซอร์นอกแอปเองได้** (ทั้ง iOS และ Android ตั้งใจบล็อกไว้
-// เพื่อความปลอดภัย ไม่ใช่ข้อจำกัดของโค้ดเรา) ทำได้แค่ตรวจจับแล้วแจ้งผู้ใช้ให้กดเปิด
-// เองผ่านเมนูของแอปนั้นๆ — ตรวจจาก user agent ซึ่งไม่แม่นยำ 100% เพราะแต่ละแอป
-// เปลี่ยนวิธี identify ตัวเองได้ตลอดเวลาโดยไม่แจ้งล่วงหน้า
+// อื่น": in-app browser พวกนี้ (โดยเฉพาะฝั่ง Android) มักบล็อก <input type="file">
+// ไม่ให้เปิด file picker เลย เพราะแอปแม่ (เช่น X) ไม่ implement
+// onShowFileChooser() ให้ WebView ของตัวเอง — เป็นข้อจำกัดของแอปนั้นๆ ไม่ใช่โค้ด
+// เรา แก้จากฝั่งเว็บตรงๆ ไม่ได้ 100%
+//
+// มีเทคนิคเดียวที่พอ "ช่วยให้กดออกไปเปิด Chrome ได้เอง" คือ Android เท่านั้น: ยิง
+// intent:// URL ให้ระบบเปิดหน้านี้ต่อด้วย Chrome โดยตรง (ใช้กันทั่วไปในหลายเว็บ
+// สำหรับเคสเดียวกันนี้) — **ไม่การันตี 100%** เพราะแอปแม่ต้องยอมส่งต่อ intent
+// ออกไปด้วย บางแอปตั้งใจปิดกั้นไว้เพื่อกันคนออกจากแอป ส่วน iOS ไม่มีเทคนิคแบบนี้
+// เลย (Apple ไม่มี public API ให้เว็บสั่งเปิด Safari เองได้) เหลือแค่บอกให้ผู้ใช้
+// กดเปิดเองผ่านเมนู ⋯ ของแอปเท่านั้น
 // ============================================================
 const IN_APP_BROWSER_PATTERNS = [
   { test: /Twitter/i, th: 'X (Twitter)', en: 'X (Twitter)' },
@@ -40,6 +45,13 @@ function detectInAppBrowser() {
   }
   return null;
 }
+function isAndroidUA() {
+  return /Android/i.test(navigator.userAgent || '');
+}
+function androidChromeIntentUrl() {
+  return 'intent://' + location.host + location.pathname + location.search +
+    '#Intent;scheme=https;package=com.android.chrome;end;';
+}
 function dismissInAppBrowserBanner() {
   const el = document.getElementById('lykn-iab-banner');
   if (el) el.remove();
@@ -54,19 +66,33 @@ function initInAppBrowserBanner() {
   } catch (e) { /* ignore */ }
 
   const en = getStoredLang() === 'en';
+  const onAndroid = isAndroidUA();
   const text = en
-    ? `You're viewing this inside the ${app.en} app's browser — some features (like attaching evidence files) may not work here. Tap the ⋯ or share icon above, then choose "Open in Browser" for full functionality.`
-    : `คุณกำลังเปิดเว็บนี้ผ่านเบราว์เซอร์ในแอป ${app.th} — บางฟีเจอร์ (เช่น แนบไฟล์หลักฐาน) อาจใช้งานไม่ได้ กดปุ่ม ⋯ หรือไอคอนแชร์ด้านบนของแอป แล้วเลือก "เปิดในเบราว์เซอร์" เพื่อใช้งานได้เต็มรูปแบบ`;
+    ? `You're viewing this inside the ${app.en} app's browser — some features (like attaching evidence files) may not work here.` +
+      (onAndroid ? ' Try the button below, or tap ⋯ / the share icon above and choose "Open in Browser".' : ' Tap the ⋯ or share icon above, then choose "Open in Browser".')
+    : `คุณกำลังเปิดเว็บนี้ผ่านเบราว์เซอร์ในแอป ${app.th} — บางฟีเจอร์ (เช่น แนบไฟล์หลักฐาน) อาจใช้งานไม่ได้` +
+      (onAndroid ? ' ลองกดปุ่มด้านล่าง หรือกดปุ่ม ⋯ / ไอคอนแชร์ด้านบนของแอป แล้วเลือก "เปิดในเบราว์เซอร์"' : ' กดปุ่ม ⋯ หรือไอคอนแชร์ด้านบนของแอป แล้วเลือก "เปิดในเบราว์เซอร์"');
 
   const banner = document.createElement('div');
   banner.id = 'lykn-iab-banner';
-  banner.style.cssText = 'position:fixed;top:60px;left:12px;right:12px;z-index:49;display:flex;align-items:flex-start;gap:10px;background:rgba(255,176,32,0.14);backdrop-filter:blur(6px);border:1px solid rgba(255,176,32,0.4);border-radius:12px;padding:12px 14px;box-shadow:0 8px 20px rgba(0,0,0,0.35);font-family:\'Noto Sans Thai\',sans-serif;';
+  banner.style.cssText = 'position:fixed;top:60px;left:12px;right:12px;z-index:49;display:flex;flex-direction:column;gap:10px;background:rgba(255,176,32,0.14);backdrop-filter:blur(6px);border:1px solid rgba(255,176,32,0.4);border-radius:12px;padding:12px 14px;box-shadow:0 8px 20px rgba(0,0,0,0.35);font-family:\'Noto Sans Thai\',sans-serif;';
   banner.innerHTML =
-    '<div style="width:18px;height:18px;border-radius:50%;background:#ffb066;color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:none;margin-top:1px">!</div>' +
-    '<div style="flex:1;font-size:12.5px;line-height:1.6;color:#eafffb"></div>' +
-    '<div id="lykn-iab-close" style="flex:none;cursor:pointer;color:#8ea6a3;font-size:16px;line-height:1;padding:2px">✕</div>';
-  banner.querySelector('div:nth-child(2)').textContent = text;
+    '<div style="display:flex;align-items:flex-start;gap:10px">' +
+      '<div style="width:18px;height:18px;border-radius:50%;background:#ffb066;color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:none;margin-top:1px">!</div>' +
+      '<div id="lykn-iab-text" style="flex:1;font-size:12.5px;line-height:1.6;color:#eafffb"></div>' +
+      '<div id="lykn-iab-close" style="flex:none;cursor:pointer;color:#8ea6a3;font-size:16px;line-height:1;padding:2px">✕</div>' +
+    '</div>';
+  banner.querySelector('#lykn-iab-text').textContent = text;
   banner.querySelector('#lykn-iab-close').addEventListener('click', dismissInAppBrowserBanner);
+
+  if (onAndroid) {
+    const btn = document.createElement('a');
+    btn.href = androidChromeIntentUrl();
+    btn.textContent = en ? 'Open in Chrome' : 'เปิดใน Chrome';
+    btn.style.cssText = 'align-self:flex-start;margin-left:28px;background:linear-gradient(120deg,#0891b2,#4fbdb8);color:#fff;font-weight:700;font-size:12.5px;padding:8px 16px;border-radius:8px;text-decoration:none;cursor:pointer';
+    banner.appendChild(btn);
+  }
+
   document.body.appendChild(banner);
 }
 if (document.readyState === 'loading') {
