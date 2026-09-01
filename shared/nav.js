@@ -16,6 +16,65 @@ if (MAINTENANCE_MODE && !location.pathname.startsWith('/admin')) {
   location.replace('/errors/503/index.html');
 }
 
+// ============================================================
+// แจ้งเตือนกรณีเปิดเว็บผ่าน in-app browser ของแอปอื่น (X/Twitter, Instagram,
+// Facebook, LINE, TikTok) — บั๊กที่พี่แจ้ง "แนบไฟล์ไม่ได้ ไม่ส่งไปเปิดที่ browser
+// อื่น": in-app browser พวกนี้มักบล็อก/จำกัด <input type="file"> ไม่ให้เปิด
+// file picker เต็มรูปแบบเหมือน Safari/Chrome จริง — และ**ไม่มีทางที่หน้าเว็บจะสั่ง
+// ให้เด้งออกไปเปิดในเบราว์เซอร์นอกแอปเองได้** (ทั้ง iOS และ Android ตั้งใจบล็อกไว้
+// เพื่อความปลอดภัย ไม่ใช่ข้อจำกัดของโค้ดเรา) ทำได้แค่ตรวจจับแล้วแจ้งผู้ใช้ให้กดเปิด
+// เองผ่านเมนูของแอปนั้นๆ — ตรวจจาก user agent ซึ่งไม่แม่นยำ 100% เพราะแต่ละแอป
+// เปลี่ยนวิธี identify ตัวเองได้ตลอดเวลาโดยไม่แจ้งล่วงหน้า
+// ============================================================
+const IN_APP_BROWSER_PATTERNS = [
+  { test: /Twitter/i, th: 'X (Twitter)', en: 'X (Twitter)' },
+  { test: /Instagram/i, th: 'Instagram', en: 'Instagram' },
+  { test: /FBAN|FBAV|FB_IAB/i, th: 'Facebook', en: 'Facebook' },
+  { test: /\bLine\//i, th: 'LINE', en: 'LINE' },
+  { test: /BytedanceWebview|musical_ly|TikTok/i, th: 'TikTok', en: 'TikTok' }
+];
+function detectInAppBrowser() {
+  const ua = (navigator.userAgent || '');
+  for (const p of IN_APP_BROWSER_PATTERNS) {
+    if (p.test.test(ua)) return p;
+  }
+  return null;
+}
+function dismissInAppBrowserBanner() {
+  const el = document.getElementById('lykn-iab-banner');
+  if (el) el.remove();
+  try { sessionStorage.setItem('lykn_iab_dismissed', '1'); } catch (e) { /* ignore */ }
+}
+function initInAppBrowserBanner() {
+  if (location.pathname.startsWith('/admin')) return;
+  const app = detectInAppBrowser();
+  if (!app) return;
+  try {
+    if (sessionStorage.getItem('lykn_iab_dismissed') === '1') return;
+  } catch (e) { /* ignore */ }
+
+  const en = getStoredLang() === 'en';
+  const text = en
+    ? `You're viewing this inside the ${app.en} app's browser — some features (like attaching evidence files) may not work here. Tap the ⋯ or share icon above, then choose "Open in Browser" for full functionality.`
+    : `คุณกำลังเปิดเว็บนี้ผ่านเบราว์เซอร์ในแอป ${app.th} — บางฟีเจอร์ (เช่น แนบไฟล์หลักฐาน) อาจใช้งานไม่ได้ กดปุ่ม ⋯ หรือไอคอนแชร์ด้านบนของแอป แล้วเลือก "เปิดในเบราว์เซอร์" เพื่อใช้งานได้เต็มรูปแบบ`;
+
+  const banner = document.createElement('div');
+  banner.id = 'lykn-iab-banner';
+  banner.style.cssText = 'position:fixed;top:60px;left:12px;right:12px;z-index:49;display:flex;align-items:flex-start;gap:10px;background:rgba(255,176,32,0.14);backdrop-filter:blur(6px);border:1px solid rgba(255,176,32,0.4);border-radius:12px;padding:12px 14px;box-shadow:0 8px 20px rgba(0,0,0,0.35);font-family:\'Noto Sans Thai\',sans-serif;';
+  banner.innerHTML =
+    '<div style="width:18px;height:18px;border-radius:50%;background:#ffb066;color:#0d1117;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex:none;margin-top:1px">!</div>' +
+    '<div style="flex:1;font-size:12.5px;line-height:1.6;color:#eafffb"></div>' +
+    '<div id="lykn-iab-close" style="flex:none;cursor:pointer;color:#8ea6a3;font-size:16px;line-height:1;padding:2px">✕</div>';
+  banner.querySelector('div:nth-child(2)').textContent = text;
+  banner.querySelector('#lykn-iab-close').addEventListener('click', dismissInAppBrowserBanner);
+  document.body.appendChild(banner);
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initInAppBrowserBanner);
+} else {
+  initInAppBrowserBanner();
+}
+
 // สไตล์กล่องแจ้งเตือนแบบ alert message (success/warning/error/info) — ใช้ค่าสีชุด
 // เดียวกับที่มีอยู่แล้วในเว็บ (เช่น การ์ดผลตรวจสอบที่นั่ง) เพื่อให้ธีมสอดคล้องกันทั้งเว็บ
 // คืนแค่ token สี/ไอคอน ส่วน markup ยังต้องใส่แยกในแต่ละไฟล์ตามธรรมเนียมเดิมของโปรเจกต์
