@@ -1632,7 +1632,15 @@ class Component extends DCLogic {
       // ต่อทันที (throw TypeError) — ไฟล์ขึ้น storage ไปแล้วจริง แต่ request
       // ไปไม่ถึง submit-evidence เลยสักครั้ง (ไม่มี rate-limit hit บันทึกด้วย)
       // user เห็นแค่ "เกิดข้อผิดพลาด" เดาสาเหตุไม่ออกเลยว่าต้อง login ใหม่
-      const { data: sessionData } = await sb.auth.getSession();
+      let { data: sessionData } = await sb.auth.getSession();
+      if (!sessionData || !sessionData.session) {
+        // เคสที่พบบ่อย: เปิดหน้าค้างไว้แล้วสลับแอป/ล็อกจอนาน ตัว auto-refresh
+        // เบื้องหลัง (ทำงานด้วย timer) โดนมือถือหยุดไว้ระหว่างนั้น พอกลับมา
+        // ใช้งานจริง timer อาจยังไม่ทันได้ refresh — ลอง refresh ตรงๆ อีกทีก่อน
+        // ค่อยถือว่า session หมดอายุจริง (refresh token เองก็หมดอายุ/หายไปแล้ว)
+        const refreshed = await sb.auth.refreshSession();
+        sessionData = refreshed.data;
+      }
       if (!sessionData || !sessionData.session) {
         this.setState({ evidenceStatus: 'error', evidenceErrorMsg: t.profile.evidenceSessionExpired });
         return;
