@@ -1627,7 +1627,16 @@ class Component extends DCLogic {
     }
 
     try {
+      // เคยพังเงียบๆ ตรงนี้: ถ้า session หมดอายุ/หายไปพอดีตอนนั้น
+      // sessionData.session เป็น null แล้วโค้ดเดิมพยายามอ่าน .access_token
+      // ต่อทันที (throw TypeError) — ไฟล์ขึ้น storage ไปแล้วจริง แต่ request
+      // ไปไม่ถึง submit-evidence เลยสักครั้ง (ไม่มี rate-limit hit บันทึกด้วย)
+      // user เห็นแค่ "เกิดข้อผิดพลาด" เดาสาเหตุไม่ออกเลยว่าต้อง login ใหม่
       const { data: sessionData } = await sb.auth.getSession();
+      if (!sessionData || !sessionData.session) {
+        this.setState({ evidenceStatus: 'error', evidenceErrorMsg: t.profile.evidenceSessionExpired });
+        return;
+      }
       const token = sessionData.session.access_token;
       const res = await fetch(supabaseFunctionUrl('submit-evidence'), {
         method: 'POST',

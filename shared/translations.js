@@ -841,6 +841,9 @@ function buildTranslations(en) {
       evidenceUnsupportedType: en
         ? 'This file type is not supported — please choose a JPG, PNG, WEBP, or HEIC image.'
         : 'ไฟล์นี้เป็นประเภทที่ไม่รองรับ กรุณาเลือกรูปภาพชนิด JPG, PNG, WEBP หรือ HEIC เท่านั้น',
+      evidenceSessionExpired: en
+        ? 'Your session has expired — please log out and log back in, then try submitting evidence again.'
+        : 'เซสชันการเข้าสู่ระบบของคุณหมดอายุ กรุณาออกจากระบบแล้วเข้าสู่ระบบใหม่ ก่อนลองส่งหลักฐานอีกครั้ง',
       evidenceUploadBtn: en ? 'Upload' : 'อัปโหลด',
       evidenceUploadBtnLoading: en ? 'Uploading…' : 'กำลังอัปโหลด...',
       evidenceReviewTimeNote: en ? 'Review usually takes 24–48 hours. Files are deleted immediately after review.' : 'ปกติใช้เวลาตรวจ 24-48 ชั่วโมง ไฟล์จะถูกลบทันทีหลังตรวจเสร็จ',
