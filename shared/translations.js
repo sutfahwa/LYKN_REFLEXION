@@ -838,6 +838,9 @@ function buildTranslations(en) {
       evidenceFileRemoveBtn: en ? 'Remove' : 'นำออก',
       evidenceFileSizeHint: en ? 'Image only, up to 2MB' : 'แนบได้เฉพาะรูปภาพ ขนาดไม่เกิน 2MB',
       evidenceFileTooLarge: en ? 'File too large — please choose an image under 2MB.' : 'ไฟล์ใหญ่เกินไป กรุณาเลือกรูปภาพขนาดไม่เกิน 2MB',
+      evidenceUnsupportedType: en
+        ? 'This file type is not supported — please choose a JPG, PNG, WEBP, or HEIC image.'
+        : 'ไฟล์นี้เป็นประเภทที่ไม่รองรับ กรุณาเลือกรูปภาพชนิด JPG, PNG, WEBP หรือ HEIC เท่านั้น',
       evidenceUploadBtn: en ? 'Upload' : 'อัปโหลด',
       evidenceUploadBtnLoading: en ? 'Uploading…' : 'กำลังอัปโหลด...',
       evidenceReviewTimeNote: en ? 'Review usually takes 24–48 hours. Files are deleted immediately after review.' : 'ปกติใช้เวลาตรวจ 24-48 ชั่วโมง ไฟล์จะถูกลบทันทีหลังตรวจเสร็จ',

@@ -672,7 +672,7 @@
                ไม่ยอมเปิด file picker จาก <label for> ถ้า input จริงเป็น display:none
                (โดยเฉพาะ input ที่ render ผ่าน JS framework แบบนี้) ต้องใช้เทคนิค
                "ซ่อนแบบมองไม่เห็นแต่ยังอยู่ใน layout" แทนถึงจะกดติดบนมือถือ -->
-          <input type="file" id="evidenceFileInput" accept="image/*" onChange="{{ setEvidenceFile }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
+          <input type="file" id="evidenceFileInput" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange="{{ setEvidenceFile }}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
           <label for="evidenceFileInput" style="position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1.5px dashed rgba(111,224,214,0.35);background:rgba(111,224,214,0.05);color:#6fe0d6;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
             <span>📎</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ evidenceFilePickerLabel }}</span>
           </label>
@@ -1609,14 +1609,24 @@ class Component extends DCLogic {
       return;
     }
     this.setState({ evidenceStatus: 'loading', evidenceErrorMsg: '' });
-    try {
-      const sb = getSupabaseClient();
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const fileKey = `${claimId}/${Date.now()}-${safeName}`;
+    const sb = getSupabaseClient();
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const fileKey = `${claimId}/${Date.now()}-${safeName}`;
 
+    // แยก try/catch ของขั้นอัปโหลดไฟล์ขึ้น storage ออกจากขั้นบันทึกลง DB (edge
+    // function) — error ของขั้นอัปโหลดส่วนใหญ่คือไฟล์ผิดประเภท (bucket จำกัดไว้
+    // แค่ jpeg/png/webp/heic/heif) ไม่ใช่ปัญหาเครือข่ายทั่วไป เดิมโชว์ข้อความ
+    // "เกิดข้อผิดพลาด" เฉยๆ ทำให้เดาสาเหตุไม่ออก เลยแยกให้บอกสาเหตุจริงแทน
+    try {
       const uploadRes = await sb.storage.from('evidence').upload(fileKey, file);
       if (uploadRes.error) throw uploadRes.error;
+    } catch (err) {
+      const msg = /mime|type/i.test(err && err.message || '') ? t.profile.evidenceUnsupportedType : t.seatCheck.genericError;
+      this.setState({ evidenceStatus: 'error', evidenceErrorMsg: msg });
+      return;
+    }
 
+    try {
       const { data: sessionData } = await sb.auth.getSession();
       const token = sessionData.session.access_token;
       const res = await fetch(supabaseFunctionUrl('submit-evidence'), {
