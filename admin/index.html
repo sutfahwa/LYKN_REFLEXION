@@ -611,6 +611,12 @@
         <sc-if value="{{ approveConfirmNoEvidence }}" hint-placeholder-val="{{ false }}">
           <div style="font-size:12.5px;color:#a35c00;background:rgba(255,176,32,0.1);border:1px solid rgba(255,176,32,0.35);border-radius:8px;padding:10px 12px;margin-bottom:16px;line-height:1.6">⚠️ {{ t.admin.approveNoEvidenceWarning }}</div>
         </sc-if>
+        <sc-if value="{{ approveConfirmHasRejectReason }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12.5px;color:#a32020;background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.3);border-radius:8px;padding:10px 12px;margin-bottom:16px;line-height:1.6">
+            ⚠️ {{ t.admin.approveRejectedEvidenceWarning }}
+            <div style="margin-top:6px;font-weight:600">{{ t.admin.approveRejectedEvidenceReasonLabel }}: {{ approveConfirmRejectReason }}</div>
+          </div>
+        </sc-if>
 
         <sc-if value="{{ isRejectClaimMode }}" hint-placeholder-val="{{ false }}">
           <div style="margin-bottom:12px">
@@ -1555,6 +1561,12 @@ class Component extends DCLogic {
       // "รอตรวจสอบหลักฐาน" คือ REGISTERED ที่มีหลักฐานล่าสุดยัง PENDING อยู่ —
       // แยกจาก "รอยืนยันหลักฐาน" (ยังไม่ส่งอะไรมาเลย หรือหลักฐานก่อนหน้าถูกแทนที่/ไม่ผ่านไปแล้ว)
       const hasPendingEvidence = !isDeleted && c.status === 'REGISTERED' && c.latest_evidence_result === 'PENDING';
+      // เคยส่งหลักฐานแล้วตรวจไม่ผ่าน (ทั้งทาง admin-review-evidence ที่กลับไป
+      // REGISTERED กับทาง admin-reject-claim-evidence ที่เป็น EVIDENCE_REJECTED) —
+      // ให้แอดมินอนุมัติทับได้เลยถ้ามั่นใจว่าถูกต้องจริง (เช่น คุย/ตรวจนอกรอบแล้ว)
+      // ไม่ต้องรอผู้ใช้ส่งหลักฐานใหม่มาก่อน (quickApprove รองรับ flow นี้อยู่แล้ว)
+      const hasRejectedEvidence = !isDeleted && (c.status === 'REGISTERED' || c.status === 'EVIDENCE_REJECTED') &&
+        c.latest_evidence_result === 'REJECTED';
 
       const hasDeadline = hasPendingEvidence && !!c.latest_evidence_submitted_at;
       let deadlineLabel = '', deadlineBg = '', deadlineColor = '';
@@ -1612,7 +1624,7 @@ class Component extends DCLogic {
         hasCaseNumber: !!caseNumber, hasNoCaseNumber: !caseNumber, caseNumberLabel: formatCaseNumber(caseNumber), caseNumberRaw: caseNumber || 0,
         onGoToDispute: () => this.goToDisputeCase(caseNumber),
         isEvidenceRejected, evidenceRejectReason: c.evidence_reject_reason || '',
-        canApprove: hasPendingEvidence,
+        canApprove: hasPendingEvidence || hasRejectedEvidence,
         canManage: !isDeleted && c.status === 'VERIFIED',
         onApprove: () => this.openApproveConfirm(c),
         onChangeStatus: () => this.openChangeStatus(c),
@@ -1638,6 +1650,10 @@ class Component extends DCLogic {
       ? `@${approveConfirmClaim.x_handle} · ${roundLabelById[approveConfirmClaim.show_id] || approveConfirmClaim.show_id} / ${approveConfirmClaim.zone} / ${approveConfirmClaim.row} / ${approveConfirmClaim.seat}`
       : '';
     const approveConfirmNoEvidence = !!approveConfirmClaim && !(approveConfirmClaim.evidence_count > 0);
+    const approveConfirmRejectReason = approveConfirmClaim
+      ? (approveConfirmClaim.evidence_reject_reason || approveConfirmClaim.latest_evidence_review_note || '')
+      : '';
+    const approveConfirmHasRejectReason = !!approveConfirmClaim && approveConfirmClaim.latest_evidence_result === 'REJECTED';
 
     // case_number ตอนนี้ติดที่ claim ของแต่ละคน ไม่ใช่ของ "เคส" รวม — เวลา search
     // เจอแค่ใครคนใดคนหนึ่งในเคสตรงกับคำค้น ต้องโชว์ทั้งเคส (ทุกคนที่ผูก review_id
@@ -2028,6 +2044,8 @@ class Component extends DCLogic {
       isApproveConfirmOpen: !!approveConfirmClaim,
       approveConfirmSeatLabel,
       approveConfirmNoEvidence,
+      approveConfirmHasRejectReason,
+      approveConfirmRejectReason,
       closeApproveConfirm: () => this.closeApproveConfirm(),
       confirmApprove: () => this.confirmApprove(),
       isRejectClaimMode: this.state.rejectClaimMode,

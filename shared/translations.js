@@ -372,6 +372,10 @@ function buildTranslations(en) {
       approveNoEvidenceWarning: en
         ? 'This claim has not submitted any evidence yet. Are you sure you want to approve it anyway?'
         : 'รายการนี้ยังไม่มีการส่งหลักฐาน แน่ใจหรือไม่ว่าต้องการอนุมัติเลย',
+      approveRejectedEvidenceWarning: en
+        ? 'This document was already reviewed and rejected. Approving now will override that decision — make sure you have confirmed the ownership another way (e.g. discussed off-platform).'
+        : 'เอกสารของรายการนี้เคยถูกตรวจแล้วว่า "ไม่ผ่าน" — การอนุมัติตอนนี้จะทับผลตรวจเดิม กรุณายืนยันความเป็นเจ้าของด้วยวิธีอื่นแล้ว (เช่น คุยนอกรอบ) ก่อนกดอนุมัติ',
+      approveRejectedEvidenceReasonLabel: en ? 'Previous rejection reason' : 'เหตุผลที่ไม่ผ่านครั้งก่อน',
       reloadBtn: en ? 'Reload' : 'รีเฟรช',
       pageLabel: en ? 'Page' : 'หน้า',
       pageSizeLabel: en ? 'Per page' : 'ต่อหน้า',
